@@ -1,0 +1,75 @@
+{
+  "name": "scorekeep",
+  "description": "Easily set up recurring payments based on plans.",
+  "version": "0.0.0",
+  "author": "BeeeQueue",
+  "dependencies": {
+    "@types/graphql": "14.2.1",
+    "@types/node": "12.0.10",
+    "@types/superagent": "4.1.2",
+    "@types/uuid": "3.4.4",
+    "apollo-server": "2.6.7",
+    "date-fns": "2.0.0-alpha.27",
+    "dotenv": "8.0.0",
+    "graphql": "14.3.1",
+    "graphql-tools": "4.0.5",
+    "reflect-metadata": "0.1.13",
+    "superagent": "5.1.0",
+    "ts-node": "8.3.0",
+    "tsconfig-paths": "3.8.0",
+    "type-graphql": "0.17.4",
+    "typescript": "3.5.2",
+    "uuid": "3.3.2",
+    "winston": "3.2.1"
+  },
+  "devDependencies": {
+    "@types/jest": "24.0.15",
+    "@typescript-eslint/eslint-plugin": "1.11.0",
+    "@typescript-eslint/parser": "1.11.0",
+    "coveralls": "3.0.4",
+    "eslint": "6.0.0",
+    "eslint-config-prettier": "5.0.0",
+    "eslint-config-standard": "12.0.0",
+    "eslint-import-resolver-typescript": "1.1.1",
+    "eslint-plugin-import": "2.17.3",
+    "eslint-plugin-node": "9.1.0",
+    "eslint-plugin-prettier": "3.1.0",
+    "eslint-plugin-promise": "4.1.1",
+    "eslint-plugin-standard": "4.0.0",
+    "husky": "2.5.0",
+    "jest": "24.8.0",
+    "lint-staged": "8.2.1",
+    "prettier": "1.18.2",
+    "ts-jest": "24.0.2",
+    "ts-node-dev": "1.0.0-pre.40"
+  },
+  "engines": {
+    "node": ">=12.6.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "license": "AGPL-3.0-only",
+  "lint-staged": {
+    "*.{js,ts,json,vue}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "private": true,
+  "repository": "https://github.com/BeeeQueue/scorekeep",
+  "scripts": {
+    "build": "yarn tsc --noEmit -P tsconfig.json",
+    "dev": "ts-node-dev --respawn -r dotenv/config -r tsconfig-paths/register --inspect -- src/index.ts",
+    "lint": "eslint 'src/**/*'",
+    "migrate": "knex migrate:latest --knexfile knexfile.ts",
+    "migrate:create": "knex migrate:make --knexfile knexfile.ts -x ts",
+    "prestart": "yarn run migrate",
+    "pretest": "NODE_ENV=test yarn run migrate",
+    "start": "ts-node -r dotenv/config -r tsconfig-paths/register src/index.ts",
+    "test": "jest -i",
+    "test:coverage": "yarn run test --coverage"
+  }
+}
