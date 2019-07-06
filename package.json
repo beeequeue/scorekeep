@@ -55,7 +55,7 @@
   },
   "license": "AGPL-3.0-only",
   "lint-staged": {
-    "*.{js,ts,json,vue}": [
+    "*.{js,ts,tsx,json}": [
       "prettier --write",
       "git add"
     ]
