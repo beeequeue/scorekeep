@@ -1,3 +1,4 @@
+import 'reflect-metadata'
 import { createServer } from '@/apollo'
 
 const { PORT } = process.env

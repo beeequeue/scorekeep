@@ -1,4 +1,3 @@
-import 'reflect-metadata'
 import { ApolloServer } from 'apollo-server'
 
 import { createSchema } from '@/graphql'
