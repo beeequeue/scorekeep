@@ -1,25 +1,38 @@
+import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
 import { Field, ID, ObjectType } from 'type-graphql'
 
 interface UserConstructor {
-  id: string
+  uuid: string
   name: string
-  mainConnectionid?: string
+  mainConnectionUuid?: string
 }
 
+@Entity()
 @ObjectType()
-export class User {
+export class User extends BaseEntity {
+  @PrimaryColumn({ type: 'uuid' })
   @Field(() => ID)
-  public id: string
+  public uuid!: string
 
+  @Column({ length: 50 })
   @Field()
-  public name: string
+  public name!: string
 
+  @Column({ type: 'uuid' })
   @Field(() => ID, { nullable: true })
-  public mainConnectionId?: string
+  public mainConnectionUuid?: string
 
-  constructor({id, name, mainConnectionid}: UserConstructor) {
-    this.id = id
-    this.name = name
-    this.mainConnectionId = mainConnectionid
+  public static async from({
+    uuid,
+    name,
+    mainConnectionUuid,
+  }: UserConstructor) {
+    const user = new User()
+
+    user.uuid = uuid
+    user.name = name
+    user.mainConnectionUuid = mainConnectionUuid
+
+    return user
   }
 }
