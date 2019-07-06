@@ -41,7 +41,7 @@ const _config: Config = {
       ...defaultDbConfig,
       type: 'postgres',
       database: 'scorekeep',
-      url: process.env.DB_URL,
+      url: process.env.DATABASE_URL,
       migrationsRun: true,
     },
   },
