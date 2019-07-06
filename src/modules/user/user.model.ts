@@ -8,10 +8,7 @@ enum UserType {
 
 registerEnumType(UserType, { name: 'UserType' })
 
-type UserConstructor = Pick<
-  User,
-  'uuid' | 'name' | 'mainConnectionUuid'
->
+type UserConstructor = Pick<User, 'uuid' | 'name' | 'mainConnectionUuid'>
 
 @Entity()
 @ObjectType()

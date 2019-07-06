@@ -44,7 +44,7 @@ const _config: Config = {
       url: process.env.DB_URL,
       migrationsRun: true,
     },
-  }
+  },
 }
 
 export const config = _config[process.env.NODE_ENV as Environment]
