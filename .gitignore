@@ -3,6 +3,8 @@
 .env
 !.gitkeep
 
+sqlite
+
 
 ## Generated
 # Logs
