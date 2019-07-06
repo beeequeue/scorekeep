@@ -4,14 +4,14 @@
   "version": "0.0.0",
   "author": "BeeeQueue",
   "dependencies": {
-    "@types/graphql": "14.2.1",
-    "@types/node": "12.0.10",
+    "@types/graphql": "14.2.2",
+    "@types/node": "12.0.12",
     "@types/superagent": "4.1.2",
-    "@types/uuid": "3.4.4",
+    "@types/uuid": "3.4.5",
     "apollo-server": "2.6.7",
     "date-fns": "2.0.0-alpha.27",
     "dotenv": "8.0.0",
-    "graphql": "14.3.1",
+    "graphql": "14.4.2",
     "graphql-tools": "4.0.5",
     "reflect-metadata": "0.1.13",
     "superagent": "5.1.0",
@@ -28,14 +28,14 @@
     "@typescript-eslint/eslint-plugin": "1.11.0",
     "@typescript-eslint/parser": "1.11.0",
     "coveralls": "3.0.4",
-    "eslint": "6.0.0",
-    "eslint-config-prettier": "5.0.0",
+    "eslint": "6.0.1",
+    "eslint-config-prettier": "6.0.0",
     "eslint-config-standard": "12.0.0",
     "eslint-import-resolver-typescript": "1.1.1",
-    "eslint-plugin-import": "2.17.3",
+    "eslint-plugin-import": "2.18.0",
     "eslint-plugin-node": "9.1.0",
     "eslint-plugin-prettier": "3.1.0",
-    "eslint-plugin-promise": "4.1.1",
+    "eslint-plugin-promise": "4.2.1",
     "eslint-plugin-standard": "4.0.0",
     "husky": "3.0.0",
     "jest": "24.8.0",
@@ -57,7 +57,10 @@
   "lint-staged": {
     "*.{js,ts,tsx,json}": [
       "prettier --write",
-      "yarn lint --fix",
+      "git add"
+    ],
+    "*.{ts,tsx}": [
+      "eslint --fix",
       "git add"
     ]
   },
