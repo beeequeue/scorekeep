@@ -1,11 +1,17 @@
 import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
-import { Field, ID, ObjectType } from 'type-graphql'
+import { Field, ID, ObjectType, registerEnumType } from 'type-graphql'
 
-interface UserConstructor {
-  uuid: string
-  name: string
-  mainConnectionUuid?: string
+enum UserType {
+  SIMPLE = 'SIMPLE',
+  FULL = 'FULL',
 }
+
+registerEnumType(UserType, { name: 'UserType' })
+
+type UserConstructor = Pick<
+  User,
+  'uuid' | 'name' | 'mainConnectionUuid'
+>
 
 @Entity()
 @ObjectType()
@@ -17,6 +23,12 @@ export class User extends BaseEntity {
   @Column({ length: 50 })
   @Field()
   public name!: string
+
+  @Field(() => UserType)
+  public type(): UserType {
+    // Check if has connections
+    return UserType.SIMPLE
+  }
 
   @Column({ type: 'uuid' })
   @Field(() => ID, { nullable: true })
