@@ -1,7 +1,7 @@
 import { Router } from 'express'
 
+import { googleRouter } from '@/modules/google/google.routes'
+
 export const router = Router()
 
-router.get('/test', (_, res) => {
-  res.send('Hello world!')
-})
+router.use('/connect/google', googleRouter)
