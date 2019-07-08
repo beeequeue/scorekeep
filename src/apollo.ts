@@ -1,6 +1,7 @@
 import { ApolloServer } from 'apollo-server-express'
 import Express, { Express as IExpress } from 'express'
 import Helmet from 'helmet'
+import CookieParser from 'cookie-parser'
 
 import { createSchema } from '@/graphql'
 import { router } from '@/router'
@@ -9,6 +10,7 @@ export const createApp = (): IExpress => {
   const app = Express()
 
   app.use(Helmet())
+  app.use(CookieParser())
 
   app.use(router)
 
