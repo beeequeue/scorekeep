@@ -1,11 +1,18 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryColumn,
+} from 'typeorm'
 import uuid from 'uuid/v4'
 
 import { isNil } from '@/utils'
 import { User } from '../user/user.model'
 
 const WEEK = 1000 * 60 * 60 * 24 * 7
-type Constructor = Pick<Session, 'userUuid' | 'expiresAt'>
+type Constructor = Pick<Session, 'user' | 'expiresAt'>
 
 /**
  * A Session can either have a user or it can not.
@@ -16,8 +23,9 @@ export class Session extends BaseEntity {
   @PrimaryColumn({ type: 'uuid' })
   public readonly uuid: string = uuid()
 
-  @Column({ type: 'uuid' })
-  public readonly userUuid: string
+  @OneToOne(() => User)
+  @JoinColumn()
+  public readonly user?: User
 
   @Column()
   public readonly expiresAt: Date
@@ -30,13 +38,13 @@ export class Session extends BaseEntity {
 
     if (isNil(options)) options = {} as any
 
-    this.userUuid = options.userUuid
+    this.user = options.user
     this.expiresAt = options.expiresAt
   }
 
-  public static async generate(userUuid: string) {
+  public static async generate(user?: User) {
     const session = new Session({
-      userUuid,
+      user,
       expiresAt: new Date(Date.now() + WEEK),
     })
 
@@ -46,17 +54,6 @@ export class Session extends BaseEntity {
   }
 
   public async getUser() {
-    return User.findOne(this.userUuid)
-  }
-
-  public async exists() {
-    const result = await Session.count({
-      where: { uuid: this.uuid, userUuid: this.userUuid },
-    })
-
-    // eslint-disable-next-line no-console
-    console.error('Got two session when checking if one existed')
-
-    return result === 1
+    return User.findOne(this.user)
   }
 }

@@ -3,6 +3,7 @@ import Express, { Express as IExpress } from 'express'
 import Helmet from 'helmet'
 import CookieParser from 'cookie-parser'
 
+import { contextProvider } from '@/modules/session/session.lib'
 import { createSchema } from '@/graphql'
 import { router } from '@/router'
 
@@ -21,6 +22,7 @@ export const connectApolloServer = async (app: IExpress) => {
   const server = new ApolloServer({
     schema: await createSchema(),
     introspection: true,
+    context: contextProvider,
   })
 
   server.applyMiddleware({ app })
