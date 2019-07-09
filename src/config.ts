@@ -1,9 +1,11 @@
-import { Environment } from '@/constants'
+import { EngineReportingOptions } from 'apollo-engine-reporting'
 import { ConnectionOptions } from 'typeorm'
+import { Environment } from '@/constants'
 
 type Config = {
   [key in Environment]: {
     db: ConnectionOptions
+    apolloEngine?: EngineReportingOptions<unknown>
   }
 }
 
@@ -43,6 +45,9 @@ const _config: Config = {
       database: 'scorekeep',
       url: process.env.DATABASE_URL,
       migrationsRun: true,
+    },
+    apolloEngine: {
+      apiKey: process.env.APOLLO_ENGINE_KEY,
     },
   },
 }
