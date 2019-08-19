@@ -41,6 +41,7 @@ type Boardgame {
     name: String!
     """ Link to boardgame characteristics (e.g. boardgamegeek) """
     url: String
+    rulebook: String
     maxPlayers: Int!
     minPlayers: Int!
     resultTemplateJSON: GameScoreTemplateJSON!
