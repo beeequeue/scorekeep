@@ -1,0 +1,60 @@
+"""
+JSON that contains a template for results
+"""
+scalar GameScoreTemplateJSON
+
+"""
+JSON that contains the results of a match
+"""
+scalar GameScoreJSON
+
+"""
+An ISO-8601 formatted date string.
+"""
+scalar Date
+
+enum GAME_TYPE {
+    COLLABORATIVE,
+    COMPETITIVE
+}
+
+type Player {
+    id: ID!
+    name: String!
+    """A player could belong to 0 clubs"""
+    clubs: [Club]!
+    """Only existing if a player claims the account"""
+    email: String
+}
+
+type Club {
+    id: ID!
+    name: String!
+    members: [Player!]!
+    """A club owner must be a claimed player"""
+    owner: Player!
+}
+
+type Boardgame {
+    type: GAME_TYPE!
+    id: ID!
+    name: String!
+    """ Link to boardgame characteristics (e.g. boardgamegeek) """
+    url: String
+    rulebook: String
+    maxPlayers: Int!
+    minPlayers: Int!
+    resultTemplateJSON: GameScoreTemplateJSON!
+}
+
+type Match {
+    id: ID!
+    club: Club!
+    players: [Player!]!
+    results: GameScoreJSON!
+    winner: [Player!]!
+    game: Boardgame!
+    date: Date!
+}
+
+
