@@ -6,6 +6,7 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -13,13 +14,11 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "sourceMap": true,
-    "baseUrl": ".",
     "types": ["node", "jest"],
+    "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
     },
     "lib": ["es5", "es2015", "es2016", "es2017", "esnext"]
-  },
-  "include": ["src/**/*.ts", "./index.d.ts"],
-  "exclude": ["node_modules"]
+  }
 }
