@@ -1,0 +1,32 @@
+schema:
+  - https://localhost:3000/graphql:
+      headers:
+        Authorization: Bearer ${TOKEN}
+documents: ./src/**/*.{ts,tsx,graphql}
+hooks:
+  afterOneFileWrite:
+    - prettier --write
+generates:
+  ./src/graphql/generated.ts:
+    plugins:
+      - add: '/* eslint-disable */'
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      avoidOptionals: true
+      skipTypename: false
+      #scalars:
+      #  Date: Date
+      withHOC: false
+      withComponent: false
+      withHooks: true
+
+  ./src/graphql/introspection-result.ts:
+    plugins:
+      - add: "/* eslint-disable */"
+      - fragment-matcher
+
+  ./schema.graphql:
+    plugins:
+      - schema-ast

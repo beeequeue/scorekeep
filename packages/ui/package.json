@@ -68,6 +68,9 @@
     "url": "git+https://github.com/BeeeQueue/scorekeep.git"
   },
   "scripts": {
+    "build": "NODE_ENV=production webpack -p",
+    "dev": "webpack-dev-server --hot",
+    "lint": "eslint 'src/**/*.{ts,tsx}'",
     "test": "echo \"Error: run tests from root\" && exit 1"
   }
 }
