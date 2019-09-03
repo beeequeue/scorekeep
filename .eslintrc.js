@@ -12,17 +12,16 @@ module.exports = {
     project: './tsconfig.json',
     tsconfigRootDir: './',
   },
-  plugins: ['@typescript-eslint', 'import'],
+  plugins: ['@typescript-eslint', 'import', 'security'],
   extends: [
     'eslint:recommended',
     'plugin:node/recommended',
-    'standard',
+    'plugin:security/recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:import/errors',
     'plugin:import/warnings',
     'plugin:import/typescript',
     'plugin:prettier/recommended',
-    'prettier/standard',
     'prettier/@typescript-eslint',
   ],
   rules: {
@@ -49,6 +48,7 @@ module.exports = {
       2,
       { overrides: { constructors: 'no-public' } },
     ],
+    'security/detect-object-injection': 0,
     'prettier/prettier': 0,
   },
   settings: {
