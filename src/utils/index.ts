@@ -22,7 +22,7 @@ export const mapObjIndexed = <T extends {}, R extends {}>(
   return keys.reduce(
     (newObj, key) => ({
       ...newObj,
-      [key]: mappingFunc((obj as any)[key] as any, key as any, obj as any),
+      [key]: mappingFunc((obj as any)[key], key as any, obj as any),
     }),
     {} as any,
   ) as R

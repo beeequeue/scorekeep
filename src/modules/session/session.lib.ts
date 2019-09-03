@@ -6,13 +6,13 @@ import { Session } from '@/modules/session/session.model'
 import { User } from '@/modules/user/user.model'
 import { isNil } from '@/utils'
 
-interface NoSessionContext {
+type NoSessionContext = {
   session: Session
   user: undefined
   isLoggedIn: false
 }
 
-interface SessionContext {
+type SessionContext = {
   session: Session
   user: User
   isLoggedIn: true

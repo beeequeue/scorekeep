@@ -31,11 +31,7 @@ export class User extends BaseEntity {
   @Field(() => ID, { nullable: true })
   public mainConnectionUuid?: string
 
-  public static async from({
-    uuid,
-    name,
-    mainConnectionUuid,
-  }: UserConstructor) {
+  public static from({ uuid, name, mainConnectionUuid }: UserConstructor) {
     const user = new User()
 
     user.uuid = uuid

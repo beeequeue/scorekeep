@@ -17,7 +17,9 @@ module.exports = {
     'eslint:recommended',
     'plugin:node/recommended',
     'plugin:security/recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:import/errors',
     'plugin:import/warnings',
     'plugin:import/typescript',
@@ -47,6 +49,11 @@ module.exports = {
     '@typescript-eslint/explicit-member-accessibility': [
       2,
       { overrides: { constructors: 'no-public' } },
+    ],
+    '@typescript-eslint/consistent-type-definitions': [2, 'type'],
+    '@typescript-eslint/consistent-type-assertions': [
+      2,
+      { assertionStyle: 'as' },
     ],
     'security/detect-object-injection': 0,
     'prettier/prettier': 0,
