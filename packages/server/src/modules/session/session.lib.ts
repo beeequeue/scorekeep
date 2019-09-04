@@ -54,9 +54,8 @@ export const contextProvider: ContextFunction<
   })
 
   const user = await session.getUser()
-  const isLoggedIn = isNil(user)
 
-  if (!isLoggedIn) {
+  if (isNil(user)) {
     return {
       session,
       user: undefined,
@@ -66,7 +65,7 @@ export const contextProvider: ContextFunction<
 
   return {
     session,
-    user: user!,
+    user: user,
     isLoggedIn: true as const,
   }
 }
