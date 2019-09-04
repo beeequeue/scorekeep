@@ -1,17 +1,23 @@
 module.exports = {
   root: false,
-  extends: ['../../.eslintrc.js', 'plugin:react/recommended', 'prettier/react'],
+  extends: ['plugin:react/recommended', 'prettier/react'],
   parserOptions: {
+    ecmaVersion: 2018,
     project: './tsconfig.json',
     tsconfigRootDir: './',
   },
   env: {
     browser: true,
   },
-  settings: {
-    'import/resolver': 'webpack',
-  },
   rules: {
     'jsx-quotes': 0,
+  },
+  settings: {
+    'import/resolver': {
+      alias: {
+        map: [['@', __dirname + '/src']],
+        extensions: ['.js', '.ts', '.tsx', '.json'],
+      },
+    },
   },
 }

@@ -32,6 +32,25 @@
     "sqlite3": "4.1.0",
     "ts-node-dev": "1.0.0-pre.42"
   },
+  "engines": {
+    "node": ">=12.9.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,json,yml}": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.{ts,tsx}": [
+      "lint --fix",
+      "prettier --write",
+      "git add"
+    ]
+  },
   "private": true,
   "repository": "https://github.com/BeeeQueue/scorekeep",
   "scripts": {

@@ -47,7 +47,6 @@
     "copy-webpack-plugin": "5.0.4",
     "core-js": "3.2.1",
     "dotenv-webpack": "1.7.0",
-    "eslint-import-resolver-webpack": "0.11.1",
     "eslint-plugin-react": "7.14.3",
     "file-loader": "4.2.0",
     "fork-ts-checker-webpack-plugin": "1.5.0",
@@ -60,6 +59,25 @@
     "webpack-cli": "3.3.7",
     "webpack-dev-server": "3.3.1",
     "webpack-manifest-plugin": "2.0.4"
+  },
+  "engines": {
+    "node": ">=12.9.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,json,yml}": [
+      "prettier --write",
+      "git add"
+    ],
+    "*.{ts,tsx}": [
+      "lint --fix",
+      "prettier --write",
+      "git add"
+    ]
   },
   "homepage": "https://github.com/BeeeQueue/scorekeep#readme",
   "private": true,

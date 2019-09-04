@@ -13,7 +13,6 @@ module.exports = {
   plugins: ['@typescript-eslint', 'import', 'security'],
   extends: [
     'eslint:recommended',
-    'plugin:node/recommended',
     'plugin:security/recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
@@ -27,9 +26,6 @@ module.exports = {
   rules: {
     'no-console': 2,
     'no-use-before-define': 0,
-    'node/no-unsupported-features/es-syntax': 0,
-    'node/prefer-promises/dns': 2,
-    'node/prefer-promises/fs': 2,
     'import/no-default-export': 2,
     'import/no-useless-path-segments': [
       2,
@@ -37,6 +33,7 @@ module.exports = {
         noUselessIndex: true,
       },
     ],
+    '@typescript-eslint/no-unused-vars': [2, { args: 'after-used' }],
     '@typescript-eslint/explicit-function-return-type': 0,
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/no-non-null-assertion': 0,
@@ -55,11 +52,5 @@ module.exports = {
     ],
     'security/detect-object-injection': 0,
     'prettier/prettier': 0,
-  },
-  settings: {
-    'import/resolver': {
-      // Has to exist for some reason, can't find the issue on GitHub
-      typescript: {},
-    },
   },
 }
