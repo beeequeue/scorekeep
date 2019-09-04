@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  server:
+    image: node:12.9.1
+    command: >
+      yarn install
+      yarn dev
+    working_dir: /server
+    volumes:
+      - ./packages/server:/server
+    ports:
+      - 3000:3000
+    links:
+      - ui
+  ui:
+    image: node:12.9.1
+    command: >
+      yarn install
+      yarn dev
+    environment:
+      REACT_APP_API_URL: http://server:3000
+    working_dir: /server
+    volumes:
+      - ./packages/ui:/server
+    ports:
+      - 3100:3100
+    links:
+      - server
