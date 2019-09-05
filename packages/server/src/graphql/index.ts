@@ -1,10 +1,11 @@
 import { buildSchema } from 'type-graphql'
 
-import { UserResolver } from '@/modules/user/user.resolvers'
 import { BoardgameResolver } from '@/modules/boardgame/boardgame.resolvers'
+import { ClubResolver } from '@/modules/club/club.resolvers'
+import { UserResolver } from '@/modules/user/user.resolvers'
 
 export const createSchema = async () =>
   buildSchema({
     dateScalarMode: 'isoDate',
-    resolvers: [BoardgameResolver, UserResolver],
+    resolvers: [BoardgameResolver, ClubResolver, UserResolver],
   })
