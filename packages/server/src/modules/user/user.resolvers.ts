@@ -1,23 +1,24 @@
-import { Arg, ID, Query, Resolver } from 'type-graphql'
-import uuid from 'uuid/v4'
+import { Arg, Ctx, ID, Query, Resolver } from 'type-graphql'
 
 import { User } from '@/modules/user/user.model'
+import { isUuid } from '@/utils'
 
 @Resolver()
 export class UserResolver {
-  @Query(() => User)
-  public user(@Arg('uuid', () => ID) uuid: string): User {
-    return User.from({
-      uuid,
-      name: 'Someone else',
-    })
+  // eslint-disable-next-line @typescript-eslint/require-await
+  @Query(() => User, { nullable: true })
+  public async user(@Arg('uuid', () => ID) uuid: string): Promise<User | null> {
+    if (!isUuid(uuid)) return null
+
+    return User.findByUuid(uuid)
   }
 
-  @Query(() => User)
-  public viewer(): User {
-    return User.from({
-      uuid: uuid(),
-      name: 'You',
-    })
+  // eslint-disable-next-line @typescript-eslint/require-await
+  @Query(() => User, { nullable: true })
+  public async viewer(@Ctx() context: any): Promise<User | null> {
+    // eslint-disable-next-line no-console
+    console.log(context)
+
+    return null
   }
 }

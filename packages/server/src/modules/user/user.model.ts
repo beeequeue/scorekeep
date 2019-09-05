@@ -26,6 +26,12 @@ export class User extends BaseEntity {
   @Field(() => ID, { nullable: true })
   public mainConnectionUuid?: string
 
+  public static async findByUuid(uuid: string): Promise<User | null> {
+    const user = await User.findOne({ where: { uuid } })
+
+    return user || null
+  }
+
   public static from(parameters: UserConstructor) {
     const user = new User()
 
