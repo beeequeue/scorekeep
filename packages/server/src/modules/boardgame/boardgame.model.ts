@@ -1,5 +1,6 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
+import { GraphQLJSONObject } from 'graphql-type-json'
 import { Field, ID, ObjectType, registerEnumType } from 'type-graphql'
+import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
 
 type BoardgameConstructor = Pick<
   Boardgame,
@@ -51,7 +52,7 @@ export class Boardgame extends BaseEntity {
   public maxPlayers!: number
 
   @Column({ type: 'json' })
-  @Field(() => JSON)
+  @Field(() => GraphQLJSONObject)
   public resultTemplateJSON!: number
 
   public static from(parameters: BoardgameConstructor) {

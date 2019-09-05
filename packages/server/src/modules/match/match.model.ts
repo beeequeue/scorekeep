@@ -1,5 +1,6 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
+import { GraphQLJSONObject } from 'graphql-type-json'
 import { Field, ID, ObjectType } from 'type-graphql'
+import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
 import { User } from '@/modules/user/user.model'
 import { Boardgame } from '@/modules/boardgame/boardgame.model'
 import { Club } from '@/modules/club/club.model'
@@ -45,8 +46,8 @@ export class Match extends BaseEntity {
   public winners!: User[]
 
   @Column({ type: 'json' })
-  @Field(() => JSON)
-  public results!: number
+  @Field(() => GraphQLJSONObject)
+  public results!: object
 
   @Column({ type: 'timestamp' })
   @Field(() => Date)

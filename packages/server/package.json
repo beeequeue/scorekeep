@@ -16,6 +16,7 @@
     "googleapis": "42.0.0",
     "graphql": "14.5.4",
     "graphql-tools": "4.0.5",
+    "graphql-type-json": "0.3.0",
     "helmet": "3.20.1",
     "pg": "7.12.1",
     "reflect-metadata": "0.1.13",
@@ -29,6 +30,7 @@
     "winston": "3.2.1"
   },
   "devDependencies": {
+    "@types/graphql-type-json": "0.3.2",
     "@types/type-is": "1.6.3",
     "sqlite3": "4.1.0",
     "ts-node-dev": "1.0.0-pre.42"
