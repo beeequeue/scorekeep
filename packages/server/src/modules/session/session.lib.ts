@@ -6,21 +6,23 @@ import { Session } from '@/modules/session/session.model'
 import { User } from '@/modules/user/user.model'
 import { isNil } from '@/utils'
 
-type NoSessionContext = {
+type NoUserSessionContext = {
   session: Session
-  user: undefined
+  user: null
   isLoggedIn: false
 }
 
-type SessionContext = {
+type UserSessionContext = {
   session: Session
   user: User
   isLoggedIn: true
 }
 
+export type SessionContext = UserSessionContext | NoUserSessionContext
+
 export const contextProvider: ContextFunction<
   ExpressContext,
-  SessionContext | NoSessionContext
+  SessionContext
 > = async ({ req, res }) => {
   let session: Session | undefined
 
@@ -58,7 +60,7 @@ export const contextProvider: ContextFunction<
   if (isNil(user)) {
     return {
       session,
-      user: undefined,
+      user: null,
       isLoggedIn: false as const,
     }
   }

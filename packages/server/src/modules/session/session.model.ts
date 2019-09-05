@@ -53,7 +53,7 @@ export class Session extends BaseEntity {
     return session
   }
 
-  public async getUser() {
-    return User.findOne(this.user)
+  public async getUser(): Promise<User | null> {
+    return (await User.findOne(this.user)) || null
   }
 }
