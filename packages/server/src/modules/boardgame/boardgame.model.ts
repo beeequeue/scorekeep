@@ -1,5 +1,5 @@
 import { GraphQLJSONObject } from 'graphql-type-json'
-import { Field, ID, ObjectType, registerEnumType } from 'type-graphql'
+import { Field, ID, Int, ObjectType, registerEnumType } from 'type-graphql'
 import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
 
 type BoardgameConstructor = Pick<
@@ -44,11 +44,11 @@ export class Boardgame extends BaseEntity {
   public rulebook?: string
 
   @Column({ type: 'int' })
-  @Field()
+  @Field(() => Int)
   public minPlayers!: number
 
   @Column({ type: 'int' })
-  @Field()
+  @Field(() => Int)
   public maxPlayers!: number
 
   @Column({ type: 'json' })
