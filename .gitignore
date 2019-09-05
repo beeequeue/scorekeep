@@ -3,6 +3,7 @@
 .env
 !.gitkeep
 
+postgres
 sqlite
 dist
 

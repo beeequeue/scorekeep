@@ -29,6 +29,7 @@
     "winston": "3.2.1"
   },
   "devDependencies": {
+    "@types/type-is": "1.6.3",
     "sqlite3": "4.1.0",
     "ts-node-dev": "1.0.0-pre.42"
   },

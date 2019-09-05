@@ -25,8 +25,12 @@ const _config: Config = {
   [Environment.DEVELOPMENT]: {
     db: {
       ...defaultDbConfig,
-      type: 'sqlite',
-      database: 'sqlite/dev.sqlite3',
+      type: 'postgres',
+      database: 'scorekeep',
+      host: 'localhost',
+      port: 5432,
+      username: 'scorekeep-admin',
+      password: "ADAM's COOL",
       synchronize: true,
     },
   },
