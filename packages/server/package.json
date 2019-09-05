@@ -46,7 +46,7 @@
       "git add"
     ],
     "*.{ts,tsx}": [
-      "lint --fix",
+      "eslint --fix",
       "prettier --write",
       "git add"
     ]
