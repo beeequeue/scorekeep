@@ -2,35 +2,30 @@ module.exports = {
   root: true,
   env: {
     es6: true,
-    node: true,
     jest: true,
   },
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: 'module',
-    project: './tsconfig.json',
-    tsconfigRootDir: './',
+    warnOnUnsupportedTypeScriptVersion: false,
   },
-  plugins: ['@typescript-eslint', 'import'],
+  plugins: ['@typescript-eslint', 'import', 'security'],
   extends: [
     'eslint:recommended',
-    'plugin:node/recommended',
-    'standard',
+    'plugin:security/recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:import/errors',
     'plugin:import/warnings',
     'plugin:import/typescript',
     'plugin:prettier/recommended',
-    'prettier/standard',
     'prettier/@typescript-eslint',
   ],
   rules: {
     'no-console': 2,
     'no-use-before-define': 0,
-    'node/no-unsupported-features/es-syntax': 0,
-    'node/prefer-promises/dns': 2,
-    'node/prefer-promises/fs': 2,
     'import/no-default-export': 2,
     'import/no-useless-path-segments': [
       2,
@@ -38,6 +33,7 @@ module.exports = {
         noUselessIndex: true,
       },
     ],
+    '@typescript-eslint/no-unused-vars': [2, { args: 'after-used' }],
     '@typescript-eslint/explicit-function-return-type': 0,
     '@typescript-eslint/no-explicit-any': 0,
     '@typescript-eslint/no-non-null-assertion': 0,
@@ -49,12 +45,12 @@ module.exports = {
       2,
       { overrides: { constructors: 'no-public' } },
     ],
+    '@typescript-eslint/consistent-type-definitions': [2, 'type'],
+    '@typescript-eslint/consistent-type-assertions': [
+      2,
+      { assertionStyle: 'as' },
+    ],
+    'security/detect-object-injection': 0,
     'prettier/prettier': 0,
-  },
-  settings: {
-    'import/resolver': {
-      // Has to exist for some reason, can't find the issue on GitHub
-      typescript: {},
-    },
   },
 }

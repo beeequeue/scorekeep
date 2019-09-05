@@ -6,7 +6,7 @@ import { User } from '@/modules/user/user.model'
 @Resolver()
 export class UserResolver {
   @Query(() => User)
-  public async user(@Arg('uuid', () => ID) uuid: string): Promise<User> {
+  public user(@Arg('uuid', () => ID) uuid: string): User {
     return User.from({
       uuid,
       name: 'Someone else',
@@ -14,7 +14,7 @@ export class UserResolver {
   }
 
   @Query(() => User)
-  public async viewer(): Promise<User> {
+  public viewer(): User {
     return User.from({
       uuid: uuid(),
       name: 'You',

@@ -10,7 +10,7 @@ googleRouter.get('/', (req, res) => {
   res.redirect(Google.getConnectUrl(req))
 })
 
-interface ICallbackQuery {
+type ICallbackQuery = {
   code?: string
   state?: string
 }
