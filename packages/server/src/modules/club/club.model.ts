@@ -21,7 +21,9 @@ export class Club extends BaseEntity {
 
   @Column({ type: 'uuid' })
   public ownerUuid!: string
-  @Field(() => User)
+  @Field(() => User, {
+    description: 'A club owner must be a claimed player',
+  })
   public async owner(): Promise<User> {
     const owner = await User.findOne({ where: { uuid: this.ownerUuid } })
 
