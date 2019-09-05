@@ -28,22 +28,24 @@ export class Match extends BaseEntity {
   @Field(() => Club)
   public club!: Club
 
-  // Text is going to be a comma separated uuids
-  @Column({ type: 'text' })
+  @Column({ type: 'simple-array' })
   public playerUuids!: string[]
   @Field(() => [User])
-  public players!: User[]
+  public async players(): Promise<User[]> {
+    return User.find({ where: this.playerUuids.map(uuid => ({ uuid })) })
+  }
+
+  @Column({ type: 'simple-array' })
+  public winnerUuids!: string[]
+  @Field(() => [User])
+  public async winners(): Promise<User[]> {
+    return User.find({ where: this.winnerUuids.map(uuid => ({ uuid })) })
+  }
 
   @Column({ type: 'uuid' })
   public gameUuid!: string
   @Field(() => Boardgame)
   public game!: Boardgame
-
-  // Text is going to be a comma separated uuids
-  @Column({ type: 'text' })
-  public winnerUuids!: string[]
-  @Field(() => [User])
-  public winners!: User[]
 
   @Column({ type: 'json' })
   @Field(() => GraphQLJSONObject)
