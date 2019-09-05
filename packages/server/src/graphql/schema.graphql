@@ -30,7 +30,6 @@ enum GAME_TYPE {
 type User {
     id: ID!
     name: String!
-    """A player could belong to 0 clubs"""
     clubs: [Club!]!
     mainConnection: Connection
     connections: [Connection!]
@@ -48,7 +47,7 @@ type Boardgame {
     id: ID!
     type: GAME_TYPE!
     name: String!
-    """ Link to boardgame characteristics (e.g. boardgamegeek) """
+    """Link to boardgame characteristics (e.g. boardgamegeek)"""
     url: String
     rulebook: String
     maxPlayers: Int!

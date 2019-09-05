@@ -26,7 +26,9 @@ export class Match extends BaseEntity {
   @Column({ type: 'uuid' })
   public clubUuid!: string
   @Field(() => Club)
-  public club!: Club
+  public async club(): Promise<Club> {
+    return (await Club.findOne({ where: { uuid: this.clubUuid } }))!
+  }
 
   @Column({ type: 'simple-array' })
   public playerUuids!: string[]
@@ -45,7 +47,9 @@ export class Match extends BaseEntity {
   @Column({ type: 'uuid' })
   public gameUuid!: string
   @Field(() => Boardgame)
-  public game!: Boardgame
+  public async game(): Promise<Boardgame> {
+    return (await Boardgame.findOne({ where: { uuid: this.gameUuid } }))!
+  }
 
   @Column({ type: 'json' })
   @Field(() => GraphQLJSONObject)
