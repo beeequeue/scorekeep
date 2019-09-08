@@ -12,7 +12,6 @@ export class BoardgameResolver {
     return (await Boardgame.findOne({ where: { uuid } })) || null
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   @Mutation(() => Boardgame)
   public async addBoardgame() {
     const boardgame = Boardgame.from({

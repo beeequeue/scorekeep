@@ -13,7 +13,6 @@ export class MatchResolver {
     return (await Match.findOne({ where: { uuid } })) || null
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   @Mutation(() => Match)
   public async addMatch(
     @Arg('players', () => [ID]) players: string[],

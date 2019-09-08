@@ -8,7 +8,6 @@ import uuid from 'uuid/v4'
 
 @Resolver()
 export class UserResolver {
-  // eslint-disable-next-line @typescript-eslint/require-await
   @Query(() => User, { nullable: true })
   public async user(@Arg('uuid', () => ID) uuid: string): Promise<User | null> {
     if (!isUuid(uuid)) return null
@@ -16,7 +15,6 @@ export class UserResolver {
     return User.findByUuid(uuid)
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   @Query(() => User, { nullable: true })
   public async viewer(@Ctx() context: SessionContext): Promise<User | null> {
     return context.user

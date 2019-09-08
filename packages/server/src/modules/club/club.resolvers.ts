@@ -12,7 +12,6 @@ export class ClubResolver {
     return (await Club.findOne({ where: { uuid } })) || null
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   @Mutation(() => Club)
   public async addClub(
     @Ctx() context: SessionContext,
