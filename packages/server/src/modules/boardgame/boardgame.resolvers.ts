@@ -13,16 +13,24 @@ export class BoardgameResolver {
   }
 
   @Mutation(() => Boardgame)
-  public async addBoardgame() {
+  public async addBoardgame(
+    @Arg('name') name: string,
+    @Arg('url') url: string,
+    @Arg('type', { nullable: true }) type: GAME_TYPE = GAME_TYPE.COMPETITIVE,
+    @Arg('rulebook', { nullable: true })
+    rulebook: string = 'https://boardgamegeek.com/',
+    @Arg('minPlayers', { nullable: true }) minPlayers: number = 1,
+    @Arg('maxPlayers') maxPlayers: number,
+  ) {
     const boardgame = Boardgame.from({
       uuid: uuid(),
-      type: GAME_TYPE.COMPETITIVE,
-      name: 'A board game',
-      url: 'https://google.com',
-      rulebook: 'https://google.com',
+      type,
+      name,
+      url,
+      rulebook,
       resultTemplateJSON: { something: 'cool' },
-      minPlayers: 1,
-      maxPlayers: 4,
+      minPlayers,
+      maxPlayers,
     })
 
     return boardgame.save()
