@@ -32,7 +32,6 @@
   "devDependencies": {
     "@types/graphql-type-json": "0.3.2",
     "@types/type-is": "1.6.3",
-    "sqlite3": "4.1.0",
     "ts-node-dev": "1.0.0-pre.42"
   },
   "engines": {

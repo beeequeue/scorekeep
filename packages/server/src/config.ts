@@ -10,6 +10,14 @@ type Config = {
 }
 
 const defaultDbConfig = {
+  type: 'postgres' as const,
+  host: process.env.DATABASE_HOST || 'localhost',
+  port: Number(process.env.DATABASE_PORT || 5432),
+  username: process.env.DATABASE_USER || 'scorekeep-admin',
+  password: process.env.DATABASE_PASS || "ADAM's COOL",
+  database: 'postgres',
+  url: process.env.DATABASE_URL,
+
   logging: false,
   entities: ['src/modules/**/*.model.ts'],
   migrations: ['migrations/**/*.ts'],
@@ -25,28 +33,19 @@ const _config: Config = {
   [Environment.DEVELOPMENT]: {
     db: {
       ...defaultDbConfig,
-      type: 'postgres',
-      database: 'scorekeep',
-      host: 'localhost',
-      port: 5432,
-      username: 'scorekeep-admin',
-      password: "ADAM's COOL",
       synchronize: true,
     },
   },
   [Environment.TEST]: {
     db: {
       ...defaultDbConfig,
-      type: 'sqlite',
-      database: 'sqlite/test.sqlite3',
+      database: 'scorekeep-tests',
       dropSchema: true,
     },
   },
   [Environment.PRODUCTION]: {
     db: {
       ...defaultDbConfig,
-      type: 'postgres',
-      database: 'scorekeep',
       url: process.env.DATABASE_URL,
       migrationsRun: true,
     },
