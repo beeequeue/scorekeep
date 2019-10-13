@@ -5,7 +5,7 @@ import { oc } from 'ts-optchain'
 
 import { Session } from '@/modules/session/session.model'
 import { User } from '@/modules/user/user.model'
-import { isNil } from '@/utils'
+import { isNil, isUuid } from '@/utils'
 
 const setSession = (res: Response) => (session: Session) =>
   res.cookie('token', session.uuid, {
@@ -13,8 +13,8 @@ const setSession = (res: Response) => (session: Session) =>
     secure: process.env.NODE_ENV === 'production',
   })
 
-type NoUserSessionContext = {
-  session: Session
+type NoSessionContext = {
+  session: null
   user: null
   isLoggedIn: false
   setSession: (session: Session) => void
@@ -27,7 +27,32 @@ type UserSessionContext = {
   setSession: (session: Session) => void
 }
 
-export type SessionContext = UserSessionContext | NoUserSessionContext
+export type SessionContext = UserSessionContext | NoSessionContext
+
+const isValidToken = (str?: string) => !isNil(str) && isUuid(str)
+
+const getContextSession = async (
+  session: Session | null,
+  setSession: (session: Session) => Response,
+): Promise<SessionContext> => {
+  if (isNil(session)) {
+    return {
+      session: null,
+      user: null,
+      isLoggedIn: false,
+      setSession,
+    }
+  }
+
+  return {
+    /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
+    session: session!,
+    user: await session!.getUser(),
+    /* eslint-enable @typescript-eslint/no-unnecessary-type-assertion */
+    isLoggedIn: true,
+    setSession,
+  }
+}
 
 export const contextProvider: ContextFunction<
   ExpressContext,
@@ -37,47 +62,26 @@ export const contextProvider: ContextFunction<
 
   const header = req.header('Authorization') || ''
   const tokenMatch = /^Bearer (.*)$/.exec(header)
-  const token = oc(tokenMatch)[0]()
+  let token = oc(tokenMatch)[0]()
 
-  session = await Session.findOne({ uuid: token })
+  if (isValidToken(token)) {
+    session = await Session.findOne({ uuid: token })
+  }
 
   // No Bearer session found
   if (isNil(session)) {
-    const { token = undefined } = req.cookies
+    token = req.cookies.token
 
-    if (!isNil(token)) {
+    if (isValidToken(token)) {
       session = await Session.findOne({ uuid: token })
     }
-
-    if (isNil(token) || isNil(session)) {
-      res.clearCookie('token')
-    }
-  }
-  // TODO: Not sessions unless you logged in
-  // No cookie session found
-  if (isNil(session)) {
-    session = await Session.generate()
   }
 
   const contextSetSession = setSession(res)
 
-  contextSetSession(session)
-
-  const user = await session.getUser()
-
-  if (isNil(user)) {
-    return {
-      session,
-      user: null,
-      isLoggedIn: false as const,
-      setSession: contextSetSession,
-    }
+  if (!isNil(session)) {
+    contextSetSession(session)
   }
 
-  return {
-    session,
-    user: user,
-    isLoggedIn: true as const,
-    setSession: contextSetSession,
-  }
+  return getContextSession(session || null, contextSetSession)
 }
