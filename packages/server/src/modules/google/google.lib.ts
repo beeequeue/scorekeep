@@ -5,6 +5,17 @@ import { google } from 'googleapis'
 
 import { isNil } from '@/utils'
 
+type GoogleUser = {
+  id: string
+  email: string
+  verified_email: boolean
+  name: string
+  given_name: string
+  family_name: string
+  picture: string
+  locale: string
+}
+
 const { GOOGLE_CLIENT, GOOGLE_SECRET } = process.env as {
   [key: string]: string
 }
@@ -49,10 +60,10 @@ export class Google {
       .auth(token, { type: 'bearer' })
       .ok(() => true)
 
-    if (response.error) {
+    if (response.error || isNil(response.body)) {
       throw new Error('Could not get user from token...')
     }
 
-    return response.body
+    return response.body as GoogleUser
   }
 }

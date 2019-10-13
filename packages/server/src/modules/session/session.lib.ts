@@ -7,7 +7,7 @@ import { Session } from '@/modules/session/session.model'
 import { User } from '@/modules/user/user.model'
 import { isNil, isUuid } from '@/utils'
 
-const setSession = (res: Response) => (session: Session) =>
+export const setTokenCookie = (res: Response) => (session: Session) =>
   res.cookie('token', session.uuid, {
     expires: session.expiresAt,
     secure: process.env.NODE_ENV === 'production',
@@ -77,7 +77,7 @@ export const contextProvider: ContextFunction<
     }
   }
 
-  const contextSetSession = setSession(res)
+  const contextSetSession = setTokenCookie(res)
 
   if (!isNil(session)) {
     contextSetSession(session)

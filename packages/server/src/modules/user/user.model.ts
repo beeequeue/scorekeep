@@ -22,7 +22,7 @@ export class User extends BaseEntity {
   // @Field(() => Connection[])
   public connections!: any[]
 
-  @Column({ type: 'uuid' })
+  @Column({ type: 'uuid', nullable: true })
   @Field(() => ID, { nullable: true })
   public mainConnectionUuid?: string
 
