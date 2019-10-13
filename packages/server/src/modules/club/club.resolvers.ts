@@ -15,7 +15,7 @@ export class ClubResolver {
   @Mutation(() => Club)
   public async addClub(
     @Ctx() context: SessionContext,
-    @Arg('name') name: string = 'Kool Kidz Klub',
+    @Arg('name') name: string,
   ) {
     if (!context.isLoggedIn) {
       throw new GraphQLError('You need to be logged in to do this.')

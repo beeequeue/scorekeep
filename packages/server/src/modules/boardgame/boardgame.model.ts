@@ -37,11 +37,11 @@ export class Boardgame extends BaseEntity {
   @Column({ length: 100 })
   @Field({ nullable: true })
   @Field({ description: 'Link to boardgamegeek' })
-  public url?: string
+  public url!: string | null
 
   @Column({ length: 100 })
   @Field({ nullable: true })
-  public rulebook?: string
+  public rulebook!: string | null
 
   @Column({ type: 'int' })
   @Field(() => Int)
