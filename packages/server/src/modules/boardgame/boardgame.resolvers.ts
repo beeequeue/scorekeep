@@ -17,7 +17,7 @@ export class BoardgameResolver {
     @Arg('name') name: string,
     @Arg('url') url: string,
     @Arg('type', { nullable: true }) type: GAME_TYPE = GAME_TYPE.COMPETITIVE,
-    @Arg('rulebook', { nullable: true }) rulebook: string | null,
+    @Arg('rulebook', () => String, { nullable: true }) rulebook: string | null,
     @Arg('minPlayers', { nullable: true }) minPlayers: number = 1,
     @Arg('maxPlayers') maxPlayers: number,
   ) {
