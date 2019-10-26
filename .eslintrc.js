@@ -33,6 +33,8 @@ module.exports = {
         noUselessIndex: true,
       },
     ],
+    '@typescript-eslint/no-inferrable-types': 0,
+    '@typescript-eslint/require-await': 0,
     '@typescript-eslint/no-unused-vars': [2, { args: 'after-used' }],
     '@typescript-eslint/explicit-function-return-type': 0,
     '@typescript-eslint/no-explicit-any': 0,

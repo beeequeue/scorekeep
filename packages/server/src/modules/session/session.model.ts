@@ -3,7 +3,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryColumn,
 } from 'typeorm'
 import uuid from 'uuid/v4'
@@ -11,7 +11,7 @@ import uuid from 'uuid/v4'
 import { isNil } from '@/utils'
 import { User } from '../user/user.model'
 
-const WEEK = 1000 * 60 * 60 * 24 * 7
+const WEEK = 60 * 60 * 24 * 7
 type Constructor = Pick<Session, 'user' | 'expiresAt'>
 
 /**
@@ -23,7 +23,7 @@ export class Session extends BaseEntity {
   @PrimaryColumn({ type: 'uuid' })
   public readonly uuid: string = uuid()
 
-  @OneToOne(() => User)
+  @ManyToOne(() => User, { eager: true, nullable: false })
   @JoinColumn()
   public readonly user?: User
 
@@ -53,7 +53,7 @@ export class Session extends BaseEntity {
     return session
   }
 
-  public async getUser() {
-    return User.findOne(this.user)
+  public async getUser(): Promise<User | null> {
+    return (await User.findOne(this.user)) || null
   }
 }

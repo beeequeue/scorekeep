@@ -32,12 +32,12 @@
   },
   "license": "AGPL-3.0-only",
   "lint-staged": {
-    "*.{js,json}": [
+    "*.{js,json,yml}": [
       "prettier --write",
       "git add"
     ],
     "*.{ts,tsx}": [
-      "lint --fix",
+      "eslint --fix",
       "prettier --write",
       "git add"
     ]

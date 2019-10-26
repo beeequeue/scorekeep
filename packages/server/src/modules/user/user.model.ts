@@ -1,12 +1,6 @@
 import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
-import { Field, ID, ObjectType, registerEnumType } from 'type-graphql'
-
-enum UserType {
-  SIMPLE = 'SIMPLE',
-  FULL = 'FULL',
-}
-
-registerEnumType(UserType, { name: 'UserType' })
+import { Field, ID, ObjectType } from 'type-graphql'
+import { Club } from '@/modules/club/club.model'
 
 type UserConstructor = Pick<User, 'uuid' | 'name' | 'mainConnectionUuid'>
 
@@ -21,23 +15,27 @@ export class User extends BaseEntity {
   @Field()
   public name!: string
 
-  @Field(() => UserType)
-  public type(): UserType {
-    // Check if has connections
-    return UserType.SIMPLE
-  }
+  @Field(() => [Club])
+  public clubs!: Club[]
+
+  // TODO
+  // @Field(() => Connection[])
+  public connections!: any[]
 
   @Column({ type: 'uuid' })
   @Field(() => ID, { nullable: true })
   public mainConnectionUuid?: string
 
-  public static from({ uuid, name, mainConnectionUuid }: UserConstructor) {
+  public static async findByUuid(uuid: string): Promise<User | null> {
+    const user = await User.findOne({ where: { uuid } })
+
+    return user || null
+  }
+
+  public static from(parameters: UserConstructor) {
     const user = new User()
 
-    user.uuid = uuid
-    user.name = name
-    user.mainConnectionUuid = mainConnectionUuid
-
-    return user
+    // TODO: Filter keys haha
+    return Object.assign(user, parameters)
   }
 }

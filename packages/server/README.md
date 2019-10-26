@@ -12,5 +12,6 @@ The auth token can be passed either via a Bearer token or a `token` cookie.
 
 ## Development
 
-1. Install dependencies - `yarn` 
-1. Start server - `yarn dev` 
+1. Start the database - `docker-compose up postgres`
+1. Install dependencies - `yarn`
+1. Start server - `yarn dev`
