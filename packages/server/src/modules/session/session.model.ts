@@ -25,7 +25,7 @@ export class Session extends BaseEntity {
 
   @ManyToOne(() => User, { eager: true, nullable: false })
   @JoinColumn()
-  public readonly user?: User
+  public readonly user: User
 
   @Column()
   public readonly expiresAt: Date
@@ -42,7 +42,7 @@ export class Session extends BaseEntity {
     this.expiresAt = options.expiresAt
   }
 
-  public static async generate(user?: User) {
+  public static async generate(user: User) {
     const session = new Session({
       user,
       expiresAt: new Date(Date.now() + WEEK),
@@ -53,7 +53,7 @@ export class Session extends BaseEntity {
     return session
   }
 
-  public async getUser(): Promise<User | null> {
-    return (await User.findOne(this.user)) || null
+  public async getUser(): Promise<User> {
+    return (await User.findOne({ where: { uuid: this.user.uuid } }))!
   }
 }
