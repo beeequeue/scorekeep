@@ -2,7 +2,7 @@
 import { hot } from 'react-hot-loader/root'
 import React from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
-import { ApolloProvider } from 'react-apollo'
+import { ApolloProvider } from '@apollo/react-common'
 import loadable from '@loadable/component'
 
 import { client } from '@/apollo'
