@@ -57,7 +57,7 @@
   "repository": "https://github.com/BeeeQueue/scorekeep",
   "scripts": {
     "build": "yarn tsc --noEmit -P tsconfig.json",
-    "dev": "ts-node-dev --respawn -r dotenv/config -r tsconfig-paths/register --inspect -- src/index.ts",
+    "dev": "ts-node-dev --respawn --no-deps -r dotenv/config -r tsconfig-paths/register --inspect -- src/index.ts",
     "lint": "eslint 'src/**/*.ts'",
     "migrate:create": "typeorm migration:create -d migrations -n",
     "pretest": "NODE_ENV=test yarn run migrate",
