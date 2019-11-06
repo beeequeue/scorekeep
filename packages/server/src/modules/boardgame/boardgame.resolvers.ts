@@ -1,7 +1,48 @@
+/* eslint-disable @typescript-eslint/consistent-type-definitions */
+import Ajv from 'ajv'
+import { UserInputError } from 'apollo-server-express'
 import { Arg, ID, Mutation, Query, Resolver } from 'type-graphql'
 import uuid from 'uuid/v4'
 
 import { Boardgame, GAME_TYPE } from '@/modules/boardgame/boardgame.model'
+import { GraphQLJSONObject } from 'graphql-type-json'
+import { isNil } from '@/utils'
+
+interface JsonSchema extends JsonSchemaBaseProperty {
+  $schema: string
+}
+
+interface JsonSchemaBaseProperty {
+  type?: 'object' | 'array' | 'string' | 'number' | 'boolean'
+  properties?: { [key: string]: JsonSchemaBaseProperty }
+  items?: JsonSchemaBaseProperty
+  required?: string[]
+}
+
+const ajv = new Ajv({ allErrors: true })
+
+const schema: JsonSchema = {
+  $schema: 'http://json-schema.org/draft-07/schema#',
+  type: 'object',
+  required: ['playerResults'],
+  properties: {
+    playerResults: {
+      type: 'object',
+      required: ['winner', 'finalScore'],
+      properties: {
+        winner: {
+          type: 'boolean',
+        },
+        finalScore: {
+          type: 'number',
+        },
+      },
+    },
+    metaData: {},
+  },
+}
+
+const validate = ajv.compile(schema)
 
 @Resolver()
 export class BoardgameResolver {
@@ -16,6 +57,8 @@ export class BoardgameResolver {
   public async addBoardgame(
     @Arg('name') name: string,
     @Arg('maxPlayers') maxPlayers: number,
+    @Arg('resultSchema', () => GraphQLJSONObject)
+    resultSchema: unknown,
     // Nullable
     @Arg('url', () => String, { nullable: true })
     url: string | null,
@@ -32,10 +75,22 @@ export class BoardgameResolver {
       name,
       url,
       rulebook,
-      resultTemplateJSON: { something: 'cool' },
+      resultSchema,
       minPlayers,
       maxPlayers,
     })
+
+    // Move schema validation to GQL type
+    validate(resultSchema)
+
+    if (!isNil(validate.errors) && validate.errors.length > 0) {
+      throw new UserInputError('Invalid schema!', {
+        validation: validate.errors.map(error => ({
+          path: error.dataPath.split('.').filter(Boolean),
+          message: error.message,
+        })),
+      })
+    }
 
     return boardgame.save()
   }

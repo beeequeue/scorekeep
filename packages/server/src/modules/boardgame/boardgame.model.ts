@@ -11,7 +11,7 @@ type BoardgameConstructor = Pick<
   | 'rulebook'
   | 'maxPlayers'
   | 'minPlayers'
-  | 'resultTemplateJSON'
+  | 'resultSchema'
 >
 
 export enum GAME_TYPE {
@@ -56,7 +56,7 @@ export class Boardgame extends BaseEntity {
 
   @Column({ type: 'json' })
   @Field(() => GraphQLJSONObject)
-  public resultTemplateJSON!: object
+  public resultSchema!: unknown
 
   public static from(parameters: BoardgameConstructor) {
     const boardgame = new Boardgame()
