@@ -14,9 +14,10 @@ module.exports = {
     tsconfigRootDir: './',
   },
   rules: {
-    'node/no-unsupported-features/es-syntax': 0,
-    'node/prefer-promises/dns': 2,
-    'node/prefer-promises/fs': 2,
+    'node/no-missing-import': 'off',
+    'node/no-unsupported-features/es-syntax': 'off',
+    'node/prefer-promises/dns': 'error',
+    'node/prefer-promises/fs': 'error',
   },
   settings: {
     'import/resolver': {

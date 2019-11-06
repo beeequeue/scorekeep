@@ -53,7 +53,7 @@ export class Match extends BaseEntity {
 
   @Column({ type: 'json' })
   @Field(() => GraphQLJSONObject)
-  public results!: object
+  public results!: unknown
 
   @Column({ type: 'timestamp' })
   @Field(() => Date)
