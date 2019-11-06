@@ -60,9 +60,8 @@
     "dev": "ts-node-dev --respawn --no-deps -r dotenv/config -r tsconfig-paths/register --inspect -- src/index.ts",
     "lint": "eslint 'src/**/*.ts'",
     "migrate:create": "typeorm migration:create -d migrations -n",
-    "pretest": "NODE_ENV=test yarn run migrate",
     "start": "ts-node -r dotenv/config -r tsconfig-paths/register src/index.ts",
-    "test": "jest -i",
+    "test": "jest server -i",
     "test:coverage": "yarn run test --coverage"
   }
 }

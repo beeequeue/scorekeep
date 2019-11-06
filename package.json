@@ -46,7 +46,8 @@
   "scripts": {
     "build": "lerna run build --stream --parallel",
     "clean": "lerna run clean --stream --parallel",
-    "lint": "lerna run lint --stream --parallel"
+    "lint": "lerna run lint --stream --parallel",
+    "test": "lerna run test --stream --parallel"
   },
   "workspaces": [
     "packages/*"
