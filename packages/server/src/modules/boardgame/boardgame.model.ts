@@ -56,7 +56,7 @@ export class Boardgame extends BaseEntity {
 
   @Column({ type: 'json' })
   @Field(() => GraphQLJSONObject)
-  public resultSchema!: unknown
+  public resultSchema!: object
 
   public static from(parameters: BoardgameConstructor) {
     const boardgame = new Boardgame()

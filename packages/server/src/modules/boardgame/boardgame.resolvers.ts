@@ -1,50 +1,17 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 import Ajv from 'ajv'
 import { UserInputError } from 'apollo-server-express'
+import { GraphQLJSONObject } from 'graphql-type-json'
 import { Arg, ID, Mutation, Query, Resolver } from 'type-graphql'
 import uuid from 'uuid/v4'
 
+import jsonSchema from '@/assets/json-schema-07.json'
 import { Boardgame, GAME_TYPE } from '@/modules/boardgame/boardgame.model'
-import { GraphQLJSONObject } from 'graphql-type-json'
 import { isNil } from '@/utils'
-
-interface JsonSchema extends JsonSchemaBaseProperty {
-  $schema: string
-}
-
-interface JsonSchemaBaseProperty {
-  type?: 'object' | 'array' | 'string' | 'number' | 'boolean'
-  properties?: { [key: string]: JsonSchemaBaseProperty }
-  items?: JsonSchemaBaseProperty
-  required?: string[]
-}
 
 const ajv = new Ajv({ allErrors: true })
 
-const schema: JsonSchema = {
-  $schema: 'http://json-schema.org/draft-07/schema#',
-  type: 'object',
-  required: ['playerResults'],
-  properties: {
-    playerResults: {
-      type: 'object',
-      required: ['winner', 'finalScore'],
-      properties: {
-        winner: {
-          type: 'boolean',
-        },
-        finalScore: {
-          type: 'number',
-        },
-      },
-    },
-    metaData: {
-      type: 'object',
-    },
-  },
-}
-
-const validate = ajv.compile(schema)
+const validate = ajv.compile(jsonSchema)
 
 @Resolver()
 export class BoardgameResolver {
@@ -60,7 +27,7 @@ export class BoardgameResolver {
     @Arg('name') name: string,
     @Arg('maxPlayers') maxPlayers: number,
     @Arg('resultSchema', () => GraphQLJSONObject)
-    resultSchema: unknown,
+    resultSchema: object,
     // Nullable
     @Arg('url', () => String, { nullable: true })
     url: string | null,
@@ -71,17 +38,6 @@ export class BoardgameResolver {
     @Arg('minPlayers', { nullable: true })
     minPlayers: number = 1,
   ) {
-    const boardgame = Boardgame.from({
-      uuid: uuid(),
-      type,
-      name,
-      url,
-      rulebook,
-      resultSchema,
-      minPlayers,
-      maxPlayers,
-    })
-
     // TODO: Move schema validation to GQL type
     validate(resultSchema)
 
@@ -93,6 +49,17 @@ export class BoardgameResolver {
         })),
       })
     }
+
+    const boardgame = Boardgame.from({
+      uuid: uuid(),
+      type,
+      name,
+      url,
+      rulebook,
+      resultSchema,
+      minPlayers,
+      maxPlayers,
+    })
 
     return boardgame.save()
   }
