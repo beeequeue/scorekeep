@@ -38,7 +38,8 @@ jobs:
           paths:
             - node_modules
 
-  build:
+  ui_build:
+    working_directory: ~/app/packages/ui
     executor: node
     steps:
       - attach_workspace:
@@ -47,7 +48,8 @@ jobs:
           name: Run tests
           command: yarn run build
 
-  test:
+  ui_test:
+    working_directory: ~/app/packages/ui
     executor: node
     steps:
       - attach_workspace:
@@ -62,7 +64,8 @@ jobs:
   #          when: always
   #          path: test-results
 
-  lint:
+  ui_lint:
+    working_directory: ~/app/packages/ui
     executor: node
     steps:
       - attach_workspace:
@@ -82,12 +85,12 @@ workflows:
       - dependencies:
           requires:
             - checkout_code
-      - build:
+      - ui_build:
           requires:
             - dependencies
-      - test:
+      - ui_test:
           requires:
             - dependencies
-      - lint:
+      - ui_lint:
           requires:
             - dependencies
