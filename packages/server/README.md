@@ -10,6 +10,33 @@ Supports registering / logging in with Google.
 
 The auth token can be passed either via a Bearer token or a `token` cookie.
 
+## Game Result Schemas
+
+The minimum result looks like this:
+
+```json
+{
+  "playerResults": [
+    {
+      "player": "uuid",
+      "winner": false,
+      "total": 10
+    }
+  ]
+}
+```
+
+Eventual game-wide info can be provided in the optional `metaData` key:
+
+```json
+{
+  "playerResults": [...],
+  "metaData": {
+    "volcanoErupted": true
+  }
+}
+```
+
 ## Development
 
 1. Start the database - `docker-compose up postgres`
