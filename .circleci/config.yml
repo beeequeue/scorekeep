@@ -1,0 +1,147 @@
+version: 2.1
+
+executors:
+  node:
+    docker:
+      - image: circleci/node:12.9.1
+    working_directory: ~/app
+    environment:
+      JEST_JUNIT_OUTPUT_NAME: 'results.xml'
+      JEST_JUNIT_ANCESTOR_SEPARATOR: ' > '
+
+jobs:
+  checkout_code:
+    executor: node
+    steps:
+      - checkout
+      - persist_to_workspace:
+          root: ~/app
+          paths:
+            - ./*
+
+  dependencies:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - restore_cache:
+          keys:
+            - deps-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - deps-v1-{{ .Branch }}
+            - deps-v1-
+      - run:
+          name: Install NPM dependencies
+          command: yarn install --frozen-lockfile
+      - save_cache:
+          key: deps-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - node_modules
+      - persist_to_workspace:
+          root: ~/app
+          paths:
+            - node_modules
+
+  ui_build:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          working_directory: ~/app/packages/ui
+          name: Build
+          command: yarn run build
+
+  server_build:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          working_directory: ~/app/packages/server
+          name: Build
+          command: yarn run build
+
+  ui_test:
+    executor: node
+    environment:
+      JEST_JUNIT_OUTPUT_DIR: '../../test-results/ui_test'
+      NODE_ENV: 'test'
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          working_directory: ~/app/packages/ui
+          name: Test
+          command: yarn run test --ci --reporters=jest-junit
+      - store_test_results:
+          when: always
+          path: test-results
+
+  server_test:
+    executor: node
+    environment:
+      JEST_JUNIT_OUTPUT_DIR: '../../test-results/server_test'
+      NODE_ENV: 'test'
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          working_directory: ~/app/packages/server
+          name: Test
+          command: yarn run test --ci --reporters=jest-junit
+      - store_test_results:
+          when: always
+          path: test-results
+
+  ui_lint:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          working_directory: ~/app/packages/ui
+          name: Lint
+          command: yarn run lint -f junit -o ../../test-results/ui_lint/results.xml
+      - store_test_results:
+          when: always
+          path: test-results
+
+  server_lint:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          working_directory: ~/app/packages/server
+          name: Lint
+          command: yarn run lint -f junit -o ../../test-results/server_lint/results.xml
+      - store_test_results:
+          when: always
+          path: test-results
+
+workflows:
+  version: 2
+  build_test_lint:
+    jobs:
+      - checkout_code
+      - dependencies:
+          requires:
+            - checkout_code
+      - ui_build:
+          requires:
+            - dependencies
+      - ui_test:
+          requires:
+            - dependencies
+      - ui_lint:
+          requires:
+            - dependencies
+      - server_build:
+          requires:
+            - dependencies
+      - server_test:
+          requires:
+            - dependencies
+      - server_lint:
+          requires:
+            - dependencies

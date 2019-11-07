@@ -2,6 +2,7 @@
 .idea
 .env
 !.gitkeep
+test-results
 
 postgres
 sqlite
