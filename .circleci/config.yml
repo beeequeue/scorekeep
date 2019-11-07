@@ -54,7 +54,7 @@ jobs:
   ui_test:
     executor: node
     environment:
-      JEST_JUNIT_OUTPUT_DIR: 'test-results/ui_test'
+      JEST_JUNIT_OUTPUT_DIR: '../../test-results/ui_test'
       NODE_ENV: 'test'
     steps:
       - attach_workspace:
@@ -75,7 +75,7 @@ jobs:
       - run:
           working_directory: ~/app/packages/ui
           name: Lint
-          command: yarn run lint -f junit -o test-results/ui_lint/results.xml
+          command: yarn run lint -f junit -o ../../test-results/ui_lint/results.xml
       - store_test_results:
           when: always
           path: test-results
