@@ -38,7 +38,9 @@ const schema: JsonSchema = {
         },
       },
     },
-    metaData: {},
+    metaData: {
+      type: 'object',
+    },
   },
 }
 
@@ -80,7 +82,7 @@ export class BoardgameResolver {
       maxPlayers,
     })
 
-    // Move schema validation to GQL type
+    // TODO: Move schema validation to GQL type
     validate(resultSchema)
 
     if (!isNil(validate.errors) && validate.errors.length > 0) {
