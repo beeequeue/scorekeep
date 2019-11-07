@@ -39,7 +39,7 @@ googleRouter.get('/callback', async (req, res) => {
     throw new Error('You need to have a verified email address to connect.')
   }
 
-  const newUser = await User.from({
+  const newUser = User.from({
     uuid: uuid(),
     name: googleUser.name,
   })

@@ -1,4 +1,5 @@
 import { Response } from 'express'
+// eslint-disable-next-line node/no-extraneous-import
 import { ContextFunction } from 'apollo-server-core'
 import { ExpressContext } from 'apollo-server-express/src/ApolloServer'
 import { oc } from 'ts-optchain'

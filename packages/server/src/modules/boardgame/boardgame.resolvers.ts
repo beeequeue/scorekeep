@@ -15,11 +15,16 @@ export class BoardgameResolver {
   @Mutation(() => Boardgame)
   public async addBoardgame(
     @Arg('name') name: string,
-    @Arg('url') url: string,
-    @Arg('type', { nullable: true }) type: GAME_TYPE = GAME_TYPE.COMPETITIVE,
-    @Arg('rulebook', () => String, { nullable: true }) rulebook: string | null,
-    @Arg('minPlayers', { nullable: true }) minPlayers: number = 1,
     @Arg('maxPlayers') maxPlayers: number,
+    // Nullable
+    @Arg('url', () => String, { nullable: true })
+    url: string | null,
+    @Arg('type', () => GAME_TYPE, { nullable: true })
+    type: GAME_TYPE = GAME_TYPE.COMPETITIVE,
+    @Arg('rulebook', () => String, { nullable: true })
+    rulebook: string | null,
+    @Arg('minPlayers', { nullable: true })
+    minPlayers: number = 1,
   ) {
     const boardgame = Boardgame.from({
       uuid: uuid(),

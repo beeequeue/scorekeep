@@ -1,3 +1,4 @@
+// eslint-disable-next-line node/no-extraneous-import
 import { EngineReportingOptions } from 'apollo-engine-reporting'
 import { ConnectionOptions } from 'typeorm'
 import { Environment } from '@/constants'
