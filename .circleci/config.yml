@@ -39,22 +39,22 @@ jobs:
             - node_modules
 
   ui_build:
-    working_directory: ~/app/packages/ui
     executor: node
     steps:
       - attach_workspace:
           at: .
       - run:
+          working_directory: ~/app/packages/ui
           name: Run tests
           command: yarn run build
 
   ui_test:
-    working_directory: ~/app/packages/ui
     executor: node
     steps:
       - attach_workspace:
           at: .
       - run:
+          working_directory: ~/app/packages/ui
           name: Run tests
           command: yarn run test
   #      - run:
@@ -65,12 +65,12 @@ jobs:
   #          path: test-results
 
   ui_lint:
-    working_directory: ~/app/packages/ui
     executor: node
     steps:
       - attach_workspace:
           at: .
       - run:
+          working_directory: ~/app/packages/ui
           name: Run linting
           command: yarn run lint
 #      - store_test_results:
