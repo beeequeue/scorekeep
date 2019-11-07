@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 import Ajv from 'ajv'
-import { UserInputError } from 'apollo-server-express'
 import { GraphQLJSONObject } from 'graphql-type-json'
 import { Arg, ID, Mutation, Query, Resolver } from 'type-graphql'
 import uuid from 'uuid/v4'
 
 import jsonSchema from '@/assets/json-schema-07.json'
 import { Boardgame, GAME_TYPE } from '@/modules/boardgame/boardgame.model'
-import { isNil } from '@/utils'
+import { CustomValidator, JsonSchemaObject } from '@/types/json-schema'
+import { createValidationError } from '@/utils/validations'
 
 const ajv = new Ajv({ allErrors: true })
 
-const validate = ajv.compile(jsonSchema)
+const validate = ajv.compile(jsonSchema) as CustomValidator<JsonSchemaObject>
 
 @Resolver()
 export class BoardgameResolver {
@@ -41,13 +41,9 @@ export class BoardgameResolver {
     // TODO: Move schema validation to GQL type
     validate(resultSchema)
 
-    if (!isNil(validate.errors) && validate.errors.length > 0) {
-      throw new UserInputError('Invalid schema!', {
-        validation: validate.errors.map(error => ({
-          path: error.dataPath.split('.').filter(Boolean),
-          message: error.message,
-        })),
-      })
+    // TODO: actually validate against the minimum result schema
+    if (!validate(resultSchema)) {
+      throw createValidationError(validate.errors!, 'Invalid schema!')
     }
 
     const boardgame = Boardgame.from({

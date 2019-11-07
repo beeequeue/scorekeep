@@ -2,6 +2,20 @@ import { GraphQLJSONObject } from 'graphql-type-json'
 import { Field, ID, Int, ObjectType, registerEnumType } from 'type-graphql'
 import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
 
+import { JsonSchemaObject } from '@/types/json-schema'
+
+export type ResultBase = {
+  playerResults: Array<{
+    player: string
+    winner: boolean
+    total: number
+    [key: string]: any | undefined
+  }>
+  metaData?: {
+    [key: string]: any | undefined
+  }
+}
+
 type BoardgameConstructor = Pick<
   Boardgame,
   | 'uuid'
@@ -56,7 +70,7 @@ export class Boardgame extends BaseEntity {
 
   @Column({ type: 'json' })
   @Field(() => GraphQLJSONObject)
-  public resultSchema!: object
+  public resultSchema!: JsonSchemaObject
 
   public static from(parameters: BoardgameConstructor) {
     const boardgame = new Boardgame()
