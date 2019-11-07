@@ -26,12 +26,12 @@ The minimum result looks like this:
 }
 ```
 
-Eventual game-wide info can be provided in the optional `metaData` key:
+Eventual game-wide info can be provided in the optional `metadata` key:
 
 ```json
 {
   "playerResults": [...],
-  "metaData": {
+  "metadata": {
     "volcanoErupted": true
   }
 }

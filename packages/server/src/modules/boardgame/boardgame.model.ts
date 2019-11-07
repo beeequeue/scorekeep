@@ -11,7 +11,7 @@ export type ResultBase = {
     total: number
     [key: string]: any | undefined
   }>
-  metaData?: {
+  metadata?: {
     [key: string]: any | undefined
   }
 }
