@@ -8,6 +8,7 @@
     "@types/helmet": "0.0.45",
     "@types/superagent": "4.1.4",
     "@types/uuid": "3.4.6",
+    "ajv": "6.10.2",
     "apollo-server-express": "2.9.7",
     "cookie-parser": "1.4.4",
     "date-fns": "2.6.0",

@@ -1,8 +1,15 @@
+import Ajv from 'ajv'
+import { GraphQLJSONObject } from 'graphql-type-json'
 import { Arg, ID, Mutation, Query, Resolver } from 'type-graphql'
 import uuid from 'uuid/v4'
 
 import { Match } from '@/modules/match/match.model'
-import { GraphQLJSONObject } from 'graphql-type-json'
+import { Boardgame, ResultBase } from '@/modules/boardgame/boardgame.model'
+import { CustomValidator, JsonSchemaArray } from '@/types/json-schema'
+import { isNil } from '@/utils'
+import { createValidationError } from '@/utils/validations'
+
+const ajv = new Ajv({ allErrors: true })
 
 @Resolver()
 export class MatchResolver {
@@ -15,20 +22,43 @@ export class MatchResolver {
 
   @Mutation(() => Match)
   public async addMatch(
-    @Arg('players', () => [ID]) players: string[],
     @Arg('results', () => GraphQLJSONObject) results: object,
-    @Arg('winners', () => [ID]) winners: string[],
-    @Arg('game', () => ID) game: string,
-    @Arg('club', () => ID) club: string,
+    @Arg('game', () => ID) gameUuid: string,
+    @Arg('club', () => ID, { nullable: true }) clubUuid: string,
   ) {
+    const game = await Boardgame.findOne(gameUuid)
+
+    if (isNil(game)) {
+      throw new Error('Not found!')
+    }
+
+    const improvedSchema = game.resultSchema
+    ;(improvedSchema.properties!.playerResults as JsonSchemaArray).minItems =
+      game.minPlayers
+    ;(improvedSchema.properties!.playerResults as JsonSchemaArray).maxItems =
+      game.maxPlayers
+
+    const validate = ajv.compile(game.resultSchema) as CustomValidator<
+      ResultBase
+    >
+
+    if (!validate(results, 'results')) {
+      throw createValidationError(validate.errors!, 'Invalid result!')
+    }
+
+    const playerUuids = results.playerResults.map(({ player }) => player)
+    const winnerUuids = results.playerResults
+      .filter(({ winner }) => winner === true)
+      .map(({ player }) => player)
+
     const match = Match.from({
       uuid: uuid(),
-      playerUuids: players,
+      playerUuids,
       results,
-      winnerUuids: winners,
-      gameUuid: game,
+      winnerUuids,
+      gameUuid,
+      clubUuid,
       date: new Date(),
-      clubUuid: club,
     })
 
     return match.save()
