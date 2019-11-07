@@ -5,6 +5,9 @@ executors:
     docker:
       - image: circleci/node:12.9.1
     working_directory: ~/app
+    environment:
+      JEST_JUNIT_OUTPUT_NAME: 'results.xml'
+      JEST_JUNIT_ANCESTOR_SEPARATOR: ' > '
 
 jobs:
   checkout_code:
@@ -45,24 +48,24 @@ jobs:
           at: .
       - run:
           working_directory: ~/app/packages/ui
-          name: Run tests
+          name: Build
           command: yarn run build
 
   ui_test:
     executor: node
+    environment:
+      JEST_JUNIT_OUTPUT_DIR: 'test-results/ui_test'
+      NODE_ENV: 'test'
     steps:
       - attach_workspace:
           at: .
       - run:
           working_directory: ~/app/packages/ui
-          name: Run tests
-          command: yarn run test
-  #      - run:
-  #          name: Send coverage report
-  #          command: cat coverage/lcov.info | yarn coveralls
-  #      - store_test_results:
-  #          when: always
-  #          path: test-results
+          name: Test
+          command: yarn run test --ci --reporters=jest-junit
+      - store_test_results:
+          when: always
+          path: test-results
 
   ui_lint:
     executor: node
@@ -71,11 +74,11 @@ jobs:
           at: .
       - run:
           working_directory: ~/app/packages/ui
-          name: Run linting
-          command: yarn run lint
-#      - store_test_results:
-#          when: always
-#          path: test-results
+          name: Lint
+          command: yarn run lint -f junit -o test-results/ui_lint/results.xml
+      - store_test_results:
+          when: always
+          path: test-results
 
 workflows:
   version: 2
