@@ -18,6 +18,7 @@ const defaultDbConfig = {
   password: process.env.DATABASE_PASS || "ADAM's COOL",
   database: 'postgres',
   url: process.env.DATABASE_URL,
+  schema: 'scorekeep',
 
   logging: false,
   entities: ['src/modules/**/*.model.ts'],
@@ -34,19 +35,22 @@ const _config: Config = {
   [Environment.DEVELOPMENT]: {
     db: {
       ...defaultDbConfig,
+      schema: 'scorekeep-dev',
       synchronize: true,
     },
   },
   [Environment.TEST]: {
     db: {
       ...defaultDbConfig,
-      database: 'scorekeep-tests',
+      schema: 'scorekeep-tests',
+      synchronize: true,
       dropSchema: true,
     },
   },
   [Environment.PRODUCTION]: {
     db: {
       ...defaultDbConfig,
+      schema: 'scorekeep-prod',
       url: process.env.DATABASE_URL,
       migrationsRun: true,
     },
