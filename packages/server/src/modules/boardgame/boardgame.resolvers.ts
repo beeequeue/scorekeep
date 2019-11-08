@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 import Ajv from 'ajv'
 import { GraphQLJSONObject } from 'graphql-type-json'
-import { Arg, ID, Mutation, Query, Resolver } from 'type-graphql'
+import { Arg, ID, Int, Mutation, Query, Resolver } from 'type-graphql'
 import uuid from 'uuid/v4'
 
 import jsonSchema from '@/assets/json-schema-07.json'
@@ -25,7 +25,7 @@ export class BoardgameResolver {
   @Mutation(() => Boardgame)
   public async addBoardgame(
     @Arg('name') name: string,
-    @Arg('maxPlayers') maxPlayers: number,
+    @Arg('maxPlayers', () => Int) maxPlayers: number,
     @Arg('resultSchema', () => GraphQLJSONObject)
     resultSchema: object,
     // Nullable
@@ -35,7 +35,7 @@ export class BoardgameResolver {
     type: GAME_TYPE = GAME_TYPE.COMPETITIVE,
     @Arg('rulebook', () => String, { nullable: true })
     rulebook: string | null,
-    @Arg('minPlayers', { nullable: true })
+    @Arg('minPlayers', () => Int, { nullable: true })
     minPlayers: number = 1,
   ) {
     // TODO: Move schema validation to GQL type
