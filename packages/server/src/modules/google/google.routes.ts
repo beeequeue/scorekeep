@@ -1,5 +1,6 @@
-import { Router } from 'express'
+import { Response, Router } from 'express'
 
+import { AuthErrorCode } from '@/constants/auth.constants'
 import { Session } from '@/modules/session/session.model'
 import { setTokenCookie } from '@/modules/session/session.lib'
 import { User } from '@/modules/user/user.model'
@@ -9,6 +10,23 @@ import {
 } from '@/modules/connection/connection.model'
 import { isNil } from '@/utils'
 import { Google } from './google.lib'
+
+const redirectToFailure = (
+  res: Response,
+  code: AuthErrorCode,
+  extraParams: { [key: string]: string } = {},
+) => {
+  const url = new URL('http://frontend.url/connect/failed')
+
+  url.searchParams.append('code', code)
+  url.searchParams.append('service', ConnectionService.GOOGLE)
+
+  Object.entries(extraParams).forEach(([key, value]) =>
+    url.searchParams.append(key, value),
+  )
+
+  return res.redirect(url.toString())
+}
 
 export const googleRouter = Router()
 
@@ -27,19 +45,21 @@ googleRouter.get('/callback', async (req, res) => {
   const user = await User.findOne({ uuid: state })
 
   if (isNil(user)) {
-    throw new Error('User not found')
+    // User not found
+    return redirectToFailure(res, AuthErrorCode.USER_NOT_FOUND)
   }
 
   if (isNil(code)) {
-    throw new Error('Did not get a code back from Google...')
+    // Did not get a code back from Google...
+    return redirectToFailure(res, AuthErrorCode.NO_CODE)
   }
 
   const tokens = await Google.getTokens(code, req)
-
   const googleUser = await Google.getUserFromToken(tokens.token)
 
   if (isNil(googleUser.email) || googleUser.verified_email) {
-    throw new Error('You need to have a verified email address to connect.')
+    // You need to have a verified email address on Google to connect.
+    return redirectToFailure(res, AuthErrorCode.EMAIL_REQUIRED)
   }
 
   const existingConnection = await Connection.findOne({
@@ -51,10 +71,12 @@ googleRouter.get('/callback', async (req, res) => {
 
   if (!isNil(existingConnection)) {
     if (existingConnection.userUuid === user.uuid) {
-      throw new Error('You are already connected to this account!')
+      // You are already connected to this account!
+      return redirectToFailure(res, AuthErrorCode.ALREADY_CONNECTED)
     }
 
-    throw new Error('This account is already connected to another user!')
+    // This account is already connected to another user!
+    return redirectToFailure(res, AuthErrorCode.ANOTHER_USER)
   }
 
   const connection = new Connection({

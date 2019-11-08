@@ -10,7 +10,8 @@ export enum ConnectionService {
 type ConnectionConstructor = Pick<
   Connection,
   'type' | 'userUuid' | 'serviceId' | 'email' | 'image'
->
+> &
+  Partial<Pick<Connection, 'uuid'>>
 
 registerEnumType(ConnectionService, {
   name: 'ConnectionService',
@@ -23,13 +24,13 @@ export class Connection extends BaseEntity {
   @Field(() => ID)
   public uuid: string
 
-  @Column({ type: 'uuid' })
-  @Field(() => ID)
-  public userUuid: string
-
   @Column()
   @Field(() => ConnectionService)
   public type: ConnectionService
+
+  @Column({ type: 'uuid' })
+  @Field(() => ID)
+  public userUuid: string
 
   @Column()
   @Field(() => ID)
@@ -48,9 +49,9 @@ export class Connection extends BaseEntity {
 
     if (isNil(options)) options = {} as any
 
-    this.uuid = uuid()
-    this.userUuid = options.userUuid
+    this.uuid = options.uuid || uuid()
     this.type = options.type
+    this.userUuid = options.userUuid
     this.serviceId = options.serviceId
     this.email = options.email
     this.image = options.image
