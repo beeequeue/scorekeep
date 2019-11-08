@@ -40,14 +40,8 @@ type ICallbackQuery = {
 }
 
 googleRouter.get('/callback', async (req, res) => {
-  const { code, state } = req.query as ICallbackQuery
-
-  const user = await User.findOne({ uuid: state })
-
-  if (isNil(user)) {
-    // User not found
-    return redirectToFailure(res, AuthErrorCode.USER_NOT_FOUND)
-  }
+  const { code, state: userUuid } = req.query as ICallbackQuery
+  let user: User
 
   if (isNil(code)) {
     // Did not get a code back from Google...
@@ -60,6 +54,22 @@ googleRouter.get('/callback', async (req, res) => {
   if (isNil(googleUser.email) || googleUser.verified_email) {
     // You need to have a verified email address on Google to connect.
     return redirectToFailure(res, AuthErrorCode.EMAIL_REQUIRED)
+  }
+
+  if (!isNil(userUuid)) {
+    const foundUser = await User.findOne({ uuid: userUuid })
+
+    if (isNil(foundUser)) {
+      // User not found
+      return redirectToFailure(res, AuthErrorCode.USER_NOT_FOUND)
+    }
+
+    user = foundUser
+  } else {
+    user = new User({
+      name: googleUser.name,
+      mainConnectionUuid: null,
+    })
   }
 
   const existingConnection = await Connection.findOne({
