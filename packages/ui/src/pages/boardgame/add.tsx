@@ -1,20 +1,19 @@
 import React, { useState, useCallback } from 'react'
 import { hot } from 'react-hot-loader'
 import AceEditor from 'react-ace'
-import Slider from 'rc-slider'
+import { Range } from 'rc-slider'
 import styled from 'styled-components'
 import { useMutation } from '@apollo/react-hooks'
 
-
 import 'ace-builds/src-noconflict/mode-json'
 import 'ace-builds/src-noconflict/theme-github'
-import 'rc-slider/assets/index.css'
 
-import { AddBoardgameMutationVariables, AddBoardgameMutation } from '@/graphql/generated'
+import {
+  AddBoardgameMutationVariables,
+  AddBoardgameMutation,
+} from '@/graphql/generated'
 import AddBoardgame from '@/graphql/add-boardgame.graphql'
-
-
-const Range = Slider.createSliderWithTooltip(Slider.Range)
+import { RcStyle } from './rc-slider-styles'
 
 const Container = styled.div`
   width: 600px;
@@ -22,38 +21,47 @@ const Container = styled.div`
 `
 const Add = () => {
   const [JSONSchema, setJson] = useState()
-  const [name, setName] = useState("Azul")
+  const [name, setName] = useState('Azul')
   const [range, setRange] = useState([1, 4])
 
-  const [ addBoardgame ]  = useMutation<AddBoardgameMutation, AddBoardgameMutationVariables>(AddBoardgame)
+  const [addBoardgame] = useMutation<
+    AddBoardgameMutation,
+    AddBoardgameMutationVariables
+  >(AddBoardgame)
 
   const submitBoardgame = useCallback(async () => {
     const [minPlayers, maxPlayers] = range
-    const variables : AddBoardgameMutationVariables = {
+    const variables: AddBoardgameMutationVariables = {
       minPlayers,
       maxPlayers,
       schema: JSON.parse(JSONSchema),
-      name
+      name,
     }
 
-    return addBoardgame({ variables})
-  }, [addBoardgame, JSONSchema, range, name ])
+    return addBoardgame({ variables })
+  }, [addBoardgame, JSONSchema, range, name])
 
   return (
     <>
-      <h1>Hello world!</h1>
+      <RcStyle />
+      <h1>Add boardgame</h1>
       <form
         onSubmit={e => {
           e.preventDefault()
           submitBoardgame()
         }}
       >
-        <input type="text" name="name" value={name} onChange={(e) => {
-          setName(e.target.value)
-        }} />
+        <input
+          type="text"
+          name="name"
+          value={name}
+          onChange={e => {
+            setName(e.target.value)
+          }}
+        />
 
         <Container>
-          <Range min={1} max={15} defaultValue={[1, 4]} onChange={setRange}/>
+          <Range min={1} max={15} defaultValue={[1, 4]} onChange={setRange} />
         </Container>
 
         <AceEditor
@@ -66,7 +74,6 @@ const Add = () => {
         />
         <input type="submit" value="Submit" />
       </form>
-
     </>
   )
 }
