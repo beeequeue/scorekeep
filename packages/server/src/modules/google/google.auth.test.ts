@@ -30,16 +30,6 @@ beforeEach(async () => {
   jest.resetAllMocks()
 })
 
-describe('/connect/google', () => {
-  test(' should redirect the user to google', async () => {
-    const response = await request(app)
-      .get('/connect/google')
-      .expect(302)
-
-    expect(response.text).toContain('https://accounts.google.com')
-  })
-})
-
 describe('/connect/google/callback', () => {
   test('should create user if not logged in', async () => {
     mockedGoogle.getTokens.mockResolvedValue({
