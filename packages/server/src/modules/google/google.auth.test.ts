@@ -31,17 +31,19 @@ beforeEach(async () => {
 
 describe('/connect/google', () => {
   test(' should redirect the user to google', async () => {
-    return request(app)
+    const response = await request(app)
       .get('/connect/google')
-      .expect(302, /https:\/\/accounts.google.com/)
+      .expect(302)
+
+    expect(response.text).toContain('https://accounts.google.com')
   })
 })
 
 describe('/connect/google/callback', () => {
-  test.skip('should create user if not logged in', async () => {
+  test('should create user if not logged in', async () => {
     await request(app)
       .get('/connect/google/callback')
-      .expect(302, /https:\/\/accounts.google.com/)
+      .expect(302)
   })
 
   test.skip('should only create connection if logged in already', async () => {
@@ -53,8 +55,7 @@ describe('/connect/google/callback', () => {
   test('should fail if already connected to service', async () => {
     const connectionUuid = uuid()
 
-    const user = await User.from({
-      uuid: uuid(),
+    const user = await new User({
       name: 'FirstUser',
       mainConnectionUuid: connectionUuid,
     }).save()
@@ -89,8 +90,7 @@ describe('/connect/google/callback', () => {
   test('should fail if service user is connected to another user', async () => {
     const connectionUuid = uuid()
 
-    const existingUser = await User.from({
-      uuid: uuid(),
+    const existingUser = await new User({
       name: 'FirstUser',
       mainConnectionUuid: connectionUuid,
     }).save()
@@ -104,8 +104,7 @@ describe('/connect/google/callback', () => {
       image: '',
     }).save()
 
-    const badUser = await User.from({
-      uuid: uuid(),
+    const badUser = await new User({
       name: 'SecondUser',
       mainConnectionUuid: null,
     }).save()
