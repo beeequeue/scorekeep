@@ -159,3 +159,8 @@ workflows:
       - server_lint:
           requires:
             - dependencies
+      - deploy_storybook:
+          requires:
+            - ui_build
+            - ui_test
+            - ui_lint
