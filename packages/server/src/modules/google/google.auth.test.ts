@@ -31,7 +31,7 @@ beforeEach(async () => {
 })
 
 describe('/connect/google/callback', () => {
-  test('should create user if not logged in', async () => {
+  test('should create user if not logged in and doesnt exist', async () => {
     mockedGoogle.getTokens.mockResolvedValue({
       idToken: 'id_token',
       token: 'the_token',
@@ -68,6 +68,10 @@ describe('/connect/google/callback', () => {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const user = await session!.getUser()
     expect(user).not.toBeNull()
+  })
+
+  test('should log in if not logged in and exists', async () => {
+    expect(true).toBe(false)
   })
 
   test.skip('should only create connection if logged in already', async () => {
