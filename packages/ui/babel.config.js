@@ -8,5 +8,6 @@ module.exports = {
     '@babel/plugin-proposal-class-properties',
     '@babel/plugin-syntax-dynamic-import',
     '@babel/plugin-proposal-numeric-separator',
+    'babel-plugin-styled-components',
   ],
 }
