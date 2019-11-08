@@ -124,6 +124,9 @@ jobs:
     steps:
       - attach_workspace:
           at: .
+      - run:
+          name: Avoid unknown host for github
+          command: mkdir ~/.ssh && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
       - add_ssh_keys:
           fingerprints:
             - '7f:18:8b:11:bd:bf:0a:78:94:e7:23:e7:09:87:05:17'
@@ -171,5 +174,5 @@ workflows:
             - ui_lint
           filters:
             branches:
-              #              only: master
+              #only: master
               ignore: gh-pages
