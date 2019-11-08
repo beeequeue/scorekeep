@@ -72,7 +72,7 @@ jobs:
       - run:
           working_directory: ~/app/packages/ui
           name: Test
-          command: yarn run test --ci --reporters=jest-junit
+          command: yarn run test --ci --reporters=jest-junit --reporters=default
       - store_test_results:
           when: always
           path: test-results
@@ -88,7 +88,7 @@ jobs:
       - run:
           working_directory: ~/app/packages/server
           name: Test
-          command: yarn run test --ci --reporters=jest-junit
+          command: yarn run test --ci --reporters=jest-junit --reporters=default
       - store_test_results:
           when: always
           path: test-results
@@ -119,6 +119,25 @@ jobs:
           when: always
           path: test-results
 
+  deploy_storybook:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Avoid unknown host for github
+          command: mkdir ~/.ssh && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+      - run: 'git config --global user.email sayhi@circleci.com'
+      - run: 'git config --global user.name CircleCI'
+      - run:
+          working_directory: ~/app/packages/ui
+          name: Build Storybook
+          command: yarn build-storybook
+      - run:
+          working_directory: ~/app/packages/ui
+          name: Deploy to GH Pages
+          command: yarn gh-pages -d .storybook/dist
+
 workflows:
   version: 2
   build_test_lint:
@@ -145,3 +164,11 @@ workflows:
       - server_lint:
           requires:
             - dependencies
+      - deploy_storybook:
+          requires:
+            - ui_build
+            - ui_test
+            - ui_lint
+          filters:
+            branches:
+              only: master
