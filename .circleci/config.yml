@@ -119,6 +119,20 @@ jobs:
           when: always
           path: test-results
 
+  deploy_storybook:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          working_directory: ~/app/packages/ui
+          name: Build Storybook
+          command: yarn build-storybook
+      - run:
+          working_directory: ~/app/packages/ui
+          name: Deploy to GH Pages
+          command: yarn gh-pages -d .storybook/dist
+
 workflows:
   version: 2
   build_test_lint:
