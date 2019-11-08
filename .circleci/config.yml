@@ -174,5 +174,4 @@ workflows:
             - ui_lint
           filters:
             branches:
-              #only: master
-              ignore: gh-pages
+              only: master
