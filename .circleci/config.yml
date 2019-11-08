@@ -124,6 +124,9 @@ jobs:
     steps:
       - attach_workspace:
           at: .
+      - add_ssh_keys:
+          fingerprints:
+            - '6f:d8:50:d0:1a:57:ec:c8:a7:54:0e:b4:82:be:f5:8f'
       - run:
           working_directory: ~/app/packages/ui
           name: Build Storybook
