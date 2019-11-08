@@ -8,7 +8,7 @@
   ],
   "extensions": {
     "endpoints": {
-      "default": "https://localhost:3000/graphql"
+      "default": "http://localhost:3000/graphql"
     }
   }
 }

@@ -63,6 +63,15 @@ module.exports = {
         test: /\.svg$/,
         loader: 'raw-loader',
       },
+      {
+        test: /\.css$/,
+        loader: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.(graphql|gql)$/,
+        exclude: /node_modules/,
+        loader: 'graphql-tag/loader',
+      },
     ],
   },
   plugins: noUndefined([

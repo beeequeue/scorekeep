@@ -1,0 +1,12 @@
+mutation AddBoardgame(
+  $name: String!
+  $maxPlayers: Int!,
+  $minPlayers: Int!,
+  $schema: JSONObject!
+){
+  addBoardgame(name: $name, maxPlayers: $maxPlayers, minPlayers: $minPlayers, resultSchema: $schema) {
+    uuid
+    name
+    resultSchema
+  }
+}

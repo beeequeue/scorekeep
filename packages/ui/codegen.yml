@@ -1,5 +1,5 @@
 schema:
-  - https://localhost:3000/graphql:
+  - http://localhost:3000/graphql:
       headers:
         Authorization: Bearer ${TOKEN}
 documents: ./src/**/*.{ts,tsx,graphql}
@@ -24,7 +24,7 @@ generates:
 
   ./src/graphql/introspection-result.ts:
     plugins:
-      - add: "/* eslint-disable */"
+      - add: '/* eslint-disable */'
       - fragment-matcher
 
   ./schema.graphql:

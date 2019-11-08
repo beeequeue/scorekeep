@@ -67,3 +67,6 @@ typings/
 
 #Electron-builder output
 /dist_electron
+
+#Graphql generated schema
+packages/ui/schema.graphql

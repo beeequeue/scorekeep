@@ -19,7 +19,6 @@ const ErrorLink = onError(({ graphQLErrors, networkError }) => {
 })
 
 const HttpLink = new _HttpLink({
-  credentials: 'include',
   uri: process.env.REACT_APP_API_URL,
 })
 

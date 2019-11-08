@@ -5,3 +5,10 @@ declare module 'apollo-link-logger' {
   // eslint-disable-next-line import/no-default-export
   export default LoggerLink
 }
+
+declare module '*.graphql' {
+  import { DocumentNode } from 'graphql'
+  const value: DocumentNode
+  // eslint-disable-next-line import/no-default-export
+  export default value
+}

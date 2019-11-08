@@ -9,7 +9,7 @@ import { client } from '@/apollo'
 import { Page } from '@/pages/constants'
 
 const LandingPage = loadable(() =>
-  import(/* webpackChunkName: "landing" */ './pages/landing/landing'),
+  import(/* webpackChunkName: "landing" */ './pages/boardgame/add'),
 )
 
 const AppComponent = () => (
