@@ -25,6 +25,7 @@
     "react-router-dom": "5.1.2",
     "styled-components": "5.0.0-rc.1",
     "style-loader": "1.0.0",
+    "styled-components": "5.0.0-rc.1",
     "ts-optchain": "0.1.8",
     "typescript": "3.7.2",
     "use-react-router": "1.0.7"
