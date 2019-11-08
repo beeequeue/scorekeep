@@ -126,7 +126,9 @@ jobs:
           at: .
       - add_ssh_keys:
           fingerprints:
-            - '6f:d8:50:d0:1a:57:ec:c8:a7:54:0e:b4:82:be:f5:8f'
+            - '7f:18:8b:11:bd:bf:0a:78:94:e7:23:e7:09:87:05:17'
+      - run: 'git config --global user.email sayhi@circleci.com'
+      - run: 'git config --global user.name CircleCI'
       - run:
           working_directory: ~/app/packages/ui
           name: Build Storybook
@@ -167,3 +169,7 @@ workflows:
             - ui_build
             - ui_test
             - ui_lint
+          filters:
+            branches:
+              #              only: master
+              ignore: gh-pages
