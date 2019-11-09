@@ -8,7 +8,6 @@ executors:
           environment:
             POSTGRES_USER: scorekeep-admin
             POSTGRES_PASSWORD: "ADAM's COOL"
-            POSTGRES_DB: scorekeep-tests
     working_directory: ~/app
     environment:
       JEST_JUNIT_OUTPUT_NAME: 'results.xml'
