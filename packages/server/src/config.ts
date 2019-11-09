@@ -37,6 +37,7 @@ const _config: Config = {
       ...defaultDbConfig,
       schema: 'scorekeep-dev',
       synchronize: true,
+      migrationsRun: true,
     },
   },
   [Environment.TEST]: {
@@ -44,7 +45,7 @@ const _config: Config = {
       ...defaultDbConfig,
       schema: 'scorekeep-tests',
       synchronize: true,
-      dropSchema: true,
+      migrationsRun: true,
     },
   },
   [Environment.PRODUCTION]: {
