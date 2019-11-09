@@ -4,10 +4,6 @@ executors:
   node:
     docker:
       - image: circleci/node:12
-      - image: circleci/postgres:11-alpine
-        environment:
-          POSTGRES_USER: scorekeep-admin
-          POSTGRES_PASSWORD: "ADAM's COOL"
     working_directory: ~/app
     environment:
       JEST_JUNIT_OUTPUT_NAME: 'results.xml'
@@ -83,6 +79,11 @@ jobs:
 
   server_test:
     executor: node
+    docker:
+      - image: circleci/postgres:11-alpine
+        environment:
+          POSTGRES_USER: scorekeep-admin
+          POSTGRES_PASSWORD: "ADAM's COOL"
     environment:
       JEST_JUNIT_OUTPUT_DIR: '../../test-results/server_test'
       NODE_ENV: 'test'
