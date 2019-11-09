@@ -3,7 +3,12 @@ version: 2.1
 executors:
   node:
     docker:
-      - image: circleci/node:12.9.1
+      - image: circleci/node:12
+      - image: circleci/postgres:11-alpine
+          environment:
+            POSTGRES_USER: scorekeep-admin
+            POSTGRES_PASSWORD: "ADAM's COOL"
+            POSTGRES_DB: scorekeep-tests
     working_directory: ~/app
     environment:
       JEST_JUNIT_OUTPUT_NAME: 'results.xml'
