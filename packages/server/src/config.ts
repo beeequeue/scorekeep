@@ -43,7 +43,7 @@ const _config: Config = {
       ...defaultDbConfig,
       schema: 'scorekeep-tests',
       synchronize: true,
-      migrationsRun: true,
+      dropSchema: true,
     },
   },
   [Environment.PRODUCTION]: {

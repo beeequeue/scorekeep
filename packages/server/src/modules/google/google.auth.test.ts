@@ -30,6 +30,8 @@ beforeEach(async () => {
   jest.resetAllMocks()
 })
 
+afterAll(() => dbConnection.close())
+
 describe('/connect/google/callback', () => {
   test('should create user if not logged in and doesnt exist', async () => {
     mockedGoogle.getTokens.mockResolvedValue({

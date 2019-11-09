@@ -67,7 +67,7 @@
     "migrate:generate": "typeorm migration:generate -d migrations -n",
     "migrate:create": "typeorm migration:create -d migrations -n",
     "start": "ts-node -r dotenv/config -r tsconfig-paths/register src/index.ts",
-    "pretest": "yarn run migrate",
+    "pretest": "NODE_ENV=development yarn run migrate",
     "test": "NODE_ENV=test jest server -i",
     "test:coverage": "yarn run test --coverage"
   }
