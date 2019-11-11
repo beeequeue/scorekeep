@@ -10,6 +10,7 @@ import {
   Property,
   ResultProperty,
 } from '@/pages/boardgame/components/property-form'
+import { generateSchemaFromProperties } from '@/pages/boardgame/generateSchemaValidation'
 
 const Add = () => {
   const [propNumber, setPropNumber] = useState<number>(0)
@@ -43,12 +44,12 @@ const Add = () => {
     const variables: AddBoardgameMutationVariables = {
       minPlayers,
       maxPlayers,
-      schema: JSON.parse('{}'),
+      schema: JSON.parse(generateSchemaFromProperties(properties)),
       name,
     }
 
     return addBoardgame({ variables })
-  }, [addBoardgame, name])
+  }, [addBoardgame, name, properties])
 
   return (
     <>
