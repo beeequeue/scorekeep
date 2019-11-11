@@ -4,6 +4,7 @@ import React, {
   useState,
   useEffect,
 } from 'react'
+import { Input } from '@/pages/boardgame/components/input'
 
 enum PropertyType {
   NUMBER = 'Number',
@@ -60,11 +61,11 @@ export const ResultProperty = ({
 
   return (
     <div>
-      <input
-        value={property.name}
+      <Input
+        placeholder="Property Name"
         onChange={onNameChange}
         type="text"
-        placeholder="Property Name"
+        value={property.name}
       />
       <SelectTypeInput defaultValue={property.type} onChange={onSelect} />
     </div>

@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react'
 import { hot } from 'react-hot-loader'
 import { useMutation } from '@apollo/react-hooks'
-
 import {
   AddBoardgameMutationVariables,
   AddBoardgameMutation,
