@@ -1,28 +1,38 @@
 import React, { useState, useCallback } from 'react'
 import { hot } from 'react-hot-loader'
-import AceEditor from 'react-ace'
-import { Range } from 'rc-slider'
-import styled from 'styled-components'
 import { useMutation } from '@apollo/react-hooks'
-
-import 'ace-builds/src-noconflict/mode-json'
-import 'ace-builds/src-noconflict/theme-github'
 
 import {
   AddBoardgameMutationVariables,
   AddBoardgameMutation,
 } from '@/graphql/generated'
 import AddBoardgame from '@/graphql/add-boardgame.graphql'
-import { RcStyle } from './rc-slider-styles'
+import {
+  Property,
+  ResultProperty,
+} from '@/pages/boardgame/components/property-form'
 
-const Container = styled.div`
-  width: 600px;
-  height: 100px;
-`
 const Add = () => {
-  const [JSONSchema, setJson] = useState()
+  const [propNumber, setPropNumber] = useState<number>(0)
+  const [properties, setProperties] = useState<{
+    [k: string]: Property | null
+  }>({})
   const [name, setName] = useState('Azul')
-  const [range, setRange] = useState([1, 4])
+
+  const updateProperty = useCallback(
+    (propertyName, property) => {
+      setProperties({
+        ...properties,
+        [propertyName]: property,
+      })
+    },
+    [properties, setProperties],
+  )
+
+  const addProperty = () => {
+    setProperties({ ...properties, [`property-${propNumber}`]: null })
+    setPropNumber(propNumber + 1)
+  }
 
   const [addBoardgame] = useMutation<
     AddBoardgameMutation,
@@ -30,20 +40,19 @@ const Add = () => {
   >(AddBoardgame)
 
   const submitBoardgame = useCallback(async () => {
-    const [minPlayers, maxPlayers] = range
+    const [minPlayers, maxPlayers] = [1, 4]
     const variables: AddBoardgameMutationVariables = {
       minPlayers,
       maxPlayers,
-      schema: JSON.parse(JSONSchema),
+      schema: JSON.parse('{}'),
       name,
     }
 
     return addBoardgame({ variables })
-  }, [addBoardgame, JSONSchema, range, name])
+  }, [addBoardgame, name])
 
   return (
     <>
-      <RcStyle />
       <h1>Add boardgame</h1>
       <form
         onSubmit={e => {
@@ -59,19 +68,11 @@ const Add = () => {
             setName(e.target.value)
           }}
         />
-
-        <Container>
-          <Range min={1} max={15} defaultValue={[1, 4]} onChange={setRange} />
-        </Container>
-
-        <AceEditor
-          mode="json"
-          theme="github"
-          value={JSONSchema}
-          onChange={code => setJson(code)}
-          name="UNIQUE_ID_OF_DIV"
-          editorProps={{ $blockScrolling: true }}
-        />
+        <br />
+        {Object.keys(properties).map(prop => (
+          <ResultProperty key={prop} name={prop} onChange={updateProperty} />
+        ))}
+        <button onClick={addProperty}> Add Property</button>
         <input type="submit" value="Submit" />
       </form>
     </>
