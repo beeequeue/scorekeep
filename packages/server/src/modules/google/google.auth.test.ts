@@ -6,7 +6,7 @@ import { mocked } from 'ts-jest/utils'
 import { createApp } from '@/apollo'
 import { connectToDatabase } from '@/db'
 import { AuthErrorCode } from '@/constants/auth.constants'
-import { Google } from '@/modules/google/google.lib'
+import { Google, GoogleUser } from '@/modules/google/google.lib'
 import { User } from '@/modules/user/user.model'
 import {
   Connection,
@@ -18,15 +18,14 @@ jest.mock('@/modules/google/google.lib')
 const mockedGoogle = mocked(Google)
 
 let dbConnection: DBConnection
-let app = createApp()
+const app = createApp()
 
 beforeAll(async () => {
   dbConnection = await connectToDatabase()
 })
 
 beforeEach(async () => {
-  await dbConnection.synchronize()
-  app = createApp()
+  await dbConnection.synchronize(true)
   jest.resetAllMocks()
 })
 
@@ -39,12 +38,12 @@ describe('/connect/google/callback', () => {
       token: 'the_token',
       refreshToken: 'refresh_token',
     })
-    mockedGoogle.getUserFromToken.mockResolvedValue({
+    mockedGoogle.getUserFromToken.mockResolvedValue(({
       id: '1234',
       name: 'Jan Jansson',
       email: 'email@gmail.com',
       picture: 'url',
-    } as any)
+    } as Partial<GoogleUser>) as any)
 
     const response = await request(app)
       .get('/connect/google/callback')
@@ -103,11 +102,11 @@ describe('/connect/google/callback', () => {
       token: 'the_token',
       refreshToken: 'refresh_token',
     })
-    mockedGoogle.getUserFromToken.mockResolvedValue({
+    mockedGoogle.getUserFromToken.mockResolvedValue(({
       id: connection.serviceId,
       email: connection.email,
       picture: connection.image,
-    } as any)
+    } as Partial<GoogleUser>) as any)
 
     const response = await request(app)
       .get('/connect/google/callback')
@@ -144,11 +143,11 @@ describe('/connect/google/callback', () => {
       token: 'the_token',
       refreshToken: 'refresh_token',
     })
-    mockedGoogle.getUserFromToken.mockResolvedValue({
+    mockedGoogle.getUserFromToken.mockResolvedValue(({
       id: connection.serviceId,
       email: connection.email,
       picture: connection.email,
-    } as any)
+    } as Partial<GoogleUser>) as any)
 
     const response = await request(app)
       .get('/connect/google/callback')
