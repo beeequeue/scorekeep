@@ -54,6 +54,9 @@ export class Session extends BaseEntity {
     return session ?? null
   }
 
+  /**
+   * Does not return the new session since it can be found on req.session
+   */
   public static async login(
     req: Request,
     user: User

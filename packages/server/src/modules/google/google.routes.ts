@@ -2,7 +2,6 @@ import { Response, Router } from 'express'
 
 import { AuthErrorCode } from '@/constants/auth.constants'
 import { Session } from '@/modules/session/session.model'
-import { setTokenCookie } from '@/modules/session/session.lib'
 import { User } from '@/modules/user/user.model'
 import {
   Connection,
@@ -40,12 +39,21 @@ type ICallbackQuery = {
 }
 
 googleRouter.get('/callback', async (req, res) => {
-  const { code, state: userUuid } = req.query as ICallbackQuery
-  let user: User
+  const { code } = req.query as ICallbackQuery
+  let currentSession: Session | null = null
 
   if (isNil(code)) {
     // Did not get a code back from Google...
     return redirectToFailure(res, AuthErrorCode.NO_CODE)
+  }
+
+  if (req.cookies.token) {
+    currentSession = await Session.findByUuid(req.cookies.token)
+
+    if (isNil(currentSession)) {
+      // User not found
+      return redirectToFailure(res, AuthErrorCode.USER_NOT_FOUND)
+    }
   }
 
   const tokens = await Google.getTokens(code, req)
@@ -56,22 +64,6 @@ googleRouter.get('/callback', async (req, res) => {
     return redirectToFailure(res, AuthErrorCode.EMAIL_REQUIRED)
   }
 
-  if (!isNil(userUuid)) {
-    const foundUser = await User.findOne({ uuid: userUuid })
-
-    if (isNil(foundUser)) {
-      // User not found
-      return redirectToFailure(res, AuthErrorCode.USER_NOT_FOUND)
-    }
-
-    user = foundUser
-  } else {
-    user = new User({
-      name: googleUser.name,
-      mainConnectionUuid: null,
-    })
-  }
-
   const existingConnection = await Connection.findOne({
     where: {
       type: ConnectionService.GOOGLE,
@@ -79,32 +71,38 @@ googleRouter.get('/callback', async (req, res) => {
     },
   })
 
+  // If the service account is connected to someone
   if (!isNil(existingConnection)) {
-    if (existingConnection.userUuid === user.uuid) {
-      // You are already connected to this account!
-      return redirectToFailure(res, AuthErrorCode.ALREADY_CONNECTED)
-    }
+    await Session.login(req, await existingConnection.user())
 
-    // This account is already connected to another user!
-    return redirectToFailure(res, AuthErrorCode.ANOTHER_USER)
+    return res.redirect('/')
   }
 
-  const connection = new Connection({
+  // If user is logged in and is connecting a new account
+  if (!isNil(req.session)) {
+    await req.session.user.connectTo({
+      type: ConnectionService.GOOGLE,
+      email: googleUser.email,
+      serviceId: googleUser.id,
+      image: googleUser.picture,
+    })
+
+    return res.redirect('/')
+  }
+
+  const newUser = new User({
+    name: googleUser.name,
+    mainConnectionUuid: null,
+  })
+
+  await newUser.connectTo({
     type: ConnectionService.GOOGLE,
-    userUuid: user.uuid,
     email: googleUser.email,
     serviceId: googleUser.id,
     image: googleUser.picture,
   })
 
-  await connection.save()
-
-  user.mainConnectionUuid = user.mainConnectionUuid || connection.uuid
-  await user.save()
-
-  const session = await Session.generate(user)
-
-  setTokenCookie(res)(session)
+  await Session.login(req, newUser)
 
   res.redirect('/')
 })
