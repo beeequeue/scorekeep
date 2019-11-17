@@ -46,10 +46,8 @@ const getContextSession = async (
   }
 
   return {
-    /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
-    session: session!,
-    user: await session!.getUser(),
-    /* eslint-enable @typescript-eslint/no-unnecessary-type-assertion */
+    session: session,
+    user: await session.user,
     isLoggedIn: true,
     setSession,
   }

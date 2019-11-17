@@ -3,7 +3,10 @@ import { Field, ID, ObjectType } from 'type-graphql'
 import uuid from 'uuid/v4'
 
 import { Club } from '@/modules/club/club.model'
-import { Connection } from '@/modules/connection/connection.model'
+import {
+  Connection,
+  ConnectionConstructor,
+} from '@/modules/connection/connection.model'
 import { isNil } from '@/utils'
 
 type UserConstructor = Partial<Pick<User, 'uuid'>> &
@@ -47,5 +50,19 @@ export class User extends BaseEntity {
     const user = await User.findOne({ where: { uuid } })
 
     return user || null
+  }
+
+  public async connectTo(options: Omit<ConnectionConstructor, 'userUuid'>) {
+    const connection = await new Connection({
+      uuid: options.uuid,
+      type: options.type,
+      userUuid: this.uuid,
+      email: options.email,
+      serviceId: options.serviceId,
+      image: options.image,
+    }).save()
+
+    this.mainConnectionUuid = this.mainConnectionUuid || connection.uuid
+    return this.save()
   }
 }

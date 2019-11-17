@@ -1,13 +1,15 @@
 import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
 import { Field, ID, ObjectType, registerEnumType } from 'type-graphql'
 import uuid from 'uuid/v4'
+
+import { User } from '@/modules/user/user.model'
 import { isNil } from '@/utils'
 
 export enum ConnectionService {
   GOOGLE = 'GOOGLE',
 }
 
-type ConnectionConstructor = Pick<
+export type ConnectionConstructor = Pick<
   Connection,
   'type' | 'userUuid' | 'serviceId' | 'email' | 'image'
 > &
@@ -29,8 +31,11 @@ export class Connection extends BaseEntity {
   public type: ConnectionService
 
   @Column({ type: 'uuid' })
-  @Field(() => ID)
   public userUuid: string
+  @Field(() => User)
+  public async user(): Promise<User> {
+    return (await User.findByUuid(this.userUuid))!
+  }
 
   @Column()
   @Field(() => ID)

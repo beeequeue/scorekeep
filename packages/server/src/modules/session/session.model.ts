@@ -1,15 +1,10 @@
-import {
-  BaseEntity,
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryColumn,
-} from 'typeorm'
+import { Request } from 'express'
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm'
 import uuid from 'uuid/v4'
 
+import { User } from '@/modules/user/user.model'
+import { setTokenCookie } from '@/modules/session/session.lib'
 import { isNil } from '@/utils'
-import { User } from '../user/user.model'
 
 const WEEK = 60 * 60 * 24 * 7
 type Constructor = Pick<Session, 'user' | 'expiresAt'>
@@ -31,7 +26,7 @@ export class Session extends BaseEntity {
   public readonly expiresAt: Date
 
   @Column()
-  public readonly cancelled: boolean = false
+  public cancelled: boolean = false
 
   constructor(options: Constructor) {
     super()
@@ -53,7 +48,40 @@ export class Session extends BaseEntity {
     return session
   }
 
-  public async getUser(): Promise<User> {
-    return (await User.findOne({ where: { uuid: this.user.uuid } }))!
+  public static async findByUuid(uuid: string) {
+    const session = await Session.findOne({ where: { uuid } })
+
+    return session ?? null
+  }
+
+  public static async login(
+    req: Request,
+    user: User
+  ) {
+    if (!isNil(req.session)) {
+      await req.session.invalidate()
+    }
+
+    const session = await Session.generate(user)
+
+    setTokenCookie(req.res!)(session)
+  }
+
+  public static async invalidate(session: Session | string) {
+    if (typeof session === 'string') {
+      const gottenSession = await this.findByUuid(session)
+
+      if (isNil(gottenSession)) return
+
+      session = gottenSession
+    }
+
+    return session.invalidate()
+  }
+
+  public async invalidate() {
+    this.cancelled = true
+
+    return this.save()
   }
 }
