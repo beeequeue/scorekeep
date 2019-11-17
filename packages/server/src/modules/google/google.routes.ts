@@ -73,6 +73,10 @@ googleRouter.get('/callback', async (req, res) => {
 
   // If the service account is connected to someone
   if (!isNil(existingConnection)) {
+    if (!isNil(req.session)) {
+      return redirectToFailure(res, AuthErrorCode.ANOTHER_USER)
+    }
+
     await Session.login(req, await existingConnection.user())
 
     return res.redirect('/')

@@ -155,68 +155,41 @@ describe('connect', () => {
     expect(newConnection?.userUuid).toBe(user.uuid)
   })
 
-  test.skip('should fail if already connected to service account', async () => {
+  test('should fail if service account already connected to someone else', async () => {
     const connectionUuid = uuid()
 
-    const user = await new User({
+    const oldUser = await new User({
       name: 'FirstUser',
       mainConnectionUuid: connectionUuid,
     }).save()
-    const connection = await new Connection({
+    const oldConnection = await new Connection({
       uuid: connectionUuid,
       type: ConnectionService.GOOGLE,
-      userUuid: user.uuid,
+      userUuid: oldUser.uuid,
       serviceId: '1234',
       email: 'coolguy@gmail.com',
       image: '',
     }).save()
-    const session = await Session.generate(user)
+
+    const badUser = await new User({
+      name: 'BadUser',
+      mainConnectionUuid: uuid(),
+    }).save()
+    const session = await Session.generate(badUser)
 
     mockedGoogle.getUserFromToken.mockResolvedValue(({
-      id: connection.serviceId,
-      email: connection.email,
-      picture: connection.image,
+      id: oldConnection.serviceId,
+      name: badUser.name,
+      email: oldConnection.email,
+      picture: oldConnection.image,
     } as Partial<GoogleUser>) as any)
 
     const response = await request(app)
       .get('/connect/google/callback')
       .set('Cookie', `token=${session.uuid}`)
-      .query({ code: '1234', state: user.uuid })
+      .query({ code: '1234' })
       .expect(302)
 
-    expect(response.text).toContain(AuthErrorCode.ALREADY_CONNECTED)
-  })
-
-  test.skip('should fail if service account already connected', async () => {
-    const connectionUuid = uuid()
-
-    const user = await new User({
-      name: 'FirstUser',
-      mainConnectionUuid: connectionUuid,
-    }).save()
-    const connection = await new Connection({
-      uuid: connectionUuid,
-      type: ConnectionService.GOOGLE,
-      userUuid: user.uuid,
-      serviceId: '1234',
-      email: 'coolguy@gmail.com',
-      image: '',
-    }).save()
-    const session = await Session.generate(user)
-
-    mockedGoogle.getUserFromToken.mockResolvedValue(({
-      id: connection.serviceId,
-      name: user.name,
-      email: connection.email,
-      picture: connection.image,
-    } as Partial<GoogleUser>) as any)
-
-    const response = await request(app)
-      .get('/connect/google/callback')
-      .set('Cookie', `token=${session.uuid}`)
-      .query({ code: '1234', state: user.uuid })
-      .expect(302)
-
-    expect(response.text).toContain(AuthErrorCode.ALREADY_CONNECTED)
+    expect(response.text).toContain(AuthErrorCode.ANOTHER_USER)
   })
 })
