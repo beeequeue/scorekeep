@@ -47,7 +47,7 @@ const getContextSession = async (
 
   return {
     session: session,
-    user: await session.user,
+    user: session.user,
     isLoggedIn: true,
     setSession,
   }

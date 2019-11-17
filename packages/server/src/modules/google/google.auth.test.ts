@@ -120,7 +120,7 @@ describe('/connect/google/callback', () => {
     const responseSession = await Session.findByUuid(token)
     expect(responseSession).not.toBeNull()
 
-    const responseUser = await responseSession?.user
+    const responseUser = responseSession?.user
     expect(responseUser).not.toBeNull()
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     expect(responseUser!.uuid).toEqual(user.uuid)
