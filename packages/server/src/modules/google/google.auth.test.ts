@@ -66,13 +66,64 @@ describe('/connect/google/callback', () => {
     const session = await Session.findOne({ where: { uuid: token } })
     expect(session).not.toBeNull()
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const user = await session!.getUser()
-    expect(user).not.toBeNull()
+    expect(session?.user).not.toBeNull()
   })
 
   test('should log in if not logged in and exists', async () => {
-    expect(true).toBe(false)
+    const connectionUuid = uuid()
+
+    const user = await new User({
+      name: 'ExistingUser',
+      mainConnectionUuid: connectionUuid,
+    }).save()
+    const connection = await new Connection({
+      uuid: connectionUuid,
+      type: ConnectionService.GOOGLE,
+      userUuid: user.uuid,
+      serviceId: '1234',
+      email: 'coolguy@gmail.com',
+      image: '',
+    }).save()
+    const session = await Session.generate(user)
+
+    mockedGoogle.getTokens.mockResolvedValue({
+      idToken: 'id_token',
+      token: 'the_token',
+      refreshToken: 'refresh_token',
+    })
+    mockedGoogle.getUserFromToken.mockResolvedValue(({
+      id: connection.serviceId,
+      email: connection.email,
+      picture: connection.image,
+    } as Partial<GoogleUser>) as any)
+
+    const response = await request(app)
+      .get('/connect/google/callback')
+      .query({ code: '1234' })
+      .set('Cookie', `token=${session.uuid}`)
+      .expect(302)
+
+    expect(response.text).not.toContain('failed')
+    expect(response.header).toMatchObject({
+      'set-cookie': [expect.stringContaining('token=')],
+    })
+
+    const token = /token=([\w\d-])+;/
+      .exec(response.header['set-cookie'][0])![0]
+      .slice(6, -1)
+
+    expect(token).not.toBeNull()
+    expect(token).toMatch(
+      /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i,
+    )
+
+    const responseSession = await Session.findByUuid(token)
+    expect(responseSession).not.toBeNull()
+
+    const responseUser = await responseSession?.user
+    expect(responseUser).not.toBeNull()
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    expect(responseUser!.uuid).toEqual(user.uuid)
   })
 
   test.skip('should only create connection if logged in already', async () => {
@@ -96,6 +147,7 @@ describe('/connect/google/callback', () => {
       email: 'coolguy@gmail.com',
       image: '',
     }).save()
+    const session = await Session.generate(user)
 
     mockedGoogle.getTokens.mockResolvedValue({
       idToken: 'id_token',
@@ -110,6 +162,7 @@ describe('/connect/google/callback', () => {
 
     const response = await request(app)
       .get('/connect/google/callback')
+      .set('Cookie', `token=${session.uuid}`)
       .query({ code: '1234', state: user.uuid })
       .expect(302)
 
