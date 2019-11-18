@@ -54,7 +54,7 @@ export class Connection extends BaseEntity {
 
     if (isNil(options)) options = {} as any
 
-    this.uuid = options.uuid || uuid()
+    this.uuid = options.uuid ?? uuid()
     this.type = options.type
     this.userUuid = options.userUuid
     this.serviceId = options.serviceId

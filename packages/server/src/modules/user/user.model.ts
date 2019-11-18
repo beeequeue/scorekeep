@@ -42,7 +42,7 @@ export class User extends BaseEntity {
 
     if (isNil(options)) options = {} as any
 
-    this.uuid = options.uuid || uuid()
+    this.uuid = options.uuid ?? uuid()
     this.name = options.name
   }
 
@@ -62,7 +62,7 @@ export class User extends BaseEntity {
       image: options.image,
     }).save()
 
-    this.mainConnectionUuid = this.mainConnectionUuid || connection.uuid
+    this.mainConnectionUuid = this.mainConnectionUuid ?? connection.uuid
     return this.save()
   }
 }
