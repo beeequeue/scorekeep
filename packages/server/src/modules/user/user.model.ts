@@ -1,30 +1,50 @@
 import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
 import { Field, ID, ObjectType } from 'type-graphql'
-import { Club } from '@/modules/club/club.model'
+import uuid from 'uuid/v4'
 
-type UserConstructor = Pick<User, 'uuid' | 'name' | 'mainConnectionUuid'>
+import { Club } from '@/modules/club/club.model'
+import {
+  Connection,
+  ConnectionConstructor,
+} from '@/modules/connection/connection.model'
+import { isNil } from '@/utils'
+
+type UserConstructor = Partial<Pick<User, 'uuid'>> &
+  Pick<User, 'name' | 'mainConnectionUuid'>
 
 @Entity()
 @ObjectType()
 export class User extends BaseEntity {
   @PrimaryColumn({ type: 'uuid' })
   @Field(() => ID)
-  public uuid!: string
+  public uuid: string
 
   @Column({ length: 50 })
   @Field()
-  public name!: string
+  public name: string
 
   @Field(() => [Club])
-  public clubs!: Club[]
+  public async clubs(): Promise<Club[]> {
+    throw new Error('Not implemented yet')
+  }
 
-  // TODO
-  // @Field(() => Connection[])
-  public connections!: any[]
+  @Field(() => [Connection])
+  public async connections(): Promise<Connection[]> {
+    return await Connection.find({ where: { userUuid: this.uuid } })
+  }
 
   @Column({ type: 'uuid', nullable: true })
   @Field(() => ID, { nullable: true })
-  public mainConnectionUuid?: string
+  public mainConnectionUuid!: string | null
+
+  constructor(options: UserConstructor) {
+    super()
+
+    if (isNil(options)) options = {} as any
+
+    this.uuid = options.uuid ?? uuid()
+    this.name = options.name
+  }
 
   public static async findByUuid(uuid: string): Promise<User | null> {
     const user = await User.findOne({ where: { uuid } })
@@ -32,10 +52,17 @@ export class User extends BaseEntity {
     return user || null
   }
 
-  public static from(parameters: UserConstructor) {
-    const user = new User()
+  public async connectTo(options: Omit<ConnectionConstructor, 'userUuid'>) {
+    const connection = await new Connection({
+      uuid: options.uuid,
+      type: options.type,
+      userUuid: this.uuid,
+      email: options.email,
+      serviceId: options.serviceId,
+      image: options.image,
+    }).save()
 
-    // TODO: Filter keys haha
-    return Object.assign(user, parameters)
+    this.mainConnectionUuid = this.mainConnectionUuid ?? connection.uuid
+    return this.save()
   }
 }

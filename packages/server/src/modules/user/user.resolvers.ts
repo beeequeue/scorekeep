@@ -22,8 +22,7 @@ export class UserResolver {
 
   @Mutation(() => User)
   public async addUser(@Arg('name') name: string) {
-    const user = User.from({
-      uuid: uuid(),
+    const user = new User({
       name,
       mainConnectionUuid: uuid(),
     })

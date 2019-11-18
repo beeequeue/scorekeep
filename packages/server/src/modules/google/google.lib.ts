@@ -5,7 +5,7 @@ import { google } from 'googleapis'
 
 import { isNil } from '@/utils'
 
-type GoogleUser = {
+export type GoogleUser = {
   id: string
   email: string
   verified_email: boolean

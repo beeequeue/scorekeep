@@ -35,12 +35,14 @@ const _config: Config = {
     db: {
       ...defaultDbConfig,
       synchronize: true,
+      migrationsRun: true,
     },
   },
   [Environment.TEST]: {
     db: {
       ...defaultDbConfig,
-      database: 'scorekeep-tests',
+      schema: 'scorekeep-tests',
+      synchronize: true,
       dropSchema: true,
     },
   },
@@ -56,4 +58,5 @@ const _config: Config = {
   },
 }
 
-export const config = _config[process.env.NODE_ENV as Environment]
+export const config =
+  _config[(process.env.NODE_ENV || 'development') as Environment]
