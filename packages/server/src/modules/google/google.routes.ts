@@ -1,11 +1,31 @@
-import { Router } from 'express'
-import uuid from 'uuid/v4'
+import { Response, Router } from 'express'
 
+import { AuthErrorCode } from '@/constants/auth.constants'
 import { Session } from '@/modules/session/session.model'
-import { setTokenCookie } from '@/modules/session/session.lib'
 import { User } from '@/modules/user/user.model'
-import { Google } from './google.lib'
+import {
+  Connection,
+  ConnectionService,
+} from '@/modules/connection/connection.model'
 import { isNil } from '@/utils'
+import { Google } from './google.lib'
+
+const redirectToFailure = (
+  res: Response,
+  code: AuthErrorCode,
+  extraParams: { [key: string]: string } = {},
+) => {
+  const url = new URL('http://frontend.url/connect/failed')
+
+  url.searchParams.append('code', code)
+  url.searchParams.append('service', ConnectionService.GOOGLE)
+
+  Object.entries(extraParams).forEach(([key, value]) =>
+    url.searchParams.append(key, value),
+  )
+
+  return res.redirect(url.toString())
+}
 
 export const googleRouter = Router()
 
@@ -19,36 +39,77 @@ type ICallbackQuery = {
 }
 
 googleRouter.get('/callback', async (req, res) => {
-  const { code, state } = req.query as ICallbackQuery
-
-  const user = await User.findOne({ uuid: state })
-
-  if (isNil(user)) {
-    // throw new Error('User not found')
-  }
+  const { code } = req.query as ICallbackQuery
+  let currentSession: Session | null = null
 
   if (isNil(code)) {
-    throw new Error('Did not get a code back from Google...')
+    // Did not get a code back from Google...
+    return redirectToFailure(res, AuthErrorCode.NO_CODE)
+  }
+
+  if (req.cookies.token) {
+    currentSession = await Session.findByUuid(req.cookies.token)
+
+    if (isNil(currentSession)) {
+      // User not found
+      return redirectToFailure(res, AuthErrorCode.USER_NOT_FOUND)
+    }
   }
 
   const tokens = await Google.getTokens(code, req)
-
   const googleUser = await Google.getUserFromToken(tokens.token)
 
-  if (!googleUser.email || !googleUser.verified_email) {
-    throw new Error('You need to have a verified email address to connect.')
+  if (isNil(googleUser.email) || googleUser.verified_email) {
+    // You need to have a verified email address on Google to connect.
+    return redirectToFailure(res, AuthErrorCode.EMAIL_REQUIRED)
   }
 
-  const newUser = User.from({
-    uuid: uuid(),
-    name: googleUser.name,
+  const existingConnection = await Connection.findOne({
+    where: {
+      type: ConnectionService.GOOGLE,
+      email: googleUser.email,
+    },
   })
 
-  await newUser.save()
+  // If the service account is connected to someone
+  if (!isNil(existingConnection)) {
+    if (
+      !isNil(req.session) &&
+      req.session.user.uuid !== existingConnection.userUuid
+    ) {
+      return redirectToFailure(res, AuthErrorCode.ANOTHER_USER)
+    }
 
-  const session = await Session.generate(newUser)
+    await Session.login(req, await existingConnection.user())
 
-  setTokenCookie(res)(session)
+    return res.redirect('/')
+  }
+
+  // If user is logged in and is connecting a new account
+  if (!isNil(req.session)) {
+    await req.session.user.connectTo({
+      type: ConnectionService.GOOGLE,
+      email: googleUser.email,
+      serviceId: googleUser.id,
+      image: googleUser.picture,
+    })
+
+    return res.redirect('/')
+  }
+
+  const newUser = new User({
+    name: googleUser.name,
+    mainConnectionUuid: null,
+  })
+
+  await newUser.connectTo({
+    type: ConnectionService.GOOGLE,
+    email: googleUser.email,
+    serviceId: googleUser.id,
+    image: googleUser.picture,
+  })
+
+  await Session.login(req, newUser)
 
   res.redirect('/')
 })
