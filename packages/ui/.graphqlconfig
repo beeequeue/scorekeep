@@ -1,5 +1,5 @@
 {
-  "schemaPath": "schema.graphql",
+  "schemaPath": "../server/src/graphql/schema.snapshot",
   "includes": [
     "src/**/*.graphql",
     "src/**/*.graphqls",
