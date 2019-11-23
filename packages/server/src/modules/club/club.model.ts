@@ -1,7 +1,7 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
-import { Field, ID, ObjectType } from 'type-graphql'
-import uuid from 'uuid/v4'
+import { Column, Entity } from 'typeorm'
+import { Field, ObjectType } from 'type-graphql'
 
+import { ExtendedEntity } from '@/modules/exented-entity'
 import { User } from '@/modules/user/user.model'
 import { isNil, OptionalUuid } from '@/utils'
 
@@ -11,11 +11,7 @@ type ClubConstructor = OptionalUuid<
 
 @Entity()
 @ObjectType()
-export class Club extends BaseEntity {
-  @PrimaryColumn({ type: 'uuid' })
-  @Field(() => ID)
-  public readonly uuid: string
-
+export class Club extends ExtendedEntity {
   @Column({ length: 50 })
   @Field()
   public name: string
@@ -41,7 +37,7 @@ export class Club extends BaseEntity {
 
     if (isNil(owner)) {
       throw new Error(
-        `Club:${this.uuid} owner (User:${this.ownerUuid}) does not exist!`,
+        `${this.toLoggable()} owner ${User.toLoggable(this.ownerUuid)} does not exist!`,
       )
     }
 
@@ -49,11 +45,10 @@ export class Club extends BaseEntity {
   }
 
   constructor(options: ClubConstructor) {
-    super()
+    super(options)
 
     if (isNil(options)) options = {} as any
 
-    this.uuid = options.uuid || uuid()
     this.name = options.name
     this.memberUuids = options.memberUuids
     this.ownerUuid = options.ownerUuid

@@ -1,8 +1,8 @@
 import { GraphQLJSONObject } from 'graphql-type-json'
-import { Field, ID, ObjectType } from 'type-graphql'
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
-import uuid from 'uuid/v4'
+import { Field, ObjectType } from 'type-graphql'
+import { Column, Entity } from 'typeorm'
 
+import { ExtendedEntity } from '@/modules/exented-entity'
 import { User } from '@/modules/user/user.model'
 import { Boardgame } from '@/modules/boardgame/boardgame.model'
 import { Club } from '@/modules/club/club.model'
@@ -23,11 +23,7 @@ type MatchConstructor = OptionalUuid<
 
 @Entity()
 @ObjectType()
-export class Match extends BaseEntity {
-  @PrimaryColumn({ type: 'uuid' })
-  @Field(() => ID)
-  public readonly uuid: string
-
+export class Match extends ExtendedEntity {
   @Column({ type: 'uuid' })
   public clubUuid: string
   @Field(() => Club)
@@ -53,7 +49,17 @@ export class Match extends BaseEntity {
   public gameUuid: string
   @Field(() => Boardgame)
   public async game(): Promise<Boardgame> {
-    return (await Boardgame.findOne({ where: { uuid: this.gameUuid } }))!
+    const game = await Boardgame.findOne({ uuid: this.gameUuid })
+
+    if (isNil(game)) {
+      throw new Error(
+        `${this.toString()}'s connected ${Boardgame.toLoggable(
+          this.gameUuid,
+        )} does not exist!`,
+      )
+    }
+
+    return game
   }
 
   @Column({ type: 'json' })
@@ -65,11 +71,10 @@ export class Match extends BaseEntity {
   public date: Date
 
   constructor(options: MatchConstructor) {
-    super()
+    super(options)
 
     if (isNil(options)) options = {} as any
 
-    this.uuid = options.uuid || uuid()
     this.clubUuid = options.clubUuid
     this.playerUuids = options.playerUuids
     this.winnerUuids = options.winnerUuids

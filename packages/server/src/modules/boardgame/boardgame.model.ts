@@ -1,8 +1,8 @@
 import { GraphQLJSONObject } from 'graphql-type-json'
-import { Field, ID, Int, ObjectType, registerEnumType } from 'type-graphql'
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
-import uuid from 'uuid/v4'
+import { Field, Int, ObjectType, registerEnumType } from 'type-graphql'
+import { Column, Entity } from 'typeorm'
 
+import { ExtendedEntity } from '@/modules/exented-entity'
 import { JsonSchemaObject } from '@/types/json-schema'
 import { isNil, OptionalUuid } from '@/utils'
 
@@ -40,11 +40,7 @@ registerEnumType(GAME_TYPE, { name: 'GAME_TYPE' })
 
 @Entity()
 @ObjectType()
-export class Boardgame extends BaseEntity {
-  @PrimaryColumn({ type: 'uuid' })
-  @Field(() => ID)
-  public readonly uuid: string
-
+export class Boardgame extends ExtendedEntity {
   @Column({ length: 15 })
   @Field(() => GAME_TYPE)
   public type: GAME_TYPE
@@ -77,11 +73,10 @@ export class Boardgame extends BaseEntity {
   public resultSchema: JsonSchemaObject
 
   constructor(options: BoardgameConstructor) {
-    super()
+    super(options)
 
     if (isNil(options)) options = {} as any
 
-    this.uuid = options.uuid || uuid()
     this.type = options.type
     this.name = options.name
     this.url = options.url

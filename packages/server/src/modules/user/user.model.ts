@@ -1,7 +1,7 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
+import { Column, Entity } from 'typeorm'
 import { Field, ID, ObjectType } from 'type-graphql'
-import uuid from 'uuid/v4'
 
+import { ExtendedEntity } from '@/modules/exented-entity'
 import { Club } from '@/modules/club/club.model'
 import {
   Connection,
@@ -15,11 +15,7 @@ type UserConstructor = OptionalUuid<
 
 @Entity()
 @ObjectType()
-export class User extends BaseEntity {
-  @PrimaryColumn({ type: 'uuid' })
-  @Field(() => ID)
-  public uuid: string
-
+export class User extends ExtendedEntity {
   @Column({ length: 50 })
   @Field()
   public name: string
@@ -39,11 +35,10 @@ export class User extends BaseEntity {
   public mainConnectionUuid: string | null
 
   constructor(options: UserConstructor) {
-    super()
+    super(options)
 
     if (isNil(options)) options = {} as any
 
-    this.uuid = options.uuid ?? uuid()
     this.name = options.name
     this.mainConnectionUuid = options.mainConnectionUuid
   }
