@@ -18,7 +18,7 @@ test('generated schema should be identical to snapshot', async () => {
   ).toString()
 
   const schema = await createSchema(false)
-  const schemaSDL = printSchema(schema, { commentDescriptions: true })
+  const schemaSDL = printSchema(schema)
 
   expect(disclaimer + schemaSDL).toEqual(snapshot)
 })
