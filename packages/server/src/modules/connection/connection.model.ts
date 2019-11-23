@@ -34,11 +34,7 @@ export class Connection extends ExtendedEntity {
     const user = await User.findByUuid(this.userUuid)
 
     if (isNil(user)) {
-      throw new Error(
-        `${this.toLoggable()}'s connected ${User.toLoggable(
-          this.userUuid,
-        )} does not exist!`,
-      )
+      throw this.shouldExistError(User, this.userUuid)
     }
 
     return user

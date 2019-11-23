@@ -36,9 +36,7 @@ export class Club extends ExtendedEntity {
     const owner = await User.findOne({ where: { uuid: this.ownerUuid } })
 
     if (isNil(owner)) {
-      throw new Error(
-        `${this.toLoggable()} owner ${User.toLoggable(this.ownerUuid)} does not exist!`,
-      )
+      throw this.shouldExistError(User, this.ownerUuid)
     }
 
     return owner

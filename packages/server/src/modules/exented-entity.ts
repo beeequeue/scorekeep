@@ -18,6 +18,15 @@ export abstract class ExtendedEntity extends BaseEntity {
     this.uuid = options.uuid || uuid()
   }
 
+  public shouldExistError<E extends typeof ExtendedEntity>(
+    entity: E,
+    uuid: string,
+  ) {
+    return new Error(
+      `${this.toLoggable()} owner ${entity.toLoggable(uuid)} does not exist!`,
+    )
+  }
+
   public toLoggable(json?: boolean) {
     if (json) {
       return JSON.stringify(this, null, 2)

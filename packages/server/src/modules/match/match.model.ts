@@ -28,7 +28,13 @@ export class Match extends ExtendedEntity {
   public clubUuid: string
   @Field(() => Club)
   public async club(): Promise<Club> {
-    return (await Club.findOne({ where: { uuid: this.clubUuid } }))!
+    const club = await Club.findOne({ uuid: this.clubUuid })
+
+    if (isNil(club)) {
+      throw this.shouldExistError(Club, this.clubUuid)
+    }
+
+    return club
   }
 
   @Column({ type: 'simple-array' })
@@ -52,11 +58,7 @@ export class Match extends ExtendedEntity {
     const game = await Boardgame.findOne({ uuid: this.gameUuid })
 
     if (isNil(game)) {
-      throw new Error(
-        `${this.toString()}'s connected ${Boardgame.toLoggable(
-          this.gameUuid,
-        )} does not exist!`,
-      )
+      throw this.shouldExistError(Boardgame, this.gameUuid)
     }
 
     return game
