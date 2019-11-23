@@ -12,7 +12,7 @@ export class UserResolver {
   public async user(@Arg('uuid', () => ID) uuid: string): Promise<User | null> {
     if (!isUuid(uuid)) return null
 
-    return User.findByUuid(uuid)
+    return (await User.findOne({ uuid })) ?? null
   }
 
   @Query(() => User, { nullable: true })
@@ -35,7 +35,7 @@ export class UserResolver {
     @Ctx() context: SessionContext,
     @Arg('uuid') uuid: string,
   ) {
-    const user = await User.findByUuid(uuid)
+    const user = await User.findOne({ uuid })
     if (isNil(user)) {
       throw new Error('User does not exist!')
     }
