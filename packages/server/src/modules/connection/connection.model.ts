@@ -3,17 +3,18 @@ import { Field, ID, ObjectType, registerEnumType } from 'type-graphql'
 import uuid from 'uuid/v4'
 
 import { User } from '@/modules/user/user.model'
-import { isNil } from '@/utils'
+import { isNil, OptionalUuid } from '@/utils'
 
 export enum ConnectionService {
   GOOGLE = 'GOOGLE',
 }
 
-export type ConnectionConstructor = Pick<
-  Connection,
-  'type' | 'userUuid' | 'serviceId' | 'email' | 'image'
-> &
-  Partial<Pick<Connection, 'uuid'>>
+export type ConnectionConstructor = OptionalUuid<
+  Pick<
+    Connection,
+    'uuid' | 'type' | 'userUuid' | 'serviceId' | 'email' | 'image'
+  >
+>
 
 registerEnumType(ConnectionService, {
   name: 'ConnectionService',
@@ -24,7 +25,7 @@ registerEnumType(ConnectionService, {
 export class Connection extends BaseEntity {
   @PrimaryColumn({ type: 'uuid' })
   @Field(() => ID)
-  public uuid: string
+  public readonly uuid: string
 
   @Column()
   @Field(() => ConnectionService)

@@ -1,8 +1,10 @@
 import { GraphQLJSONObject } from 'graphql-type-json'
 import { Field, ID, Int, ObjectType, registerEnumType } from 'type-graphql'
 import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
+import uuid from 'uuid/v4'
 
 import { JsonSchemaObject } from '@/types/json-schema'
+import { isNil, OptionalUuid } from '@/utils'
 
 export type ResultBase = {
   playerResults: Array<{
@@ -16,16 +18,18 @@ export type ResultBase = {
   }
 }
 
-type BoardgameConstructor = Pick<
-  Boardgame,
-  | 'uuid'
-  | 'name'
-  | 'type'
-  | 'url'
-  | 'rulebook'
-  | 'maxPlayers'
-  | 'minPlayers'
-  | 'resultSchema'
+type BoardgameConstructor = OptionalUuid<
+  Pick<
+    Boardgame,
+    | 'uuid'
+    | 'name'
+    | 'type'
+    | 'url'
+    | 'rulebook'
+    | 'maxPlayers'
+    | 'minPlayers'
+    | 'resultSchema'
+  >
 >
 
 export enum GAME_TYPE {
@@ -39,43 +43,51 @@ registerEnumType(GAME_TYPE, { name: 'GAME_TYPE' })
 export class Boardgame extends BaseEntity {
   @PrimaryColumn({ type: 'uuid' })
   @Field(() => ID)
-  public uuid!: string
+  public readonly uuid: string
 
   @Column({ length: 15 })
   @Field(() => GAME_TYPE)
-  public type!: GAME_TYPE
+  public type: GAME_TYPE
 
   @Column({ length: 50 })
   @Field()
-  public name!: string
+  public name: string
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   @Field(() => String, {
     nullable: true,
     description: 'Link to boardgamegeek',
   })
-  public url!: string | null
+  public url: string | null
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   @Field(() => String, { nullable: true })
-  public rulebook!: string | null
+  public rulebook: string | null
 
   @Column({ type: 'int' })
   @Field(() => Int)
-  public minPlayers!: number
+  public minPlayers: number
 
   @Column({ type: 'int' })
   @Field(() => Int)
-  public maxPlayers!: number
+  public maxPlayers: number
 
   @Column({ type: 'json' })
   @Field(() => GraphQLJSONObject)
-  public resultSchema!: JsonSchemaObject
+  public resultSchema: JsonSchemaObject
 
-  public static from(parameters: BoardgameConstructor) {
-    const boardgame = new Boardgame()
+  constructor(options: BoardgameConstructor) {
+    super()
 
-    // TODO: Filter keys haha
-    return Object.assign(boardgame, parameters)
+    if (isNil(options)) options = {} as any
+
+    this.uuid = options.uuid || uuid()
+    this.type = options.type
+    this.name = options.name
+    this.url = options.url
+    this.rulebook = options.rulebook
+    this.minPlayers = options.minPlayers
+    this.maxPlayers = options.maxPlayers
+    this.resultSchema = options.resultSchema
   }
 }

@@ -1,7 +1,6 @@
 import Ajv from 'ajv'
 import { GraphQLJSONObject } from 'graphql-type-json'
 import { Arg, ID, Mutation, Query, Resolver } from 'type-graphql'
-import uuid from 'uuid/v4'
 
 import { Match } from '@/modules/match/match.model'
 import { Boardgame, ResultBase } from '@/modules/boardgame/boardgame.model'
@@ -51,8 +50,7 @@ export class MatchResolver {
       .filter(({ winner }) => winner === true)
       .map(({ player }) => player)
 
-    const match = Match.from({
-      uuid: uuid(),
+    const match = new Match({
       playerUuids,
       results,
       winnerUuids,

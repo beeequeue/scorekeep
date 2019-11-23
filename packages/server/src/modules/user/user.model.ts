@@ -7,10 +7,11 @@ import {
   Connection,
   ConnectionConstructor,
 } from '@/modules/connection/connection.model'
-import { isNil } from '@/utils'
+import { isNil, OptionalUuid } from '@/utils'
 
-type UserConstructor = Partial<Pick<User, 'uuid'>> &
-  Pick<User, 'name' | 'mainConnectionUuid'>
+type UserConstructor = OptionalUuid<
+  Pick<User, 'uuid' | 'name' | 'mainConnectionUuid'>
+>
 
 @Entity()
 @ObjectType()
@@ -35,7 +36,7 @@ export class User extends BaseEntity {
 
   @Column({ type: 'uuid', nullable: true })
   @Field(() => ID, { nullable: true })
-  public mainConnectionUuid!: string | null
+  public mainConnectionUuid: string | null
 
   constructor(options: UserConstructor) {
     super()
@@ -44,6 +45,7 @@ export class User extends BaseEntity {
 
     this.uuid = options.uuid ?? uuid()
     this.name = options.name
+    this.mainConnectionUuid = options.mainConnectionUuid
   }
 
   public static async findByUuid(uuid: string): Promise<User | null> {

@@ -1,5 +1,4 @@
 import { Arg, Ctx, ID, Mutation, Query, Resolver } from 'type-graphql'
-import uuid from 'uuid/v4'
 
 import { Club } from '@/modules/club/club.model'
 import { SessionContext } from '@/modules/session/session.lib'
@@ -21,10 +20,10 @@ export class ClubResolver {
       throw new GraphQLError('You need to be logged in to do this.')
     }
 
-    const club = Club.from({
-      uuid: uuid(),
+    const club = new Club({
       name,
       ownerUuid: context.user.uuid,
+      memberUuids: []
     })
 
     return club.save()
