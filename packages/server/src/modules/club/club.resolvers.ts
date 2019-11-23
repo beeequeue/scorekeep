@@ -8,7 +8,7 @@ import { GraphQLError } from 'graphql'
 export class ClubResolver {
   @Query(() => Club, { nullable: true })
   public async club(@Arg('uuid', () => ID) uuid: string): Promise<Club | null> {
-    return (await Club.findOne({ where: { uuid } })) || null
+    return (await Club.findOne({ uuid })) || null
   }
 
   @Mutation(() => Club)
@@ -23,7 +23,7 @@ export class ClubResolver {
     const club = new Club({
       name,
       ownerUuid: context.user.uuid,
-      memberUuids: []
+      memberUuids: [],
     })
 
     return club.save()

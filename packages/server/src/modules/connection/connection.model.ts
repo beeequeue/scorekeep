@@ -31,7 +31,7 @@ export class Connection extends ExtendedEntity {
   public userUuid: string
   @Field(() => User)
   public async user(): Promise<User> {
-    const user = await User.findByUuid(this.userUuid)
+    const user = await User.findOne({ uuid: this.userUuid })
 
     if (isNil(user)) {
       throw this.shouldExistError(User, this.userUuid)

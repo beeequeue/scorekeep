@@ -27,7 +27,7 @@ export class User extends ExtendedEntity {
 
   @Field(() => [Connection])
   public async connections(): Promise<Connection[]> {
-    return await Connection.find({ where: { userUuid: this.uuid } })
+    return await Connection.find({  userUuid: this.uuid  })
   }
 
   @Column({ type: 'uuid', nullable: true })
@@ -41,12 +41,6 @@ export class User extends ExtendedEntity {
 
     this.name = options.name
     this.mainConnectionUuid = options.mainConnectionUuid
-  }
-
-  public static async findByUuid(uuid: string): Promise<User | null> {
-    const user = await User.findOne({ where: { uuid } })
-
-    return user || null
   }
 
   public async connectTo(options: Omit<ConnectionConstructor, 'userUuid'>) {

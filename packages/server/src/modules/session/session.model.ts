@@ -49,7 +49,7 @@ export class Session extends BaseEntity {
   }
 
   public static async findByUuid(uuid: string) {
-    const session = await Session.findOne({ where: { uuid } })
+    const session = await Session.findOne({  uuid  })
 
     return session ?? null
   }

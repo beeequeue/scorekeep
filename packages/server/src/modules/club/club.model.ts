@@ -33,7 +33,7 @@ export class Club extends ExtendedEntity {
     description: 'A club owner must be a claimed player',
   })
   public async owner(): Promise<User> {
-    const owner = await User.findOne({ where: { uuid: this.ownerUuid } })
+    const owner = await User.findOne({ uuid: this.ownerUuid })
 
     if (isNil(owner)) {
       throw this.shouldExistError(User, this.ownerUuid)

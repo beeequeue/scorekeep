@@ -54,7 +54,7 @@ const assertLoggedIn = async (response: request.Response) => {
     /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i,
   )
 
-  const session = await Session.findOne({ where: { uuid: token } })
+  const session = await Session.findOne({  uuid: token  })
   expect(session).not.toBeNull()
 
   expect(session?.user).not.toBeNull()
@@ -148,7 +148,7 @@ describe('connect', () => {
     expect(response.text).not.toContain('failed')
 
     const newConnection = await Connection.findOne({
-      where: { email: newConnectionEmail },
+       email: newConnectionEmail ,
     })
 
     expect(newConnection).not.toBeNull()

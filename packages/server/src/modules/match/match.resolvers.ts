@@ -16,7 +16,7 @@ export class MatchResolver {
   public async match(
     @Arg('uuid', () => ID) uuid: string,
   ): Promise<Match | null> {
-    return (await Match.findOne({ where: { uuid } })) || null
+    return (await Match.findOne({ uuid })) || null
   }
 
   @Mutation(() => Match)

@@ -18,7 +18,7 @@ export class BoardgameResolver {
   public async boardgame(
     @Arg('uuid', () => ID) uuid: string,
   ): Promise<Boardgame | null> {
-    return (await Boardgame.findOne({ where: { uuid } })) || null
+    return (await Boardgame.findOne({ uuid })) || null
   }
 
   @Mutation(() => Boardgame)
@@ -37,7 +37,7 @@ export class BoardgameResolver {
     @Arg('minPlayers', () => Int, { nullable: true })
     minPlayers: number = 1,
   ) {
-    // TODO: Move schema validation to GQL type
+    // TODO: Move schema validation to a custom GQL type
     validate(resultSchema)
 
     // TODO: actually validate against the minimum result schema
