@@ -14,7 +14,7 @@ const disclaimer = `
 
 test('generated schema should be identical to snapshot', async () => {
   const snapshot = readFileSync(
-    resolve(__dirname, 'schema.snapshot'),
+    resolve(__dirname, 'snapshot.graphql'),
   ).toString()
 
   const schema = await createSchema(false)
