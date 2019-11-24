@@ -125,6 +125,16 @@ jobs:
           when: always
           path: test-results
 
+  server_breaking_changes:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          working_directory: ~/app/packages/server
+          name: Check for changes in schema
+          command: npx @graphql-inspector/cli diff git:origin/schema-diff:packages/server/src/graphql/snapshot.graphql src/graphql/snapshot.graphql
+
   deploy_storybook:
     executor: node
     steps:
@@ -170,6 +180,10 @@ workflows:
       - server_lint:
           requires:
             - dependencies
+      - server_breaking_changes:
+          requires:
+            - dependencies
+            - server_build
       - deploy_storybook:
           requires:
             - ui_build

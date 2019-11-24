@@ -26,7 +26,3 @@ generates:
     plugins:
       - add: '/* eslint-disable */'
       - fragment-matcher
-
-  ./schema.graphql:
-    plugins:
-      - schema-ast
