@@ -35,6 +35,8 @@
     "@types/graphql-type-json": "0.3.2",
     "@types/supertest": "2.0.8",
     "@types/type-is": "1.6.3",
+    "eslint-plugin-node": "10.0.0",
+    "eslint-plugin-security": "1.4.0",
     "supertest": "5.0.0-0",
     "ts-node-dev": "1.0.0-pre.44"
   },
