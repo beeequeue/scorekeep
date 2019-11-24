@@ -133,7 +133,7 @@ jobs:
       - run:
           working_directory: ~/app/packages/server
           name: Check for changes in schema
-          command: npx graphql-inspector diff git:origin/schema-diff:packages/server/src/graphql/snapshot.graphql src/graphql/snapshot.graphql
+          command: npx @graphql-inspector/cli diff git:origin/schema-diff:packages/server/src/graphql/snapshot.graphql src/graphql/snapshot.graphql
 
   deploy_storybook:
     executor: node
