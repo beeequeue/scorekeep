@@ -3,7 +3,7 @@ version: 2.1
 executors:
   node:
     docker:
-      - image: circleci/node:12
+      - image: circleci/node:13
     working_directory: ~/app
     environment:
       JEST_JUNIT_OUTPUT_NAME: 'results.xml'
@@ -24,18 +24,9 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - restore_cache:
-          keys:
-            - deps-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - deps-v1-{{ .Branch }}
-            - deps-v1-
       - run:
           name: Install NPM dependencies
           command: yarn install --frozen-lockfile
-      - save_cache:
-          key: deps-v1-{{ .Branch }}-{{ checksum "yarn.lock" }}
-          paths:
-            - node_modules
       - persist_to_workspace:
           root: ~/app
           paths:
@@ -133,7 +124,7 @@ jobs:
       - run:
           working_directory: ~/app/packages/server
           name: Check for changes in schema
-          command: npx @graphql-inspector/cli diff git:origin/schema-diff:packages/server/src/graphql/snapshot.graphql src/graphql/snapshot.graphql
+          command: npx @graphql-inspector/cli diff git:origin/master:packages/server/src/graphql/snapshot.graphql src/graphql/snapshot.graphql
 
   deploy_storybook:
     executor: node
@@ -184,6 +175,7 @@ workflows:
           requires:
             - dependencies
             - server_build
+            - server_test
       - deploy_storybook:
           requires:
             - ui_build

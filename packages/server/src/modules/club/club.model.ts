@@ -1,44 +1,54 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
-import { Field, ID, ObjectType } from 'type-graphql'
-import { User } from '@/modules/user/user.model'
-import { isNil } from '@/utils'
+import { Column, Entity } from 'typeorm'
+import { Field, ObjectType } from 'type-graphql'
 
-type ClubConstructor = Pick<Club, 'uuid' | 'name' | 'ownerUuid'>
+import { ExtendedEntity } from '@/modules/exented-entity'
+import { User } from '@/modules/user/user.model'
+import { isNil, OptionalUuid } from '@/utils'
+
+type ClubConstructor = OptionalUuid<
+  Pick<Club, 'uuid' | 'name' | 'memberUuids' | 'ownerUuid'>
+>
 
 @Entity()
 @ObjectType()
-export class Club extends BaseEntity {
-  @PrimaryColumn({ type: 'uuid' })
-  @Field(() => ID)
-  public uuid!: string
-
+export class Club extends ExtendedEntity {
   @Column({ length: 50 })
   @Field()
-  public name!: string
+  public name: string
 
+  @Column({ type: 'simple-array' })
+  public memberUuids: string[]
   @Field(() => [User])
-  public members!: User[]
+  public async members(): Promise<User[]> {
+    return User.find({
+      where: this.memberUuids.map(memberUuid => ({
+        uuid: memberUuid,
+      })),
+    })
+  }
 
   @Column({ type: 'uuid' })
-  public ownerUuid!: string
+  public ownerUuid: string
   @Field(() => User, {
     description: 'A club owner must be a claimed player',
   })
   public async owner(): Promise<User> {
-    const owner = await User.findOne({ where: { uuid: this.ownerUuid } })
+    const owner = await User.findOne({ uuid: this.ownerUuid })
 
     if (isNil(owner)) {
-      throw new Error(
-        `Club:${this.uuid} owner (User:${this.ownerUuid}) does not exist!`,
-      )
+      throw this.shouldExistError(User, this.ownerUuid)
     }
 
     return owner
   }
 
-  public static from(parameters: ClubConstructor) {
-    const club = new Club()
+  constructor(options: ClubConstructor) {
+    super(options)
 
-    return Object.assign(club, parameters)
+    if (isNil(options)) options = {} as any
+
+    this.name = options.name
+    this.memberUuids = options.memberUuids
+    this.ownerUuid = options.ownerUuid
   }
 }

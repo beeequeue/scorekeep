@@ -2,7 +2,6 @@
 import Ajv from 'ajv'
 import { GraphQLJSONObject } from 'graphql-type-json'
 import { Arg, ID, Int, Mutation, Query, Resolver } from 'type-graphql'
-import uuid from 'uuid/v4'
 
 import jsonSchema from '@/assets/json-schema-07.json'
 import { Boardgame, GAME_TYPE } from '@/modules/boardgame/boardgame.model'
@@ -19,7 +18,7 @@ export class BoardgameResolver {
   public async boardgame(
     @Arg('uuid', () => ID) uuid: string,
   ): Promise<Boardgame | null> {
-    return (await Boardgame.findOne({ where: { uuid } })) || null
+    return (await Boardgame.findOne({ uuid })) || null
   }
 
   @Mutation(() => Boardgame)
@@ -38,7 +37,7 @@ export class BoardgameResolver {
     @Arg('minPlayers', () => Int, { nullable: true })
     minPlayers: number = 1,
   ) {
-    // TODO: Move schema validation to GQL type
+    // TODO: Move schema validation to a custom GQL type
     validate(resultSchema)
 
     // TODO: actually validate against the minimum result schema
@@ -46,8 +45,7 @@ export class BoardgameResolver {
       throw createValidationError(validate.errors!, 'Invalid schema!')
     }
 
-    const boardgame = Boardgame.from({
-      uuid: uuid(),
+    const boardgame = new Boardgame({
       type,
       name,
       url,

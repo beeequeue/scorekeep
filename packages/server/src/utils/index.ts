@@ -1,5 +1,9 @@
 export * from './functional'
 
+export type OptionalUuid<T extends { uuid: string }> = Omit<T, 'uuid'> & {
+  uuid?: string
+}
+
 export const IS_DEV = process.env.NODE_ENV === 'development'
 
 export const mapAsync = async <T, R>(

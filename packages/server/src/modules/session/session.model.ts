@@ -1,5 +1,12 @@
 import { Request } from 'express'
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm'
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryColumn,
+} from 'typeorm'
 import uuid from 'uuid/v4'
 
 import { User } from '@/modules/user/user.model'
@@ -49,7 +56,7 @@ export class Session extends BaseEntity {
   }
 
   public static async findByUuid(uuid: string) {
-    const session = await Session.findOne({ where: { uuid } })
+    const session = await Session.findOne({ uuid })
 
     return session ?? null
   }
@@ -57,10 +64,7 @@ export class Session extends BaseEntity {
   /**
    * Does not return the new session since it can be found on req.session
    */
-  public static async login(
-    req: Request,
-    user: User
-  ) {
+  public static async login(req: Request, user: User) {
     if (!isNil(req.session)) {
       await req.session.invalidate()
     }

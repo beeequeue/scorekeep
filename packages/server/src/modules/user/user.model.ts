@@ -1,24 +1,21 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
+import { Column, Entity } from 'typeorm'
 import { Field, ID, ObjectType } from 'type-graphql'
-import uuid from 'uuid/v4'
 
+import { ExtendedEntity } from '@/modules/exented-entity'
 import { Club } from '@/modules/club/club.model'
 import {
   Connection,
   ConnectionConstructor,
 } from '@/modules/connection/connection.model'
-import { isNil } from '@/utils'
+import { isNil, OptionalUuid } from '@/utils'
 
-type UserConstructor = Partial<Pick<User, 'uuid'>> &
-  Pick<User, 'name' | 'mainConnectionUuid'>
+type UserConstructor = OptionalUuid<
+  Pick<User, 'uuid' | 'name' | 'mainConnectionUuid'>
+>
 
 @Entity()
 @ObjectType()
-export class User extends BaseEntity {
-  @PrimaryColumn({ type: 'uuid' })
-  @Field(() => ID)
-  public uuid: string
-
+export class User extends ExtendedEntity {
   @Column({ length: 50 })
   @Field()
   public name: string
@@ -30,26 +27,20 @@ export class User extends BaseEntity {
 
   @Field(() => [Connection])
   public async connections(): Promise<Connection[]> {
-    return await Connection.find({ where: { userUuid: this.uuid } })
+    return await Connection.find({ userUuid: this.uuid })
   }
 
   @Column({ type: 'uuid', nullable: true })
   @Field(() => ID, { nullable: true })
-  public mainConnectionUuid!: string | null
+  public mainConnectionUuid: string | null
 
   constructor(options: UserConstructor) {
-    super()
+    super(options)
 
     if (isNil(options)) options = {} as any
 
-    this.uuid = options.uuid ?? uuid()
     this.name = options.name
-  }
-
-  public static async findByUuid(uuid: string): Promise<User | null> {
-    const user = await User.findOne({ where: { uuid } })
-
-    return user || null
+    this.mainConnectionUuid = options.mainConnectionUuid
   }
 
   public async connectTo(options: Omit<ConnectionConstructor, 'userUuid'>) {

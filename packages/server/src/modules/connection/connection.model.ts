@@ -1,19 +1,20 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
+import { Column, Entity } from 'typeorm'
 import { Field, ID, ObjectType, registerEnumType } from 'type-graphql'
-import uuid from 'uuid/v4'
 
+import { ExtendedEntity } from '@/modules/exented-entity'
 import { User } from '@/modules/user/user.model'
-import { isNil } from '@/utils'
+import { isNil, OptionalUuid } from '@/utils'
 
 export enum ConnectionService {
   GOOGLE = 'GOOGLE',
 }
 
-export type ConnectionConstructor = Pick<
-  Connection,
-  'type' | 'userUuid' | 'serviceId' | 'email' | 'image'
-> &
-  Partial<Pick<Connection, 'uuid'>>
+export type ConnectionConstructor = OptionalUuid<
+  Pick<
+    Connection,
+    'uuid' | 'type' | 'userUuid' | 'serviceId' | 'email' | 'image'
+  >
+>
 
 registerEnumType(ConnectionService, {
   name: 'ConnectionService',
@@ -21,11 +22,7 @@ registerEnumType(ConnectionService, {
 
 @Entity()
 @ObjectType()
-export class Connection extends BaseEntity {
-  @PrimaryColumn({ type: 'uuid' })
-  @Field(() => ID)
-  public uuid: string
-
+export class Connection extends ExtendedEntity {
   @Column()
   @Field(() => ConnectionService)
   public type: ConnectionService
@@ -34,7 +31,13 @@ export class Connection extends BaseEntity {
   public userUuid: string
   @Field(() => User)
   public async user(): Promise<User> {
-    return (await User.findByUuid(this.userUuid))!
+    const user = await User.findOne({ uuid: this.userUuid })
+
+    if (isNil(user)) {
+      throw this.shouldExistError(User, this.userUuid)
+    }
+
+    return user
   }
 
   @Column()
@@ -50,11 +53,10 @@ export class Connection extends BaseEntity {
   public image: string
 
   constructor(options: ConnectionConstructor) {
-    super()
+    super(options)
 
     if (isNil(options)) options = {} as any
 
-    this.uuid = options.uuid ?? uuid()
     this.type = options.type
     this.userUuid = options.userUuid
     this.serviceId = options.serviceId
