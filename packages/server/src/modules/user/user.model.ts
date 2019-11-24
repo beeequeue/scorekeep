@@ -27,7 +27,7 @@ export class User extends ExtendedEntity {
 
   @Field(() => [Connection])
   public async connections(): Promise<Connection[]> {
-    return await Connection.find({  userUuid: this.uuid  })
+    return await Connection.find({ userUuid: this.uuid })
   }
 
   @Column({ type: 'uuid', nullable: true })
