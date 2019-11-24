@@ -4,7 +4,7 @@ import uuid from 'uuid/v4'
 
 import { isNil } from '@/utils'
 
-@ObjectType()
+@ObjectType({ isAbstract: true })
 export abstract class ExtendedEntity extends BaseEntity {
   @PrimaryColumn({ type: 'uuid' })
   @Field(() => ID)
