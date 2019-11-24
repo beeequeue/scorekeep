@@ -19,6 +19,7 @@ export const InputFieldStyle = css`
   color: white;
   line-height: 40px;
   border: 0;
+  border-radius: 0;
   border-bottom: 1px solid #b3b3b3;
   outline: 0;
   padding: 0 8px;

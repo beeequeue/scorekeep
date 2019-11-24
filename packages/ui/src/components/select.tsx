@@ -1,9 +1,6 @@
 import React, { SelectHTMLAttributes } from 'react'
 import styled from 'styled-components'
-import {
-  InputFieldStyle,
-  Label,
-} from '@/pages/boardgame/components/input-fields'
+import { InputFieldStyle, Label } from '@/components/input-fields'
 
 const SelectElement = styled.select`
   ${InputFieldStyle};

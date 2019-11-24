@@ -4,10 +4,10 @@ import React, {
   useState,
   useEffect,
 } from 'react'
-import { Input } from '@/pages/boardgame/components/input'
-import { Select } from '@/pages/boardgame/components/select'
 import styled from 'styled-components'
-import { InputFieldContainer } from './input-fields'
+import { Input } from '@/components/input'
+import { Select } from '@/components/select'
+import { InputFieldContainer } from '@/components/input-fields'
 
 const FieldContainer = styled(InputFieldContainer)`
   flex: 1;
@@ -44,7 +44,7 @@ export type Property = {
 
 const Container = styled.div`
   display: flex;
-  padding: 8px 16px 16px;
+  padding: 8px 0px 16px;
   align-items: center;
 `
 

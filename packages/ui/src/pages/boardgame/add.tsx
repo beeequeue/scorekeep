@@ -12,8 +12,10 @@ import {
   ResultProperty,
 } from '@/pages/boardgame/components/property-form'
 import { generateSchemaFromProperties } from '@/pages/boardgame/generateSchemaValidation'
-import { InputFieldContainer } from '@/pages/boardgame/components/input-fields'
-import { Input } from './components/input'
+import { InputFieldContainer } from '@/components/input-fields'
+import { Button } from '@/components/button'
+import { box, Header, PageGrid } from '@/components/layout'
+import { Input } from '../../components/input'
 
 const PlayerNumberInput = styled(Input).attrs({
   type: 'number',
@@ -36,6 +38,27 @@ const MinMaxContainer = styled.div`
   display: flex;
   flex: 1;
   justify-content: center;
+`
+
+const Form = styled.form`
+  ${box};
+`
+
+const AddProperty = styled.button`
+  display: flex;
+  width: 100%;
+  padding: 0 16px;
+  margin-bottom: 32px;
+  height: 52px;
+  border: 0;
+  background: #004e7080;
+  color: white;
+  font-size: 20px;
+  transition: background 200ms ease-in-out;
+
+  &:hover {
+    background: #004e70b3;
+  }
 `
 
 const NumberInputContainer = styled(InputFieldContainer)`
@@ -90,9 +113,9 @@ const Add = () => {
   }, [addBoardgame, name, properties])
 
   return (
-    <>
-      <h1>Add boardgame</h1>
-      <form
+    <PageGrid>
+      <Header>Add boardgame</Header>
+      <Form
         onSubmit={e => {
           e.preventDefault()
           submitBoardgame()
@@ -139,10 +162,10 @@ const Add = () => {
             removable={prop !== 'property-0'}
           />
         ))}
-        <button onClick={addProperty}> Add Property</button>
-        <input type="submit" value="Submit" />
-      </form>
-    </>
+        <AddProperty onClick={addProperty}>+ Add Property</AddProperty>
+        <Button type="submit">Submit</Button>
+      </Form>
+    </PageGrid>
   )
 }
 

@@ -18,6 +18,7 @@ module.exports = {
       'error',
       { env: 'apollo', requiredFields: ['uuid'] },
     ],
+    'react/prop-types': 0,
   },
   settings: {
     react: {
