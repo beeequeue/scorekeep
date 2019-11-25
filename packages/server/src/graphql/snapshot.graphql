@@ -100,7 +100,8 @@ type Query {
   ): BoardgamesPage!
   club(uuid: ID!): Club
   match(uuid: ID!): Match
-  user(uuid: ID!): User
+  user(uuid: ID): User
+  users: [User!]
   viewer: User
 }
 
