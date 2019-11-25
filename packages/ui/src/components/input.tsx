@@ -5,10 +5,13 @@ import { InputFieldStyle, Label } from '@/components/input-fields'
 const InputElement = styled.input`
   ${InputFieldStyle};
 `
-export const Input = (props: InputHTMLAttributes<HTMLInputElement>) => {
+export const Input = ({
+  type,
+  ...props
+}: InputHTMLAttributes<HTMLInputElement>) => {
   return (
     <>
-      <InputElement type="text" required {...props} />
+      <InputElement required type={type || 'text'} {...props} />
       <Label htmlFor={props.placeholder}>{props.placeholder}</Label>
     </>
   )

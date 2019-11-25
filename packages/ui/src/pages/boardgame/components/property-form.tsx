@@ -17,7 +17,7 @@ const FieldContainer = styled(InputFieldContainer)`
   }
 `
 
-enum PropertyType {
+export enum PropertyType {
   NUMBER = 'Number',
   BOOLEAN = 'Boolean',
   STRING = 'String',
