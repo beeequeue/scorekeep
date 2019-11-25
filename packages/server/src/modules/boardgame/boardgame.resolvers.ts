@@ -1,9 +1,20 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 import Ajv from 'ajv'
 import { GraphQLJSONObject } from 'graphql-type-json'
-import { Arg, ID, Int, Mutation, Query, Resolver } from 'type-graphql'
+import {
+  Arg,
+  Args,
+  ArgsType,
+  ID,
+  Int,
+  Mutation,
+  ObjectType,
+  Query,
+  Resolver,
+} from 'type-graphql'
 
 import jsonSchema from '@/assets/json-schema-07.json'
+import { PaginatedResponse, PaginationArgs } from '@/modules/pagination'
 import { Boardgame, GAME_TYPE } from '@/modules/boardgame/boardgame.model'
 import { CustomValidator, JsonSchemaObject } from '@/types/json-schema'
 import { createValidationError } from '@/utils/validations'
@@ -12,6 +23,12 @@ const ajv = new Ajv({ allErrors: true })
 
 const validate = ajv.compile(jsonSchema) as CustomValidator<JsonSchemaObject>
 
+@ObjectType()
+class BoardgamesPage extends PaginatedResponse(Boardgame) {}
+
+@ArgsType()
+class BoardgamesArgs extends PaginationArgs {}
+
 @Resolver()
 export class BoardgameResolver {
   @Query(() => Boardgame, { nullable: true })
@@ -19,6 +36,19 @@ export class BoardgameResolver {
     @Arg('uuid', () => ID) uuid: string,
   ): Promise<Boardgame | null> {
     return (await Boardgame.findOne({ uuid })) || null
+  }
+
+  @Query(() => BoardgamesPage)
+  public async boardgames(
+    @Args() { offset, limit }: BoardgamesArgs,
+  ): Promise<BoardgamesPage> {
+    const boardgames = await Boardgame.find({ take: limit, skip: offset })
+
+    return {
+      items: boardgames,
+      nextOffset: 0,
+      total: 0,
+    }
   }
 
   @Mutation(() => Boardgame)
