@@ -1,40 +1,9 @@
 import { PropertyType } from '@/pages/boardgame/components/property-form'
 
-export const schema = JSON.parse(`
-  { 
-   "schema":{ 
-      "$schema":"http://json-schema.org/draft-07/schema#",
-      "type":"object",
-      "required":[ 
-         "playerResults"
-      ],
-      "properties":{ 
-         "playerResults":{ 
-            "type":"array",
-            "required":["player", "result"],
-            "items":{ 
-               "type":"object",
-               "required":["player", "result"],
-               "properties":{
-                  "player": { "type": "string" },
-                  "result": { "type": "number" },
-                  "the-boolean": { "type": "boolean" }
-               }
-            }
-         },
-         "metaData":{ 
-            "type":"object"
-         }
-      }
-   }
-}
-`)
-
 const toPropertyType = (value: string): PropertyType => {
   const propertyTypes = [
     PropertyType.STRING,
     PropertyType.NUMBER,
-    PropertyType.BOOLEAN,
   ]
 
   return (

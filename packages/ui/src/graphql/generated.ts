@@ -169,6 +169,12 @@ export type BoardgamesQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type PlayersQueryVariables = {}
+
+export type PlayersQuery = { __typename?: 'Query' } & {
+  users: Maybe<Array<{ __typename?: 'User' } & Pick<User, 'uuid' | 'name'>>>
+}
+
 export const AddBoardgameDocument = gql`
   mutation AddBoardgame(
     $name: String!
@@ -288,4 +294,56 @@ export type BoardgamesLazyQueryHookResult = ReturnType<
 export type BoardgamesQueryResult = ApolloReactCommon.QueryResult<
   BoardgamesQuery,
   BoardgamesQueryVariables
+>
+export const PlayersDocument = gql`
+  query players {
+    users {
+      uuid
+      name
+    }
+  }
+`
+
+/**
+ * __usePlayersQuery__
+ *
+ * To run a query within a React component, call `usePlayersQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePlayersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePlayersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function usePlayersQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    PlayersQuery,
+    PlayersQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<PlayersQuery, PlayersQueryVariables>(
+    PlayersDocument,
+    baseOptions,
+  )
+}
+export function usePlayersLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    PlayersQuery,
+    PlayersQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<PlayersQuery, PlayersQueryVariables>(
+    PlayersDocument,
+    baseOptions,
+  )
+}
+export type PlayersQueryHookResult = ReturnType<typeof usePlayersQuery>
+export type PlayersLazyQueryHookResult = ReturnType<typeof usePlayersLazyQuery>
+export type PlayersQueryResult = ApolloReactCommon.QueryResult<
+  PlayersQuery,
+  PlayersQueryVariables
 >

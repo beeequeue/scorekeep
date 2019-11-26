@@ -3,14 +3,32 @@ import { Select } from '@/components/select'
 import { PropertyType } from '@/pages/boardgame/components/property-form'
 import { Input } from '@/components/input'
 import styled from 'styled-components'
+import gql from 'graphql-tag'
+import { useQuery } from '@apollo/react-hooks'
+import { PlayersQuery } from '@/graphql/generated'
 
-export const PlayerDropdown = () => (
-  <Select name="Player">
-    <option value="1">Adam</option>
-    <option value="2">Angel</option>
-    <option value="4">Other</option>
+const Players = gql`
+    query players {
+        users {
+            uuid
+            name
+        }
+    }
+`
+
+export const PlayerDropdown = () => {
+  const { data, loading } = useQuery<PlayersQuery>(Players)
+
+  if (loading || !data) {
+    return null
+  }
+
+  const players = data.users ?? []
+  return (<Select name="Player">
+      {players.map(({uuid, name}) => <option value={uuid}>{name}</option>)}
   </Select>
 )
+}
 
 const NumberInput = styled(Input).attrs({ type: 'number' })``
 

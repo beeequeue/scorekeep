@@ -19,7 +19,7 @@ const FieldContainer = styled(InputFieldContainer)`
 
 export enum PropertyType {
   NUMBER = 'Number',
-  BOOLEAN = 'Boolean',
+  // BOOLEAN = 'Boolean',
   STRING = 'String',
 }
 
