@@ -1,14 +1,17 @@
 // eslint-disable-next-line node/no-extraneous-import
+import dotenv from 'dotenv'
 import { EngineReportingOptions } from 'apollo-engine-reporting'
-import { ConnectionOptions } from 'typeorm'
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions'
 import { Environment } from '@/constants'
 
 type Config = {
   [key in Environment]: {
-    db: ConnectionOptions
+    db: PostgresConnectionOptions
     apolloEngine?: EngineReportingOptions<unknown>
   }
 }
+
+dotenv.config()
 
 const defaultDbConfig = {
   type: 'postgres' as const,
@@ -21,8 +24,9 @@ const defaultDbConfig = {
 
   logging: false,
   entities: ['src/modules/**/*.model.ts'],
+  seeds: ['src/modules/**/*.seed.ts'],
+  factories: ['src/modules/**/*.factory.ts'],
   migrations: ['migrations/**/*.ts'],
-  subscribers: ['src/subscribers/**/*.ts'],
   cli: {
     entitiesDir: 'src/modules',
     migrationsDir: 'migrations',

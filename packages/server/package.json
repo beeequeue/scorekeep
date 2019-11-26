@@ -32,13 +32,15 @@
     "winston": "3.2.1"
   },
   "devDependencies": {
+    "@types/faker": "4.1.7",
     "@types/graphql-type-json": "0.3.2",
     "@types/supertest": "2.0.8",
     "@types/type-is": "1.6.3",
     "eslint-plugin-node": "10.0.0",
     "eslint-plugin-security": "1.4.0",
     "supertest": "5.0.0-0",
-    "ts-node-dev": "1.0.0-pre.44"
+    "ts-node-dev": "1.0.0-pre.44",
+    "typeorm-seeding": "1.2.0"
   },
   "engines": {
     "node": ">=12.9.1"
@@ -63,12 +65,13 @@
   "repository": "https://github.com/BeeeQueue/scorekeep",
   "scripts": {
     "build": "yarn tsc --noEmit -P tsconfig.json",
-    "dev": "ts-node-dev --respawn --no-deps -r dotenv/config -r tsconfig-paths/register --files --inspect -- src/index.ts",
+    "dev": "ts-node-dev --respawn --no-deps -r tsconfig-paths/register --files --inspect -- src/index.ts",
     "lint": "eslint 'src/**/*.ts'",
     "migrate": "yarn typeorm migration:run",
     "migrate:generate": "typeorm migration:generate -d migrations -n",
     "migrate:create": "typeorm migration:create -d migrations -n",
-    "start": "ts-node --files -r dotenv/config -r tsconfig-paths/register src/index.ts",
+    "seed": "ts-node -T -r tsconfig-paths/register ../../node_modules/typeorm-seeding/dist/cli.js --config ormconfig.ts seed",
+    "start": "ts-node --files -r tsconfig-paths/register src/index.ts",
     "pretest": "NODE_ENV=development yarn run migrate",
     "test": "NODE_ENV=test jest server -i",
     "test:coverage": "yarn run test --coverage",
