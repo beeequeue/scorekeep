@@ -39,6 +39,20 @@ export type Club = {
   owner: User
 }
 
+export type Connection = {
+  __typename?: 'Connection'
+  uuid: Scalars['ID']
+  type: ConnectionService
+  user: User
+  serviceId: Scalars['ID']
+  email: Scalars['String']
+  image: Scalars['String']
+}
+
+export enum ConnectionService {
+  Google = 'GOOGLE',
+}
+
 export enum Game_Type {
   Collaborative = 'COLLABORATIVE',
   Competitive = 'COMPETITIVE',
@@ -95,9 +109,11 @@ export type MutationUseUserArgs = {
 export type Query = {
   __typename?: 'Query'
   boardgame: Maybe<Boardgame>
+  boardgames: Maybe<Array<Boardgame>>
   club: Maybe<Club>
   match: Maybe<Match>
   user: Maybe<User>
+  users: Maybe<Array<User>>
   viewer: Maybe<User>
 }
 
@@ -122,6 +138,7 @@ export type User = {
   uuid: Scalars['ID']
   name: Scalars['String']
   clubs: Array<Club>
+  connections: Array<Connection>
   mainConnectionUuid: Maybe<Scalars['ID']>
 }
 
@@ -136,6 +153,19 @@ export type AddBoardgameMutation = { __typename?: 'Mutation' } & {
   addBoardgame: { __typename?: 'Boardgame' } & Pick<
     Boardgame,
     'uuid' | 'name' | 'resultSchema'
+  >
+}
+
+export type BoardgamesQueryVariables = {}
+
+export type BoardgamesQuery = { __typename?: 'Query' } & {
+  boardgames: Maybe<
+    Array<
+      { __typename?: 'Boardgame' } & Pick<
+        Boardgame,
+        'uuid' | 'name' | 'resultSchema'
+      >
+    >
   >
 }
 
@@ -203,4 +233,59 @@ export type AddBoardgameMutationResult = ApolloReactCommon.MutationResult<
 export type AddBoardgameMutationOptions = ApolloReactCommon.BaseMutationOptions<
   AddBoardgameMutation,
   AddBoardgameMutationVariables
+>
+export const BoardgamesDocument = gql`
+  query Boardgames {
+    boardgames {
+      uuid
+      name
+      resultSchema
+    }
+  }
+`
+
+/**
+ * __useBoardgamesQuery__
+ *
+ * To run a query within a React component, call `useBoardgamesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBoardgamesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useBoardgamesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useBoardgamesQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    BoardgamesQuery,
+    BoardgamesQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<BoardgamesQuery, BoardgamesQueryVariables>(
+    BoardgamesDocument,
+    baseOptions,
+  )
+}
+export function useBoardgamesLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    BoardgamesQuery,
+    BoardgamesQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    BoardgamesQuery,
+    BoardgamesQueryVariables
+  >(BoardgamesDocument, baseOptions)
+}
+export type BoardgamesQueryHookResult = ReturnType<typeof useBoardgamesQuery>
+export type BoardgamesLazyQueryHookResult = ReturnType<
+  typeof useBoardgamesLazyQuery
+>
+export type BoardgamesQueryResult = ApolloReactCommon.QueryResult<
+  BoardgamesQuery,
+  BoardgamesQueryVariables
 >

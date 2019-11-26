@@ -47,7 +47,7 @@ export const getTypesFromSchema = (
   schema: any,
 ): { [k: string]: PropertyType } => {
   const properties: { [k: string]: { type: string } } =
-    schema.schema.properties.playerResults.items.properties
+    schema.properties.playerResults.items.properties
 
   return Object.keys(properties).reduce(
     (acc, property) => ({
