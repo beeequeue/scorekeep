@@ -23,6 +23,8 @@ define<User, UserFactoryOptions>(User, (faker, settings) => {
       image: faker.image.imageUrl(150, 150),
       serviceId: faker.random.uuid(),
     })
+
+    connection.save()
   }
 
   return new User({

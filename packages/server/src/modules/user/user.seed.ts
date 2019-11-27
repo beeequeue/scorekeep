@@ -4,6 +4,8 @@ import { User } from './user.model'
 
 export default class SeedUsers implements Seeder {
   public async run(factory: Factory) {
-    await factory<User, UserFactoryOptions>(User)().seedMany(10)
+    await factory<User, UserFactoryOptions>(User)({ connected: true }).seedMany(
+      10,
+    )
   }
 }
