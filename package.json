@@ -23,7 +23,7 @@
     "typescript": "3.7.2"
   },
   "engines": {
-    "node": "^13.0.0"
+    "node": "^13"
   },
   "husky": {
     "hooks": {
