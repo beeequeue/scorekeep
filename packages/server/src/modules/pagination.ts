@@ -23,7 +23,7 @@ export abstract class PaginationArgs {
   @Min(0)
   public offset: number = 0
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Int, { nullable: true, description: 'Maximum 20' })
   @Max(20)
   public limit: number = 20
 }
