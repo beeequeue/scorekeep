@@ -47,12 +47,12 @@ export class Boardgame extends ExtendedEntity {
   @Field(() => GAME_TYPE)
   public type: GAME_TYPE
 
-  @Column({ length: 50 })
+  @Column()
   @Field()
-  @MaxLength(20)
+  @MaxLength(50)
   public name: string
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   @Field(() => String, {
     nullable: true,
     description: 'Link to boardgamegeek',
@@ -65,7 +65,7 @@ export class Boardgame extends ExtendedEntity {
   })
   public url: string | null
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   @Field(() => String, { nullable: true })
   @MaxLength(100)
   @IsUrl({
