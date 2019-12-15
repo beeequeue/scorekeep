@@ -40,9 +40,9 @@ export class BoardgameResolver {
 
   @Query(() => BoardgamesPage)
   public async boardgames(
-    @Args() { offset, limit }: BoardgamesArgs,
+    @Args() args: BoardgamesArgs,
   ): Promise<BoardgamesPage> {
-    const boardgames = await Boardgame.find({ take: limit, skip: offset })
+    const boardgames = await Boardgame.find({ ...args.getFilters() })
 
     return {
       items: boardgames,
