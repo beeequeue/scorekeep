@@ -2,7 +2,7 @@ import React, { ChangeEvent, useCallback, useState, useEffect } from 'react'
 import { getInput, PlayerDropdown } from '@/pages/match/components/inputs'
 import styled from 'styled-components'
 import { InputFieldContainer } from '@/components/input-fields'
-import { getTypesFromSchema } from '@/pages/match/getTypesFromSchema'
+import { getTypesFromSchema } from '@/utils/game-schema-types'
 
 const Row = styled(InputFieldContainer)`
   margin-bottom: 32px;
@@ -52,8 +52,10 @@ const Close = styled.button`
 export const MatchForm = ({
   schema,
   onChange,
+  maxPlayers,
 }: {
   schema: JSON
+  maxPlayers: number
   onChange: (players: any) => void
 }) => {
   const schemaTypes = getTypesFromSchema(schema)
@@ -61,7 +63,6 @@ export const MatchForm = ({
     (acc, type) => ({ ...acc, [type]: null }),
     {},
   )
-  // This should come from the graphql
   const [playerNumber, setPlayerNumber] = useState<number>(1)
   const [players, setPlayers] = useState<{
     [k: string]: any
@@ -89,23 +90,28 @@ export const MatchForm = ({
   }
 
   const addPlayer = () => {
+    if (Object.keys(players).length >= maxPlayers) {
+      return
+    }
     setPlayers({ ...players, [`player-${playerNumber}`]: emptyResult })
     setPlayerNumber(playerNumber + 1)
   }
 
   useEffect(() => {
-    onChange(players)
+    onChange(Object.values(players))
   }, [players])
   return (
     <>
       {Object.keys(players).map(player => (
         <Player key={player}>
-          <Close onClick={deletePlayer(player)}>X</Close>
+          {player !== 'player-0' && (
+            <Close onClick={deletePlayer(player)}>X</Close>
+          )}
           {Object.keys(players[player]).map(attribute => {
             if (attribute === 'player') {
               return (
                 <Row key={attribute}>
-                  <PlayerDropdown />
+                  <PlayerDropdown onChange={updatePlayer(player, 'player')} />
                 </Row>
               )
             }

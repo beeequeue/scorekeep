@@ -31,12 +31,11 @@ export class MatchResolver {
       throw new Error('Not found!')
     }
 
-    const improvedSchema = game.resultSchema
+    const improvedSchema = game.resultSchema!.schema
     ;(improvedSchema.properties!.playerResults as JsonSchemaArray).minItems =
       game.minPlayers
     ;(improvedSchema.properties!.playerResults as JsonSchemaArray).maxItems =
       game.maxPlayers
-
     const validate = ajv.compile(game.resultSchema) as CustomValidator<
       ResultBase
     >

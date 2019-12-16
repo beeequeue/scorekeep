@@ -16,7 +16,7 @@ const Players = gql`
     }
 `
 
-export const PlayerDropdown = () => {
+export const PlayerDropdown = ({onChange} : { onChange: (event: any) => void}) => {
   const { data, loading } = useQuery<PlayersQuery>(Players)
 
   if (loading || !data) {
@@ -24,8 +24,9 @@ export const PlayerDropdown = () => {
   }
 
   const players = data.users ?? []
-  return (<Select name="Player">
-      {players.map(({uuid, name}) => <option value={uuid}>{name}</option>)}
+  return (<Select name="Player" onChange={onChange}>
+      <option selected disabled>-- Select a player --</option>
+      {players.map(({uuid, name}) => <option key={uuid} value={uuid}>{name}</option>)}
   </Select>
 )
 }

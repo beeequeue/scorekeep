@@ -156,6 +156,15 @@ export type AddBoardgameMutation = { __typename?: 'Mutation' } & {
   >
 }
 
+export type AddMatchMutationVariables = {
+  result: Scalars['JSONObject']
+  boardgame: Scalars['ID']
+}
+
+export type AddMatchMutation = { __typename?: 'Mutation' } & {
+  addMatch: { __typename?: 'Match' } & Pick<Match, 'uuid'>
+}
+
 export type BoardgamesQueryVariables = {}
 
 export type BoardgamesQuery = { __typename?: 'Query' } & {
@@ -163,7 +172,7 @@ export type BoardgamesQuery = { __typename?: 'Query' } & {
     Array<
       { __typename?: 'Boardgame' } & Pick<
         Boardgame,
-        'uuid' | 'name' | 'resultSchema'
+        'uuid' | 'maxPlayers' | 'name' | 'resultSchema'
       >
     >
   >
@@ -240,10 +249,64 @@ export type AddBoardgameMutationOptions = ApolloReactCommon.BaseMutationOptions<
   AddBoardgameMutation,
   AddBoardgameMutationVariables
 >
+export const AddMatchDocument = gql`
+  mutation addMatch($result: JSONObject!, $boardgame: ID!) {
+    addMatch(
+      club: "40d950d8-4bb1-419d-9616-2fb0d7dc7aa7"
+      game: $boardgame
+      results: $result
+    ) {
+      uuid
+    }
+  }
+`
+export type AddMatchMutationFn = ApolloReactCommon.MutationFunction<
+  AddMatchMutation,
+  AddMatchMutationVariables
+>
+
+/**
+ * __useAddMatchMutation__
+ *
+ * To run a mutation, you first call `useAddMatchMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddMatchMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addMatchMutation, { data, loading, error }] = useAddMatchMutation({
+ *   variables: {
+ *      result: // value for 'result'
+ *      boardgame: // value for 'boardgame'
+ *   },
+ * });
+ */
+export function useAddMatchMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    AddMatchMutation,
+    AddMatchMutationVariables
+  >,
+) {
+  return ApolloReactHooks.useMutation<
+    AddMatchMutation,
+    AddMatchMutationVariables
+  >(AddMatchDocument, baseOptions)
+}
+export type AddMatchMutationHookResult = ReturnType<typeof useAddMatchMutation>
+export type AddMatchMutationResult = ApolloReactCommon.MutationResult<
+  AddMatchMutation
+>
+export type AddMatchMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  AddMatchMutation,
+  AddMatchMutationVariables
+>
 export const BoardgamesDocument = gql`
   query Boardgames {
     boardgames {
       uuid
+      maxPlayers
       name
       resultSchema
     }

@@ -25,7 +25,6 @@ export const PageGrid = styled.div`
   display: grid;
   padding: 0 16px 16px;
   grid-template-columns: 1fr;
-  grid-template-rows: 80px 1fr 1fr;
   grid-row-gap: 16px;
 
   grid-template-areas:

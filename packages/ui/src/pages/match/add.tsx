@@ -9,7 +9,11 @@ import { Select } from '@/components/select'
 import gql from 'graphql-tag'
 import { useQuery } from '@apollo/react-hooks'
 import { MatchForm } from '@/pages/match/components/player-form'
-import { Boardgame, BoardgamesQuery } from '@/graphql/generated'
+import {
+  AddMatchMutationVariables,
+  Boardgame,
+  BoardgamesQuery, useAddMatchMutation,
+} from '@/graphql/generated'
 
 const Row = styled(InputFieldContainer)`
   margin-bottom: 32px;
@@ -23,6 +27,7 @@ const Boardgames = gql`
   query Boardgames {
     boardgames {
       uuid
+      maxPlayers
       name
       resultSchema
     }
@@ -31,10 +36,11 @@ const Boardgames = gql`
 const Add = () => {
   const [boardgame, setBoardgame] = useState<Pick<
     Boardgame,
-    'uuid' | 'name' | 'resultSchema'
+    'uuid' | 'name' | 'resultSchema' | 'maxPlayers'
   > | null>(null)
   const { data, loading } = useQuery<BoardgamesQuery>(Boardgames)
-  const [playersResults, setPlayersResults] = useState<any>(null)
+  const [playerResults, setPlayerResults] = useState<any>(null)
+  const [ addMatch ] = useAddMatchMutation()
 
   const onBoardgameChange = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
@@ -60,9 +66,14 @@ const Add = () => {
     <PageGrid>
       <Header>Add match</Header>
       <Form
-        onSubmit={e => {
+        onSubmit={async e => {
           e.preventDefault()
-          return playersResults
+          const variables : AddMatchMutationVariables = {
+            boardgame: boardgame!.uuid,
+            result: { playerResults }
+          }
+          await addMatch({variables})
+
         }}
       >
         <Row>
@@ -83,7 +94,8 @@ const Add = () => {
           <>
             <MatchForm
               schema={boardgame.resultSchema}
-              onChange={setPlayersResults}
+              maxPlayers={boardgame.maxPlayers}
+              onChange={setPlayerResults}
             />
             <Button type="submit">Submit</Button>
           </>

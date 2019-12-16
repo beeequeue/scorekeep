@@ -27,24 +27,24 @@ export const generateSchemaFromProperties = (properties: {
     .toString()
 
   return `
-  { 
-   "schema":{ 
+  {
+   "schema":{
       "$schema":"http://json-schema.org/draft-07/schema#",
       "type":"object",
-      "required":[ 
+      "required":[
          "playerResults"
       ],
-      "properties":{ 
-         "playerResults":{ 
+      "properties":{
+         "playerResults":{
             "type":"array",
             "required":[${propertyArray}],
-            "items":{ 
+            "items":{
                "type":"object",
                "required":[${propertyArray}],
                "properties":${JSON.stringify(formattedProperties)}
             }
          },
-         "metaData":{ 
+         "metaData":{
             "type":"object"
          }
       }
