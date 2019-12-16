@@ -1,34 +1,6 @@
 version: '3'
 
 services:
-  server:
-    image: node:12.9.1
-    command: >
-      /bin/sh -c '
-        yarn --prefer-offline &&
-        yarn workspace @scorekeep/server dev'
-    working_dir: /server
-    volumes:
-      - yarn-cache:/usr/local/share/.cache/yarn/v1
-      - $PWD:/server
-    ports:
-      - 3000:3000
-    links:
-      - postgres
-  ui:
-    image: node:12.9.1
-    command: >
-      /bin/sh -c 'yarn workspace @scorekeep/ui dev'
-    environment:
-      REACT_APP_API_URL: http://server:3000
-    working_dir: /ui
-    volumes:
-      - $PWD/.:/ui
-      - yarn-cache:/usr/local/share/.cache/yarn/v1
-    ports:
-      - 3100:3100
-    links:
-      - server
   postgres:
     image: postgres:11
     restart: always
@@ -39,6 +11,3 @@ services:
       POSTGRES_PASSWORD: "ADAM's COOL"
     volumes:
       - ./postgres:/var/lib/postgresql/data
-
-volumes:
-  yarn-cache: {}
