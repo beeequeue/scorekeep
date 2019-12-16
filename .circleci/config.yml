@@ -71,7 +71,7 @@ jobs:
   server_test:
     executor: node
     docker:
-      - image: circleci/node:12
+      - image: circleci/node:13
       - image: circleci/postgres:11-alpine
         environment:
           POSTGRES_USER: scorekeep-admin

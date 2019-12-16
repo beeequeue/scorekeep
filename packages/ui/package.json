@@ -83,11 +83,6 @@
   "engines": {
     "node": ">=12.9.1"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
   "lint-staged": {
     "*.{js,json,yml}": [
       "prettier --write",
@@ -111,6 +106,7 @@
     "lint": "eslint 'src/**/*.{ts,tsx}'",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook -o .storybook/dist",
-    "test": "jest ui"
+    "test": "jest ui",
+    "pre-commit": "lint-staged"
   }
 }
