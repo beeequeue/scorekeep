@@ -5,7 +5,7 @@ declare namespace NodeJS {
   type ProcessEnv = {
     NODE_ENV: 'development' | 'production' | 'test'
     PUBLIC_URL: string
-    REACT_APP_API_URL: string
+    REACT_APP_SERVER_BASE_URL: string
     REACT_APP_STRIPE_CLIENT: string
   }
 }
