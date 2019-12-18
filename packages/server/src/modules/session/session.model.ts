@@ -38,10 +38,8 @@ export class Session extends BaseEntity {
   constructor(options: Constructor) {
     super()
 
-    if (isNil(options)) options = {} as any
-
-    this.user = options.user
-    this.expiresAt = options.expiresAt
+    this.user = options?.user
+    this.expiresAt = options?.expiresAt
   }
 
   public static async generate(user: User) {

@@ -75,13 +75,11 @@ export class Match extends ExtendedEntity {
   constructor(options: MatchConstructor) {
     super(options)
 
-    if (isNil(options)) options = {} as any
-
-    this.clubUuid = options.clubUuid
-    this.playerUuids = options.playerUuids
-    this.winnerUuids = options.winnerUuids
-    this.gameUuid = options.gameUuid
-    this.results = options.results
-    this.date = options.date
+    this.clubUuid = options?.clubUuid
+    this.playerUuids = options?.playerUuids
+    this.winnerUuids = options?.winnerUuids
+    this.gameUuid = options?.gameUuid
+    this.results = options?.results
+    this.date = options?.date
   }
 }

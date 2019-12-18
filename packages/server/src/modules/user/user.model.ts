@@ -4,11 +4,8 @@ import { MaxLength } from 'class-validator'
 
 import { ExtendedEntity } from '@/modules/exented-entity'
 import { Club } from '@/modules/club/club.model'
-import {
-  Connection,
-  ConnectionConstructor,
-} from '@/modules/connection/connection.model'
-import { isNil, OptionalUuid } from '@/utils'
+import { Connection, ConnectionConstructor } from '@/modules/connection/connection.model'
+import { OptionalUuid } from '@/utils'
 
 type UserConstructor = OptionalUuid<
   Pick<User, 'uuid' | 'name' | 'mainConnectionUuid'>
@@ -39,10 +36,8 @@ export class User extends ExtendedEntity {
   constructor(options: UserConstructor) {
     super(options)
 
-    if (isNil(options)) options = {} as any
-
-    this.name = options.name
-    this.mainConnectionUuid = options.mainConnectionUuid
+    this.name = options?.name
+    this.mainConnectionUuid = options?.mainConnectionUuid
   }
 
   public async connectTo(options: Omit<ConnectionConstructor, 'userUuid'>) {
