@@ -3,44 +3,53 @@ import { hot } from 'react-hot-loader/root'
 import React from 'react'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { ApolloProvider } from '@apollo/react-common'
-import loadable from '@loadable/component'
+import loadable, { LoadableComponent } from '@loadable/component'
 
 import { client } from '@/apollo'
 import { Page } from '@/pages/constants'
 
-const AddMatchPage = loadable(() =>
-  import(/* webpackChunkName: "match-add" */ './pages/match/add'),
-)
-const AddBoardgamePage = loadable(() =>
-  import(/* webpackChunkName: "boardgame-add" */ './pages/boardgame/add'),
-)
-
-const LoginPage = loadable(() =>
-  import(/* webpackChunkName: "login" */ './pages/connect/login'),
-)
+const pages: Array<[Page, LoadableComponent<any>, boolean?]> = [
+  [
+    Page.LANDING,
+    loadable(() =>
+      import(/* webpackChunkName: "landing" */ './pages/boardgame/add'),
+    ),
+    true,
+  ],
+  [
+    Page.LOGIN,
+    loadable(() =>
+      import(/* webpackChunkName: "login" */ './pages/connect/login'),
+    ),
+  ],
+  [
+    Page.CONNECT_FAILED,
+    loadable(() =>
+      import(/* webpackChunkName: "connect-failed" */ './pages/connect/failed'),
+    ),
+  ],
+  [
+    Page.ADD_MATCH,
+    loadable(() =>
+      import(/* webpackChunkName: "match-add" */ './pages/match/add'),
+    ),
+  ],
+  [
+    Page.ADD_BOARDGAME,
+    loadable(() =>
+      import(/* webpackChunkName: "boardgame-add" */ './pages/boardgame/add'),
+    ),
+  ],
+]
 
 const AppComponent = () => (
   <React.StrictMode>
     <ApolloProvider client={client}>
       <BrowserRouter>
         <Switch>
-          <Route
-            exact
-            path={Page.ADD_MATCH}
-            key={Page.ADD_MATCH}
-            component={AddMatchPage}
-          />
-          <Route
-            exact
-            path={Page.ADD_BOARDGAME}
-            key={Page.ADD_BOARDGAME}
-            component={AddBoardgamePage}
-          />
-          <Route
-            path={Page.LOGIN}
-            key={Page.LOGIN}
-            component={LoginPage}
-          />
+          {pages.map(([page, Component, exact]) => (
+            <Route path={page} key={page} component={Component} exact={exact} />
+          ))}
         </Switch>
       </BrowserRouter>
     </ApolloProvider>
