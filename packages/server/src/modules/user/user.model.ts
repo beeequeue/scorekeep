@@ -1,5 +1,6 @@
 import { Column, Entity } from 'typeorm'
 import { Field, ID, ObjectType } from 'type-graphql'
+import { MaxLength } from 'class-validator'
 
 import { ExtendedEntity } from '@/modules/exented-entity'
 import { Club } from '@/modules/club/club.model'
@@ -16,8 +17,9 @@ type UserConstructor = OptionalUuid<
 @Entity()
 @ObjectType()
 export class User extends ExtendedEntity {
-  @Column({ length: 50 })
+  @Column()
   @Field()
+  @MaxLength(50)
   public name: string
 
   @Field(() => [Club])

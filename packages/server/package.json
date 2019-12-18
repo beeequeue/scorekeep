@@ -10,6 +10,7 @@
     "@types/uuid": "3.4.6",
     "ajv": "6.10.2",
     "apollo-server-express": "2.9.13",
+    "class-validator": "0.11.0",
     "cookie-parser": "1.4.4",
     "cors": "2.8.5",
     "date-fns": "2.8.1",
@@ -68,6 +69,7 @@
     "pretest": "NODE_ENV=development yarn run migrate",
     "test": "NODE_ENV=test jest server -i",
     "test:coverage": "yarn run test --coverage",
-    "typeorm": "ts-node -T -r tsconfig-paths/register ../../node_modules/typeorm/cli.js"
+    "typeorm": "ts-node -T -r tsconfig-paths/register ../../node_modules/typeorm/cli.js",
+    "snapshot": "ts-node -T -r tsconfig-paths/register src/index.ts -shot"
   }
 }

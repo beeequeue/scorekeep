@@ -16,6 +16,12 @@ type Boardgame {
   resultSchema: JSONObject!
 }
 
+type BoardgamesPage {
+  items: [Boardgame!]!
+  nextOffset: Int
+  total: Int!
+}
+
 type Club {
   uuid: ID!
   name: String!
@@ -73,6 +79,12 @@ type Mutation {
 
 type Query {
   boardgame(uuid: ID!): Boardgame
+  boardgames(
+    offset: Int = 0
+
+    """Maximum 20"""
+    limit: Int = 20
+  ): BoardgamesPage!
   club(uuid: ID!): Club
   match(uuid: ID!): Match
   user(uuid: ID!): User

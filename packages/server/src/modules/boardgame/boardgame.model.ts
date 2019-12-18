@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { GraphQLJSONObject } from 'graphql-type-json'
 import { Field, Int, ObjectType, registerEnumType } from 'type-graphql'
 import { Column, Entity } from 'typeorm'
+import { IsUrl, MaxLength, Min } from 'class-validator'
 
 import { ExtendedEntity } from '@/modules/exented-entity'
 import { JsonSchemaObject } from '@/types/json-schema'
@@ -45,23 +47,37 @@ export class Boardgame extends ExtendedEntity {
   @Field(() => GAME_TYPE)
   public type: GAME_TYPE
 
-  @Column({ length: 50 })
+  @Column()
   @Field()
+  @MaxLength(50)
   public name: string
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   @Field(() => String, {
     nullable: true,
     description: 'Link to boardgamegeek',
   })
+  @MaxLength(100)
+  @IsUrl({
+    allow_protocol_relative_urls: false,
+    disallow_auth: true,
+    protocols: ['https'],
+  })
   public url: string | null
 
-  @Column({ type: 'varchar', length: 100, nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   @Field(() => String, { nullable: true })
+  @MaxLength(100)
+  @IsUrl({
+    allow_protocol_relative_urls: false,
+    disallow_auth: true,
+    protocols: ['https'],
+  })
   public rulebook: string | null
 
   @Column({ type: 'int' })
   @Field(() => Int)
+  @Min(1)
   public minPlayers: number
 
   @Column({ type: 'int' })
