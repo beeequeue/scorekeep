@@ -16,7 +16,7 @@ const AddBoardgamePage = loadable(() =>
 )
 
 const LoginPage = loadable(() =>
-  import(/* webpackChunkName: "login" */ './pages/login'),
+  import(/* webpackChunkName: "login" */ './pages/connect/login'),
 )
 
 const AppComponent = () => (
