@@ -15,6 +15,10 @@ const AddBoardgamePage = loadable(() =>
   import(/* webpackChunkName: "boardgame-add" */ './pages/boardgame/add'),
 )
 
+const LoginPage = loadable(() =>
+  import(/* webpackChunkName: "login" */ './pages/login'),
+)
+
 const AppComponent = () => (
   <React.StrictMode>
     <ApolloProvider client={client}>
@@ -31,6 +35,11 @@ const AppComponent = () => (
             path={Page.ADD_BOARDGAME}
             key={Page.ADD_BOARDGAME}
             component={AddBoardgamePage}
+          />
+          <Route
+            path={Page.LOGIN}
+            key={Page.LOGIN}
+            component={LoginPage}
           />
         </Switch>
       </BrowserRouter>
