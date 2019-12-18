@@ -1,5 +1,7 @@
 import { Response, Router } from 'express'
+import { URL } from 'url'
 
+import { config } from '@/config'
 import { AuthErrorCode } from '@/constants/auth.constants'
 import { Session } from '@/modules/session/session.model'
 import { User } from '@/modules/user/user.model'
@@ -15,7 +17,7 @@ const redirectToFailure = (
   code: AuthErrorCode,
   extraParams: { [key: string]: string } = {},
 ) => {
-  const url = new URL('http://frontend.url/connect/failed')
+  const url = new URL(`${config.frontendBaseUrl}/connect/failed`)
 
   url.searchParams.append('code', code)
   url.searchParams.append('service', ConnectionService.GOOGLE)

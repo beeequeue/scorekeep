@@ -5,6 +5,7 @@ import { Environment } from '@/constants'
 
 type Config = {
   [key in Environment]: {
+    frontendBaseUrl: string
     db: ConnectionOptions
     apolloEngine?: EngineReportingOptions<unknown>
   }
@@ -32,6 +33,7 @@ const defaultDbConfig = {
 
 const _config: Config = {
   [Environment.DEVELOPMENT]: {
+    frontendBaseUrl: process.env.FRONTEND_BASE_URL!,
     db: {
       ...defaultDbConfig,
       synchronize: true,
@@ -39,6 +41,7 @@ const _config: Config = {
     },
   },
   [Environment.TEST]: {
+    frontendBaseUrl: process.env.FRONTEND_BASE_URL!,
     db: {
       ...defaultDbConfig,
       schema: 'scorekeep-tests',
@@ -47,6 +50,7 @@ const _config: Config = {
     },
   },
   [Environment.PRODUCTION]: {
+    frontendBaseUrl: process.env.FRONTEND_BASE_URL!,
     db: {
       ...defaultDbConfig,
       url: process.env.DATABASE_URL,
