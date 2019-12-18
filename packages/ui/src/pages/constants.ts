@@ -3,4 +3,5 @@ export enum Page {
   ADD_BOARDGAME = '/boardgame/add',
   LANDING = '/',
   LOGIN = '/login',
+  CONNECT_FAILED = '/connect/failed',
 }
