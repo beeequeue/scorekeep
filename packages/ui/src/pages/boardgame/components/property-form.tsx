@@ -40,6 +40,7 @@ export const SelectTypeInput = (
 export type Property = {
   type: PropertyType
   name: string
+  pattern?: string
 }
 
 const Container = styled.div`
