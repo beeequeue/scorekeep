@@ -61,10 +61,13 @@ googleRouter.get('/callback', async (req, res) => {
   const tokens = await Google.getTokens(code, req)
   const googleUser = await Google.getUserFromToken(tokens.token)
 
-  if (isNil(googleUser.email) || googleUser.verified_email) {
+  if (isNil(googleUser.email) || !googleUser.verified_email) {
     // You need to have a verified email address on Google to connect.
     return redirectToFailure(res, AuthErrorCode.EMAIL_REQUIRED)
   }
+
+  const redirectToSuccess = () =>
+    res.redirect(decodeURIComponent(req.query.state))
 
   const existingConnection = await Connection.findOne({
     where: {
@@ -84,7 +87,7 @@ googleRouter.get('/callback', async (req, res) => {
 
     await Session.login(req, await existingConnection.user())
 
-    return res.redirect('/')
+    return redirectToSuccess()
   }
 
   // If user is logged in and is connecting a new account
@@ -97,7 +100,7 @@ googleRouter.get('/callback', async (req, res) => {
       image: googleUser.picture,
     })
 
-    return res.redirect(decodeURIComponent(req.query.state))
+    return redirectToSuccess()
   }
 
   const newUser = new User({
@@ -115,5 +118,5 @@ googleRouter.get('/callback', async (req, res) => {
 
   await Session.login(req, newUser)
 
-  res.redirect('/')
+  redirectToSuccess()
 })
