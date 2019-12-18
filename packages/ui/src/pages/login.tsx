@@ -19,7 +19,7 @@ const Section = styled.div`
 `
 
 const url = new URL(`${process.env.REACT_APP_SERVER_BASE_URL}/connect/google`)
-url.searchParams.append('redirect_url', location.href)
+url.searchParams.append('redirect_uri', location.href)
 
 const Login = () => (
   <Container>
