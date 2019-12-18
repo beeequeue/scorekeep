@@ -15,7 +15,7 @@ export const setTokenCookie = (res: Response) => async (session: Session) => {
   }
 
   const signed = jwt.sign(data, 'scorekeep', {
-    expiresIn: Date.now() - session.expiresAt.getTime(),
+    expiresIn: session.expiresAt.getTime() - Date.now(),
   })
 
   return res.cookie('token', signed, {
