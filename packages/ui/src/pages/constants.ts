@@ -1,3 +1,4 @@
 export enum Page {
-  LANDING = '/',
+  ADD_MATCH = '/match/add',
+  ADD_BOARDGAME = '/boardgame/add',
 }
