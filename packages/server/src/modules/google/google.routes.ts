@@ -97,7 +97,7 @@ googleRouter.get('/callback', async (req, res) => {
       image: googleUser.picture,
     })
 
-    return res.redirect('/')
+    return res.redirect(decodeURIComponent(req.query.state))
   }
 
   const newUser = new User({
