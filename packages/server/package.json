@@ -21,6 +21,7 @@
     "graphql-tools": "4.0.6",
     "graphql-type-json": "0.3.1",
     "helmet": "3.21.2",
+    "jsonwebtoken": "8.5.1",
     "pg": "7.14.0",
     "reflect-metadata": "0.1.13",
     "superagent": "5.1.2",
@@ -35,6 +36,7 @@
   "devDependencies": {
     "@types/faker": "4.1.8",
     "@types/graphql-type-json": "0.3.2",
+    "@types/jsonwebtoken": "8.3.5",
     "@types/supertest": "2.0.8",
     "@types/type-is": "1.6.3",
     "apollo-server-integration-testing": "2.3.0",

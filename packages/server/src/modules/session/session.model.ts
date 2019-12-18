@@ -69,7 +69,7 @@ export class Session extends BaseEntity {
 
     const session = await Session.generate(user)
 
-    setTokenCookie(req.res!)(session)
+    await setTokenCookie(req.res!)(session)
   }
 
   public static async invalidate(session: Session | string) {

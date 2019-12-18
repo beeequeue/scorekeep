@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken'
 import { Response } from 'express'
 // eslint-disable-next-line node/no-extraneous-import
 import { ContextFunction } from 'apollo-server-core'
@@ -6,11 +7,22 @@ import { ExpressContext } from 'apollo-server-express/src/ApolloServer'
 import { Session } from '@/modules/session/session.model'
 import { isNil, isUuid } from '@/utils'
 
-export const setTokenCookie = (res: Response) => (session: Session) =>
-  res.cookie('token', session.uuid, {
+export const setTokenCookie = (res: Response) => async (session: Session) => {
+  const data = {
+    session: session.uuid,
+    name: session.user.name,
+    image: (await session.user.getMainConnection())?.image ?? null,
+  }
+
+  const signed = jwt.sign(data, 'scorekeep', {
+    expiresIn: Date.now() - session.expiresAt.getTime(),
+  })
+
+  return res.cookie('token', signed, {
     expires: session.expiresAt,
     secure: process.env.NODE_ENV === 'production',
   })
+}
 
 type NoSessionContext = {
   session: null
@@ -28,7 +40,7 @@ export type SessionContext = UserSessionContext | NoSessionContext
 
 const getContextSession = async (
   session: Session | null,
-  setSession: (session: Session) => Response,
+  setSession: (session: Session) => Promise<Response>,
 ): Promise<SessionContext> => {
   if (isNil(session)) {
     return {
@@ -39,7 +51,7 @@ const getContextSession = async (
   }
 
   return {
-    session: session,
+    session,
     isLoggedIn: true,
     setSession,
   }
@@ -66,7 +78,7 @@ export const contextProvider: ContextFunction<
   const contextSetSession = setTokenCookie(res)
 
   if (!isNil(session)) {
-    contextSetSession(session)
+    await contextSetSession(session)
   }
 
   return getContextSession(session || null, contextSetSession)
