@@ -5,10 +5,16 @@ import { ContextFunction } from 'apollo-server-core'
 import { ExpressContext } from 'apollo-server-express/src/ApolloServer'
 
 import { Session } from '@/modules/session/session.model'
-import { isNil, isUuid } from '@/utils'
+import { isNil } from '@/utils'
+
+export type JWTData = {
+  session: string
+  name: string
+  image: string | null
+}
 
 export const setTokenCookie = (res: Response) => async (session: Session) => {
-  const data = {
+  const data: JWTData = {
     session: session.uuid,
     name: session.user.name,
     image: (await session.user.getMainConnection())?.image ?? null,
@@ -66,13 +72,11 @@ export const contextProvider: ContextFunction<
   const header = req.header('Authorization')
   const token = header?.slice(7) // Removes `Bearer `
 
-  if (isUuid(token)) {
-    session = (await Session.findOne({ uuid: token })) ?? null
-  }
+  session = await Session.findByJWT(token)
 
   // No Bearer session found
-  if (isNil(session) && isUuid(req.cookies.token)) {
-    session = (await Session.findOne({ uuid: req.cookies.token })) ?? null
+  if (isNil(session)) {
+    session = await Session.findByJWT(req.cookies.token)
   }
 
   const contextSetSession = setTokenCookie(res)

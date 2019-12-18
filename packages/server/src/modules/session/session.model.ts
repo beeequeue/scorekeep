@@ -1,4 +1,5 @@
 import { Request } from 'express'
+import jwt from 'jsonwebtoken'
 import {
   BaseEntity,
   Column,
@@ -10,8 +11,8 @@ import {
 import uuid from 'uuid/v4'
 
 import { User } from '@/modules/user/user.model'
-import { setTokenCookie } from '@/modules/session/session.lib'
-import { isNil } from '@/utils'
+import { JWTData, setTokenCookie } from '@/modules/session/session.lib'
+import { isNil, isUuid } from '@/utils'
 
 const WEEK = 60 * 60 * 24 * 7
 type Constructor = Pick<Session, 'user' | 'expiresAt'>
@@ -57,6 +58,18 @@ export class Session extends BaseEntity {
     const session = await Session.findOne({ uuid })
 
     return session ?? null
+  }
+
+  public static async findByJWT(token?: string): Promise<Session | null> {
+    if (isNil(token)) return null
+
+    const data = jwt.verify(token, 'scorekeep') as JWTData
+
+    if (isNil(data.session) && !isUuid(data.session)) {
+      return null
+    }
+
+    return (await this.findOne({ uuid: data.session })) ?? null
   }
 
   /**
