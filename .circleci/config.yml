@@ -25,11 +25,11 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: Install Lerna
-          command: yarn global add lerna
+          name: Install NPM dependencies
+          command: yarn install --frozen-lockfile
       - run:
           name: Bootstrap
-          command: lerna bootstrap
+          command: yarn lerna link
       - persist_to_workspace:
           root: ~/app
           paths:
