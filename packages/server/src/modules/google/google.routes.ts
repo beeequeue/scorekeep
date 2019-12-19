@@ -42,20 +42,10 @@ type ICallbackQuery = {
 
 googleRouter.get('/callback', async (req, res) => {
   const { code } = req.query as ICallbackQuery
-  let currentSession: Session | null = null
 
   if (isNil(code)) {
     // Did not get a code back from Google...
     return redirectToFailure(res, AuthErrorCode.NO_CODE)
-  }
-
-  if (req.cookies.token) {
-    currentSession = await Session.findByJWT(req.cookies.token)
-
-    if (isNil(currentSession)) {
-      // User not found
-      return redirectToFailure(res, AuthErrorCode.USER_NOT_FOUND)
-    }
   }
 
   const tokens = await Google.getTokens(code, req)
