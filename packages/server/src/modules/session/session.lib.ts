@@ -52,9 +52,11 @@ export const contextProvider: ContextFunction<
   let session: Session | null = null
 
   const header = req.header('Authorization')
-  const token = header?.slice(7) // Removes `Bearer `
 
-  session = await Session.findByJWT(token)
+  if (!isNil(header)) {
+    const token = header.slice(7) // Removes `Bearer `
+    session = await Session.findByJWT(token)
+  }
 
   // No Bearer session found
   if (isNil(session)) {
