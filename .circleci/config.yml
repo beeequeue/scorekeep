@@ -171,12 +171,12 @@ workflows:
       - dependencies:
           requires:
             - checkout_code
-      - ui_build:
-          requires:
-            - dependencies
       - constants_build:
           requires:
             - dependencies
+      - ui_build:
+          requires:
+            - constants_build
       - ui_test:
           requires:
             - constants_build
