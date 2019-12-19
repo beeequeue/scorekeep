@@ -48,12 +48,6 @@ export class User extends ExtendedEntity {
     this.mainConnectionUuid = options?.mainConnectionUuid
   }
 
-  public async getMainConnection(): Promise<Connection | null> {
-    if (isNil(this.mainConnectionUuid)) return null
-
-    return (await Connection.findOne({ uuid: this.mainConnectionUuid })) ?? null
-  }
-
   public async connectTo(options: Omit<ConnectionConstructor, 'userUuid'>) {
     const connection = await new Connection({
       ...options,

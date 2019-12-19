@@ -108,7 +108,7 @@ export class Session extends BaseEntity {
     const data: JWTData = {
       session: this.uuid,
       name: this.user.name,
-      image: (await this.user.getMainConnection())?.image ?? null,
+      image: (await this.user.mainConnection())?.image ?? null,
     }
 
     return jwt.sign(data, 'scorekeep', {
