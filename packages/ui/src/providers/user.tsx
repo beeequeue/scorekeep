@@ -17,7 +17,8 @@ gql`
   }
 `
 
-const UserContext = createContext<NonNullable<UserQuery['viewer']>>(null!)
+type User = NonNullable<UserQuery['viewer']>
+const UserContext = createContext<User | null>(null!)
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const { data, loading, error } = useUserQuery()
@@ -27,7 +28,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   // eslint-disable-next-line no-console
   if (error) console.dir(error)
 
-  const user = (data && data.viewer) || null
+  const user = data && data.viewer || null
 
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>
 }
