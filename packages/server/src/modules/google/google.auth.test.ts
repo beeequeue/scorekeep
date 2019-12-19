@@ -5,10 +5,10 @@ import jwt from 'jsonwebtoken'
 import uuid from 'uuid/v4'
 import { Connection as DBConnection } from 'typeorm'
 import { mocked } from 'ts-jest/utils'
+import { AuthErrorCode, JWTData } from '@scorekeep/constants'
 
 import { createApp } from '@/apollo'
 import { connectToDatabase } from '@/db'
-import { AuthErrorCode } from '@/constants/auth.constants'
 import { Google, GoogleUser } from '@/modules/google/google.lib'
 import { User } from '@/modules/user/user.model'
 import {
@@ -16,7 +16,6 @@ import {
   ConnectionService,
 } from '@/modules/connection/connection.model'
 import { Session } from '@/modules/session/session.model'
-import { JWTData } from '@/modules/session/session.lib'
 
 jest.mock('@/modules/google/google.lib')
 const mockedGoogle = mocked(Google)
