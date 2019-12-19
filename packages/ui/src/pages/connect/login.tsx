@@ -43,6 +43,7 @@ const User = styled.div`
   & > img {
     height: 25px;
     margin-right: 10px;
+    border-radius: 100%;
   }
 `
 
