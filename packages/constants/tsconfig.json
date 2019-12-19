@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "module": "esnext",
+    "jsx": "preserve",
+    "baseUrl": "."
+  },
+  "include": ["./src/**/*.ts", "./index.d.ts"],
+  "exclude": ["node_modules"]
+}

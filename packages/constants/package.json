@@ -1,0 +1,22 @@
+{
+  "name": "@scorekeep/constants",
+  "description": "Constants",
+  "version": "1.0.0",
+  "author": "Scorekeep",
+  "bugs": {
+    "url": "https://github.com/BeeeQueue/scorekeep/issues"
+  },
+  "directories": {
+    "lib": "dist"
+  },
+  "homepage": "https://github.com/BeeeQueue/scorekeep#readme",
+  "license": "AGPL-3.0-only",
+  "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BeeeQueue/scorekeep.git"
+  },
+  "scripts": {
+    "build": "tsc"
+  }
+}
