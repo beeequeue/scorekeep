@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { Icon } from '@mdi/react'
 import { mdiGoogle } from '@mdi/js'
 
-import { useUser } from '@/hooks/user'
+import { useUser } from '@/providers/user'
 
 const Container = styled.div`
   width: 100%;

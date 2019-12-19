@@ -6,7 +6,7 @@ import { ApolloProvider } from '@apollo/react-common'
 import loadable, { LoadableComponent } from '@loadable/component'
 
 import { client } from '@/apollo'
-import { UserProvider } from '@/hooks/user'
+import { UserProvider } from '@/providers/user'
 import { Page } from '@/pages/constants'
 
 const pages: Array<[Page, LoadableComponent<any>, boolean?]> = [
