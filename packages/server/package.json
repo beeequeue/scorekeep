@@ -36,10 +36,8 @@
     "winston": "3.2.1"
   },
   "devDependencies": {
-    "@types/cookie": "0.3.3",
     "@types/faker": "4.1.8",
     "@types/graphql-type-json": "0.3.2",
-    "@types/jsonwebtoken": "8.3.5",
     "@types/supertest": "2.0.8",
     "@types/type-is": "1.6.3",
     "apollo-server-integration-testing": "2.3.0",
