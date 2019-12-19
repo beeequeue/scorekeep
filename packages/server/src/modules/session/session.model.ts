@@ -62,7 +62,7 @@ export class Session extends BaseEntity {
   }
 
   public static async findByJWT(token?: string): Promise<Session | null> {
-    if (isNil(token)) return null
+    if (isNil(token) || token.length < 1) return null
 
     const data = jwt.verify(token, 'scorekeep') as JWTData
 
