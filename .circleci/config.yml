@@ -34,6 +34,7 @@ jobs:
           root: ~/app
           paths:
             - node_modules
+            - packages/**/node_modules
 
   constants_build:
     executor: node
