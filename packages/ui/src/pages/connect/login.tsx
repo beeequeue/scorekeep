@@ -1,10 +1,11 @@
 import React from 'react'
 import { hot } from 'react-hot-loader'
-import styled from 'styled-components'
+import styled, { css } from 'styled-components'
 import { Icon } from '@mdi/react'
 import { mdiGoogle } from '@mdi/js'
 
 import { useUser } from '@/providers/user'
+import { useLoginConnectionsQuery } from '@/graphql/generated'
 
 const Container = styled.div`
   width: 100%;
@@ -30,7 +31,14 @@ const User = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 5px 10px;
   margin-bottom: 10px;
+
+  ${(p: { main?: boolean }) =>
+    p.main &&
+    css`
+      background: #222;
+    `}
 
   & > img {
     height: 25px;
@@ -56,16 +64,35 @@ url.searchParams.append('redirect_uri', location.href)
 const Login = () => {
   const { user } = useUser()
 
+  const { data, loading } = useLoginConnectionsQuery({
+    skip: user == null,
+  })
+
   return (
     <Container>
       <Section>
         {user && (
-          <User>
-            {user.mainConnection!.image && <img src={user.mainConnection!.image} />}
+          <User main>
+            {user.mainConnection!.image && (
+              <img src={user.mainConnection!.image} />
+            )}
 
-            {user.name}
+            {user.mainConnection!.email}
           </User>
         )}
+
+        {user &&
+          !loading &&
+          data!.viewer!.connections.map(
+            conn =>
+              user.mainConnection!.uuid !== conn.uuid && (
+                <User key={conn.uuid}>
+                  {conn.image && <img src={conn.image} />}
+
+                  {conn.email}
+                </User>
+              ),
+          )}
 
         <a href={url.toString()}>
           <Button>

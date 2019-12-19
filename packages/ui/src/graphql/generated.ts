@@ -182,6 +182,21 @@ export type UserQuery = { __typename?: 'Query' } & {
   >
 }
 
+export type LoginConnectionsQueryVariables = {}
+
+export type LoginConnectionsQuery = { __typename?: 'Query' } & {
+  viewer: Maybe<
+    { __typename?: 'User' } & Pick<User, 'uuid'> & {
+        connections: Array<
+          { __typename?: 'Connection' } & Pick<
+            Connection,
+            'uuid' | 'type' | 'email' | 'image'
+          >
+        >
+      }
+  >
+}
+
 export const AddBoardgameDocument = gql`
   mutation AddBoardgame(
     $name: String!
@@ -304,4 +319,65 @@ export type UserLazyQueryHookResult = ReturnType<typeof useUserLazyQuery>
 export type UserQueryResult = ApolloReactCommon.QueryResult<
   UserQuery,
   UserQueryVariables
+>
+export const LoginConnectionsDocument = gql`
+  query LoginConnections {
+    viewer {
+      uuid
+      connections {
+        uuid
+        type
+        email
+        image
+      }
+    }
+  }
+`
+
+/**
+ * __useLoginConnectionsQuery__
+ *
+ * To run a query within a React component, call `useLoginConnectionsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useLoginConnectionsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useLoginConnectionsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useLoginConnectionsQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    LoginConnectionsQuery,
+    LoginConnectionsQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<
+    LoginConnectionsQuery,
+    LoginConnectionsQueryVariables
+  >(LoginConnectionsDocument, baseOptions)
+}
+export function useLoginConnectionsLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    LoginConnectionsQuery,
+    LoginConnectionsQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    LoginConnectionsQuery,
+    LoginConnectionsQueryVariables
+  >(LoginConnectionsDocument, baseOptions)
+}
+export type LoginConnectionsQueryHookResult = ReturnType<
+  typeof useLoginConnectionsQuery
+>
+export type LoginConnectionsLazyQueryHookResult = ReturnType<
+  typeof useLoginConnectionsLazyQuery
+>
+export type LoginConnectionsQueryResult = ApolloReactCommon.QueryResult<
+  LoginConnectionsQuery,
+  LoginConnectionsQueryVariables
 >

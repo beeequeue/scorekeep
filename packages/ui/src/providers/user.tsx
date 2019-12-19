@@ -1,24 +1,8 @@
 import React, { createContext, ReactNode, useContext } from 'react'
-import gql from 'graphql-tag'
 import { UserQuery, useUserQuery } from '@/graphql/generated'
 
-gql`
-  query User {
-    viewer {
-      uuid
-      name
-      mainConnection {
-        uuid
-        type
-        email
-        image
-      }
-    }
-  }
-`
-
 type User = NonNullable<UserQuery['viewer']>
-const UserContext = createContext<User | null>(null!)
+const UserContext = createContext<User | null>(null)
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const { data, loading, error } = useUserQuery()
