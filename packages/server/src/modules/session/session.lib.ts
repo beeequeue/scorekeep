@@ -6,12 +6,6 @@ import { ExpressContext } from 'apollo-server-express/src/ApolloServer'
 import { Session } from '@/modules/session/session.model'
 import { isNil } from '@/utils'
 
-export type JWTData = {
-  session: string
-  name: string
-  image: string | null
-}
-
 export const setTokenCookie = (res: Response) => async (session: Session) =>
   res.cookie('token', await session.getJWT(), {
     expires: session.expiresAt,

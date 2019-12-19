@@ -9,9 +9,10 @@ import {
   PrimaryColumn,
 } from 'typeorm'
 import uuid from 'uuid/v4'
+import { JWTData } from '@scorekeep/constants'
 
 import { User } from '@/modules/user/user.model'
-import { JWTData, setTokenCookie } from '@/modules/session/session.lib'
+import { setTokenCookie } from '@/modules/session/session.lib'
 import { isNil, isUuid } from '@/utils'
 
 const WEEK = 60 * 60 * 24 * 7

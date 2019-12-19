@@ -1,8 +1,8 @@
 import { Response, Router } from 'express'
 import { URL } from 'url'
+import { AuthErrorCode } from '@scorekeep/constants/src'
 
 import { config } from '@/config'
-import { AuthErrorCode } from '@/constants/auth.constants'
 import { Session } from '@/modules/session/session.model'
 import { User } from '@/modules/user/user.model'
 import {
