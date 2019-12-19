@@ -6,6 +6,7 @@ import { ApolloProvider } from '@apollo/react-common'
 import loadable, { LoadableComponent } from '@loadable/component'
 
 import { client } from '@/apollo'
+import { getUserFromCookie, UserContext } from '@/hooks/user'
 import { Page } from '@/pages/constants'
 
 const pages: Array<[Page, LoadableComponent<any>, boolean?]> = [
@@ -45,13 +46,20 @@ const pages: Array<[Page, LoadableComponent<any>, boolean?]> = [
 const AppComponent = () => (
   <React.StrictMode>
     <ApolloProvider client={client}>
-      <BrowserRouter>
-        <Switch>
-          {pages.map(([page, Component, exact]) => (
-            <Route path={page} key={page} component={Component} exact={exact} />
-          ))}
-        </Switch>
-      </BrowserRouter>
+      <UserContext.Provider value={getUserFromCookie()}>
+        <BrowserRouter>
+          <Switch>
+            {pages.map(([page, Component, exact]) => (
+              <Route
+                path={page}
+                key={page}
+                component={Component}
+                exact={exact}
+              />
+            ))}
+          </Switch>
+        </BrowserRouter>
+      </UserContext.Provider>
     </ApolloProvider>
   </React.StrictMode>
 )
