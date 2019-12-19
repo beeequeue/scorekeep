@@ -25,12 +25,29 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: Install NPM dependencies
-          command: yarn install --frozen-lockfile
+          name: Install Lerna
+          command: yarn global add lerna
+      - run:
+          name: Bootstrap
+          command: lerna bootstrap
       - persist_to_workspace:
           root: ~/app
           paths:
             - node_modules
+
+  constants_build:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          working_directory: ~/app/packages/constants
+          name: Build
+          command: yarn run build
+      - persist_to_workspace:
+          root: ~/app
+          paths:
+            - packages/constants/dist
 
   ui_build:
     executor: node
@@ -156,24 +173,26 @@ workflows:
       - ui_build:
           requires:
             - dependencies
+      - constants_build:
+          requires:
+            - dependencies
       - ui_test:
           requires:
-            - dependencies
+            - constants_build
       - ui_lint:
           requires:
-            - dependencies
+            - constants_build
       - server_build:
           requires:
-            - dependencies
+            - constants_build
       - server_test:
           requires:
-            - dependencies
+            - constants_build
       - server_lint:
           requires:
-            - dependencies
+            - constants_build
       - server_breaking_changes:
           requires:
-            - dependencies
             - server_build
             - server_test
       - deploy_storybook:
