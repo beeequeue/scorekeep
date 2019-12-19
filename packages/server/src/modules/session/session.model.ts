@@ -102,4 +102,16 @@ export class Session extends BaseEntity {
 
     return this.save()
   }
+
+  public async getJWT() {
+    const data: JWTData = {
+      session: this.uuid,
+      name: this.user.name,
+      image: (await this.user.getMainConnection())?.image ?? null,
+    }
+
+    return jwt.sign(data, 'scorekeep', {
+      expiresIn: this.expiresAt.getTime() - Date.now(),
+    })
+  }
 }

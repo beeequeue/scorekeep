@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken'
 import { Response } from 'express'
 // eslint-disable-next-line node/no-extraneous-import
 import { ContextFunction } from 'apollo-server-core'
@@ -13,22 +12,11 @@ export type JWTData = {
   image: string | null
 }
 
-export const setTokenCookie = (res: Response) => async (session: Session) => {
-  const data: JWTData = {
-    session: session.uuid,
-    name: session.user.name,
-    image: (await session.user.getMainConnection())?.image ?? null,
-  }
-
-  const signed = jwt.sign(data, 'scorekeep', {
-    expiresIn: session.expiresAt.getTime() - Date.now(),
-  })
-
-  return res.cookie('token', signed, {
+export const setTokenCookie = (res: Response) => async (session: Session) =>
+  res.cookie('token', await session.getJWT(), {
     expires: session.expiresAt,
     secure: process.env.NODE_ENV === 'production',
   })
-}
 
 type NoSessionContext = {
   session: null

@@ -41,7 +41,7 @@ const _config: Config = {
     },
   },
   [Environment.TEST]: {
-    frontendBaseUrl: process.env.FRONTEND_BASE_URL!,
+    frontendBaseUrl: 'http://front.end',
     db: {
       ...defaultDbConfig,
       schema: 'scorekeep-tests',

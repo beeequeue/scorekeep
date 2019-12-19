@@ -1,4 +1,7 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import request from 'supertest'
+import cookie from 'cookie'
+import jwt from 'jsonwebtoken'
 import uuid from 'uuid/v4'
 import { Connection as DBConnection } from 'typeorm'
 import { mocked } from 'ts-jest/utils'
@@ -13,6 +16,7 @@ import {
   ConnectionService,
 } from '@/modules/connection/connection.model'
 import { Session } from '@/modules/session/session.model'
+import { JWTData } from '@/modules/session/session.lib'
 
 jest.mock('@/modules/google/google.lib')
 const mockedGoogle = mocked(Google)
@@ -45,14 +49,16 @@ const assertLoggedIn = async (response: request.Response) => {
   const setCookies = response.header['set-cookie'] as string[]
   const lastCookie = setCookies[setCookies.length - 1]
 
-  const token = /token=([\w\d-])+;/.exec(lastCookie)![0].slice(6, -1)
+  const token = cookie.parse(lastCookie).token
 
   expect(token).not.toBeNull()
-  expect(token).toMatch(
-    /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i,
-  )
 
-  const session = await Session.findOne({ uuid: token })
+  const data = jwt.verify(token, 'scorekeep') as JWTData
+  expect(data).toMatchObject({
+    session: expect.any(String),
+  })
+
+  const session = await Session.findOne({ uuid: data.session })
   expect(session).not.toBeNull()
 
   expect(session?.user).not.toBeNull()
@@ -64,6 +70,7 @@ describe('register', () => {
       id: '1234',
       name: 'Jan Jansson',
       email: 'email@gmail.com',
+      verified_email: true,
       picture: 'url',
     } as Partial<GoogleUser>) as any)
 
@@ -98,13 +105,14 @@ describe('login', () => {
     mockedGoogle.getUserFromToken.mockResolvedValue(({
       id: connection.serviceId,
       email: connection.email,
+      verified_email: true,
       picture: connection.image,
     } as Partial<GoogleUser>) as any)
 
     const response = await request(app)
       .get('/connect/google/callback')
       .query({ code: '1234' })
-      .set('Cookie', `token=${session.uuid}`)
+      .set('Cookie', `token=${await session.getJWT()}`)
       .expect(302)
 
     expect(response.text).not.toContain('failed')
@@ -136,13 +144,14 @@ describe('connect', () => {
       id: '9876',
       name: 'Google User',
       email: newConnectionEmail,
+      verified_email: true,
       picture: 'not-real.png',
     } as Partial<GoogleUser>) as any)
 
     const response = await request(app)
       .get('/connect/google/callback')
       .query({ code: '1234' })
-      .set('Cookie', `token=${session.uuid}`)
+      .set('Cookie', `token=${await session.getJWT()}`)
       .expect(302)
 
     expect(response.text).not.toContain('failed')
@@ -182,12 +191,13 @@ describe('connect', () => {
       id: oldConnection.serviceId,
       name: badUser.name,
       email: oldConnection.email,
+      verified_email: true,
       picture: oldConnection.image,
     } as Partial<GoogleUser>) as any)
 
     const response = await request(app)
       .get('/connect/google/callback')
-      .set('Cookie', `token=${session.uuid}`)
+      .set('Cookie', `token=${await session.getJWT()}`)
       .query({ code: '1234' })
       .expect(302)
 

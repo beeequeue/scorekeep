@@ -50,7 +50,7 @@ googleRouter.get('/callback', async (req, res) => {
   }
 
   if (req.cookies.token) {
-    currentSession = await Session.findByUuid(req.cookies.token)
+    currentSession = await Session.findByJWT(req.cookies.token)
 
     if (isNil(currentSession)) {
       // User not found
