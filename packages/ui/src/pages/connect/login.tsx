@@ -61,7 +61,7 @@ const Login = () => {
       <Section>
         {user && (
           <User>
-            {user.image && <img src={user.image} />}
+            {user.mainConnection!.image && <img src={user.mainConnection!.image} />}
 
             {user.name}
           </User>
