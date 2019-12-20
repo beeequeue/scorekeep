@@ -1,11 +1,11 @@
 import { Arg, Authorized, Ctx, ID, Mutation, Query, Resolver } from 'type-graphql'
 
-import { Role } from '@/graphql'
 import { User } from '@/modules/user/user.model'
 import { SessionContext } from '@/modules/session/session.lib'
 import { Session } from '@/modules/session/session.model'
 import { isNil, isUuid } from '@/utils'
 import uuid from 'uuid/v4'
+import { Role } from '@/graphql/auth'
 
 @Resolver()
 export class UserResolver {
