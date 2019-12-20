@@ -21,7 +21,7 @@ export class ConnectionResolver {
     }
 
     if (connection.uuid === user.mainConnectionUuid) {
-      user.mainConnectionUuid = connections[0]?.uuid ?? null
+      user.mainConnectionUuid = connections[1]?.uuid ?? null
       await user.save()
     }
 

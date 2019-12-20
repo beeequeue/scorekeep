@@ -51,7 +51,11 @@ export class User extends ExtendedEntity {
       userUuid: this.uuid,
     }).save()
 
-    this.mainConnectionUuid = this.mainConnectionUuid ?? connection.uuid
-    return this.save()
+    if (isNil(this.mainConnectionUuid)) {
+      this.mainConnectionUuid = connection.uuid
+      await this.save()
+    }
+
+    return connection
   }
 }
