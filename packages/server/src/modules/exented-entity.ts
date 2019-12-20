@@ -7,6 +7,7 @@ import {
 } from 'typeorm'
 import uuid from 'uuid/v4'
 
+import { User } from '@/modules/user/user.model'
 import { isNil } from '@/utils'
 
 @ObjectType({ isAbstract: true })
@@ -48,4 +49,9 @@ export abstract class ExtendedEntity extends BaseEntity {
   public static toLoggable(uuid: string) {
     return `[${this.constructor.name}:${uuid}]`
   }
+}
+
+@ObjectType({ isAbstract: true })
+export abstract class EntityWithOwner extends ExtendedEntity {
+  public abstract async getOwner(): Promise<User>
 }

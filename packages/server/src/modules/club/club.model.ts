@@ -2,7 +2,7 @@ import { Column, Entity } from 'typeorm'
 import { Field, ObjectType } from 'type-graphql'
 import { MaxLength } from 'class-validator'
 
-import { ExtendedEntity } from '@/modules/exented-entity'
+import { EntityWithOwner } from '@/modules/exented-entity'
 import { User } from '@/modules/user/user.model'
 import { isNil, OptionalUuid } from '@/utils'
 
@@ -12,7 +12,7 @@ type ClubConstructor = OptionalUuid<
 
 @Entity()
 @ObjectType()
-export class Club extends ExtendedEntity {
+export class Club extends EntityWithOwner {
   @Column()
   @Field()
   @MaxLength(50)
@@ -52,5 +52,9 @@ export class Club extends ExtendedEntity {
     this.name = options.name
     this.memberUuids = options.memberUuids
     this.ownerUuid = options.ownerUuid
+  }
+
+  public async getOwner() {
+    return this.owner()
   }
 }

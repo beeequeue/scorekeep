@@ -1,7 +1,7 @@
 import { Column, Entity } from 'typeorm'
 import { Field, ID, ObjectType, registerEnumType } from 'type-graphql'
 
-import { ExtendedEntity } from '@/modules/exented-entity'
+import { EntityWithOwner } from '@/modules/exented-entity'
 import { User } from '@/modules/user/user.model'
 import { isNil, OptionalUuid } from '@/utils'
 
@@ -22,7 +22,7 @@ registerEnumType(ConnectionService, {
 
 @Entity()
 @ObjectType()
-export class Connection extends ExtendedEntity {
+export class Connection extends EntityWithOwner {
   @Column()
   @Field(() => ConnectionService)
   public type: ConnectionService
@@ -67,5 +67,9 @@ export class Connection extends ExtendedEntity {
     this.name = options.name
     this.email = options.email
     this.image = options.image
+  }
+
+  public async getOwner() {
+    return this.user()
   }
 }
