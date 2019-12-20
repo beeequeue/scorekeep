@@ -20,8 +20,12 @@ export class ConnectionResolver {
       throw new Error('No connection found with that UUID.')
     }
 
+    if (connections.length < 2) {
+      throw new Error('You need to be connected to at least one service.')
+    }
+
     if (connection.uuid === user.mainConnectionUuid) {
-      user.mainConnectionUuid = connections[1]?.uuid ?? null
+      user.mainConnectionUuid = connections[1].uuid
       await user.save()
     }
 

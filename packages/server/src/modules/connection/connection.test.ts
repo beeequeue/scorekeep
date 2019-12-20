@@ -6,7 +6,6 @@ import { Connection as DBConnection } from 'typeorm'
 import { connectApolloServer, createApp } from '@/apollo'
 import { connectToDatabase } from '@/db'
 import { createConnection, generateUser } from '@/utils/tests'
-import { Connection } from '@/modules/connection/connection.model'
 
 let server: ApolloServer
 let client: ReturnType<typeof createTestClient>
@@ -69,6 +68,28 @@ describe('disconnect', () => {
     })
 
     expect((await user.connections()).length).toBe(1)
+  })
+
+  test('fails if only has one connection', async () => {
+    const { session, connection } = await generateUser()
+
+    client.setOptions({
+      request: {
+        headers: {
+          authorization: `Bearer ${session.uuid}`,
+        },
+      },
+    })
+
+    const result = await client.query<GraphQLResponse>(disconnectQuery, {
+      variables: {
+        uuid: connection.uuid,
+      },
+    })
+
+    expect(result.errors?.[0]).toMatchObject({
+      message: 'You need to be connected to at least one service.',
+    })
   })
 
   test('should fail for not logged in users', async () => {
