@@ -36,6 +36,7 @@ type Connection {
   type: ConnectionService!
   user: User!
   serviceId: ID!
+  name: String!
   email: String!
   image: String!
 }

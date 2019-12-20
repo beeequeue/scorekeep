@@ -89,6 +89,7 @@ describe('login', () => {
       type: ConnectionService.GOOGLE,
       userUuid: user.uuid,
       serviceId: '1234',
+      name: user.name,
       email: 'coolguy@gmail.com',
       image: '',
     }).save()
@@ -124,6 +125,7 @@ describe('connect', () => {
       uuid: oldConnectionUuid,
       type: ConnectionService.GOOGLE,
       serviceId: '1234',
+      name: user.name,
       email: 'coolguy@gmail.com',
       image: '',
     })
@@ -165,6 +167,7 @@ describe('connect', () => {
       type: ConnectionService.GOOGLE,
       userUuid: oldUser.uuid,
       serviceId: '1234',
+      name: oldUser.name,
       email: 'coolguy@gmail.com',
       image: '',
     }).save()

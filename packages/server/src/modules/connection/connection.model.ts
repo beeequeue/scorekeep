@@ -12,7 +12,7 @@ export enum ConnectionService {
 export type ConnectionConstructor = OptionalUuid<
   Pick<
     Connection,
-    'uuid' | 'type' | 'userUuid' | 'serviceId' | 'email' | 'image'
+    'uuid' | 'type' | 'userUuid' | 'name' | 'serviceId' | 'email' | 'image'
   >
 >
 
@@ -46,6 +46,10 @@ export class Connection extends ExtendedEntity {
 
   @Column()
   @Field()
+  public name: string
+
+  @Column()
+  @Field()
   public email: string
 
   @Column()
@@ -60,6 +64,7 @@ export class Connection extends ExtendedEntity {
     this.type = options.type
     this.userUuid = options.userUuid
     this.serviceId = options.serviceId
+    this.name = options.name
     this.email = options.email
     this.image = options.image
   }
