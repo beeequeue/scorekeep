@@ -76,6 +76,7 @@ type Mutation {
   addMatch(club: ID, game: ID!, results: JSONObject!): Match!
   addUser(name: String!): User!
   useUser(uuid: String!): Boolean!
+  updateName(name: String!): User!
 }
 
 type Query {

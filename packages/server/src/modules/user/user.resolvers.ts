@@ -1,5 +1,6 @@
-import { Arg, Ctx, ID, Query, Resolver, Mutation } from 'type-graphql'
+import { Arg, Authorized, Ctx, ID, Mutation, Query, Resolver } from 'type-graphql'
 
+import { Role } from '@/graphql'
 import { User } from '@/modules/user/user.model'
 import { SessionContext } from '@/modules/session/session.lib'
 import { Session } from '@/modules/session/session.model'
@@ -45,5 +46,19 @@ export class UserResolver {
     context.setSession(session)
 
     return true
+  }
+
+  @Mutation(() => User)
+  @Authorized(Role.OWNER)
+  public async updateName(
+    @Ctx() context: SessionContext,
+    @Arg('name') name: string,
+  ) {
+    const user = context.user!
+
+    user.name = name
+    await user.save()
+
+    return user
   }
 }
