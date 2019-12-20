@@ -180,9 +180,18 @@ describe('connect', () => {
       image: '',
     }).save()
 
+    const badConnectionUuid = uuid()
     const badUser = await new User({
       name: 'BadUser',
-      mainConnectionUuid: uuid(),
+      mainConnectionUuid: badConnectionUuid,
+    }).save()
+    await new Connection({
+      uuid: badConnectionUuid,
+      type: ConnectionService.GOOGLE,
+      userUuid: badUser.uuid,
+      serviceId: '123456',
+      email: 'badguy@gmail.com',
+      image: '',
     }).save()
     const session = await Session.generate(badUser)
 
