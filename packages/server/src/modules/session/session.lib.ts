@@ -2,11 +2,10 @@ import { Response } from 'express'
 // eslint-disable-next-line node/no-extraneous-import
 import { ContextFunction } from 'apollo-server-core'
 import { ExpressContext } from 'apollo-server-express/src/ApolloServer'
-import { oc } from 'ts-optchain'
 
 import { Session } from '@/modules/session/session.model'
 import { User } from '@/modules/user/user.model'
-import { isNil, isUuid } from '@/utils'
+import { isNil } from '@/utils'
 
 export const setTokenCookie = (res: Response) => (session: Session) =>
   res.cookie('token', session.uuid, {
@@ -29,8 +28,6 @@ type UserSessionContext = {
 }
 
 export type SessionContext = UserSessionContext | NoSessionContext
-
-const isValidToken = (str?: string) => !isNil(str) && isUuid(str)
 
 const getContextSession = async (
   session: Session | null,
@@ -57,23 +54,18 @@ export const contextProvider: ContextFunction<
   ExpressContext,
   SessionContext
 > = async ({ req, res }) => {
-  let session: Session | undefined
+  let session: Session | null = null
 
-  const header = req.header('Authorization') || ''
-  const tokenMatch = /^Bearer (.*)$/.exec(header)
-  let token = oc(tokenMatch)[0]()
+  const header = req.header('Authorization')
 
-  if (isValidToken(token)) {
-    session = await Session.findOne({ uuid: token })
+  if (!isNil(header)) {
+    const token = header.slice(7) // Removes `Bearer `
+    session = (await Session.findOne({ uuid: token })) ?? null
   }
 
   // No Bearer session found
   if (isNil(session)) {
-    token = req.cookies.token
-
-    if (isValidToken(token)) {
-      session = await Session.findOne({ uuid: token })
-    }
+    session = (await Session.findOne({ uuid: req.cookies.token })) ?? null
   }
 
   const contextSetSession = setTokenCookie(res)
