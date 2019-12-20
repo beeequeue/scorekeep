@@ -6,16 +6,12 @@ export enum Role {
   OWNER = 'OWNER',
 }
 
-export const authChecker: AuthChecker<SessionContext, Role | Role[] | undefined> = async (
+export const authChecker: AuthChecker<SessionContext, Role> = async (
   { root, context },
   roles,
 ) => {
   if (!context.isLoggedIn) {
     throw new Error('You have to be logged in to access this field.')
-  }
-
-  if (!Array.isArray(roles)) {
-    roles = [roles]
   }
 
   if (roles.includes(Role.OWNER)) {
@@ -28,5 +24,5 @@ export const authChecker: AuthChecker<SessionContext, Role | Role[] | undefined>
     return context.user?.uuid === (await root.getOwner()).uuid
   }
 
-  return false
+  return true
 }
