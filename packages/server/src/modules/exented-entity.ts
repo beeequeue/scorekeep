@@ -1,5 +1,10 @@
 import { Field, ID, ObjectType } from 'type-graphql'
-import { BaseEntity, PrimaryColumn } from 'typeorm'
+import {
+  BaseEntity,
+  CreateDateColumn,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm'
 import uuid from 'uuid/v4'
 
 import { isNil } from '@/utils'
@@ -9,6 +14,11 @@ export abstract class ExtendedEntity extends BaseEntity {
   @PrimaryColumn({ type: 'uuid' })
   @Field(() => ID)
   public readonly uuid: string
+
+  @CreateDateColumn()
+  public readonly createdAt!: Date
+  @UpdateDateColumn()
+  public readonly updatedAt!: Date
 
   protected constructor(options: { uuid?: string }) {
     super()
