@@ -13,6 +13,9 @@ module.exports = {
     'jsx-quotes': 0,
   },
   settings: {
+    react: {
+      version: 'detect',
+    },
     'import/resolver': {
       alias: {
         map: [['@', __dirname + '/src']],
