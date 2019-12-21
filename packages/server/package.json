@@ -41,6 +41,7 @@
     "eslint-plugin-node": "10.0.0",
     "eslint-plugin-security": "1.4.0",
     "faker": "4.1.0",
+    "node-mocks-http": "1.8.1",
     "supertest": "5.0.0-0",
     "ts-node-dev": "1.0.0-pre.44"
   },
