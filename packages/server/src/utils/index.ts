@@ -1,3 +1,5 @@
+import { isNil } from './functional'
+
 export * from './functional'
 
 export type OptionalUuid<T extends { uuid: string }> = Omit<T, 'uuid'> & {
@@ -43,15 +45,13 @@ export const pick = <T extends {}, K extends (keyof T)[]>(
       {} as any,
     )
 
-export const isUuid = (str: string) =>
+export const isUuid = (str?: string) =>
+  !isNil(str) &&
   /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
     str,
   )
 
-export const createDescription = (
-  desc: string,
-  options?: { login?: true },
-) => {
+export const createDescription = (desc: string, options?: { login?: true }) => {
   const loginStr = options?.login ? '\n_Requires login._' : ''
 
   return `${desc}${loginStr}`

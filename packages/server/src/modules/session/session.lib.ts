@@ -5,7 +5,7 @@ import { ExpressContext } from 'apollo-server-express/src/ApolloServer'
 
 import { Session } from '@/modules/session/session.model'
 import { User } from '@/modules/user/user.model'
-import { isNil } from '@/utils'
+import { isNil, isUuid } from '@/utils'
 
 export const setTokenCookie = (res: Response) => (session: Session) =>
   res.cookie('token', session.uuid, {
@@ -57,14 +57,14 @@ export const contextProvider: ContextFunction<
   let session: Session | null = null
 
   const header = req.header('Authorization')
+  const token = header?.slice(7) // Removes `Bearer `
 
-  if (!isNil(header)) {
-    const token = header.slice(7) // Removes `Bearer `
+  if (isUuid(token)) {
     session = (await Session.findOne({ uuid: token })) ?? null
   }
 
   // No Bearer session found
-  if (isNil(session)) {
+  if (isNil(session) && isUuid(req.cookies.token)) {
     session = (await Session.findOne({ uuid: req.cookies.token })) ?? null
   }
 
