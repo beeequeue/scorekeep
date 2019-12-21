@@ -22,7 +22,7 @@ export const createConnection = async ({
   save = true,
 }: CreateConnectionOptions) => {
   const name = user.name.split(' ')
-  const connection = await new Connection({
+  const connection = new Connection({
     uuid: uuid ?? faker.random.uuid(),
     type: ConnectionService.GOOGLE,
     userUuid: user.uuid,
