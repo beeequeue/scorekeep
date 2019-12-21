@@ -102,7 +102,7 @@ describe('disconnect', () => {
     })
 
     expect(result.errors?.[0]).toMatchObject({
-      message: 'You have to be logged in to access this field.',
+      message: 'Access denied! You need to be authorized to perform this action!',
     })
   })
 })

@@ -11,7 +11,7 @@ export const authChecker: AuthChecker<SessionContext, Role> = async (
   roles,
 ) => {
   if (!context.isLoggedIn) {
-    throw new Error('You have to be logged in to access this field.')
+    return false
   }
 
   if (roles.includes(Role.OWNER)) {
