@@ -17,6 +17,8 @@ module.exports = {
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
+    'plugin:node/recommended',
+    'plugin:node/recommended-module',
     'plugin:import/errors',
     'plugin:import/warnings',
     'plugin:import/typescript',
@@ -26,6 +28,9 @@ module.exports = {
   rules: {
     'no-console': 2,
     'no-use-before-define': 0,
+    'node/no-missing-import': 0,
+    'node/no-extraneous-import': 0,
+    'node/no-unpublished-import': 0,
     'import/no-default-export': 2,
     'import/no-useless-path-segments': [
       2,
