@@ -49,7 +49,7 @@ export class UserResolver {
   }
 
   @Mutation(() => User)
-  @Authorized(Role.OWNER)
+  @Authorized()
   public async updateName(
     @Ctx() context: SessionContext,
     @Arg('name') name: string,
