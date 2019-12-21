@@ -25,7 +25,7 @@ export class UserResolver {
 
   @Query(() => User, { nullable: true })
   public async viewer(@Ctx() context: SessionContext): Promise<User | null> {
-    return context.user
+    return context.session?.user ?? null
   }
 
   @Mutation(() => User)
@@ -65,7 +65,7 @@ export class UserResolver {
     @Ctx() context: SessionContext,
     @Arg('name') name: string,
   ) {
-    const user = context.user!
+    const user = context.session!.user
 
     user.name = name
     await user.save()

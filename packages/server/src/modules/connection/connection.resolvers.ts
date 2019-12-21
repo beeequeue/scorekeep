@@ -16,7 +16,7 @@ export class ConnectionResolver {
     @Ctx() context: SessionContext,
     @Arg('uuid', () => ID) uuid: string,
   ): Promise<User> {
-    const user = context.user!
+    const user = context.session!.user
     const connections = await user.connections()
     const connection = connections.find(conn => conn.uuid === uuid)
 
@@ -35,6 +35,6 @@ export class ConnectionResolver {
 
     await connection.remove()
 
-    return context.user!
+    return user
   }
 }

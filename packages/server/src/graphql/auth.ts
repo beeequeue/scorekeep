@@ -21,7 +21,7 @@ export const authChecker: AuthChecker<SessionContext, Role> = async (
       )
     }
 
-    return context.user?.uuid === (await root.getOwner()).uuid
+    return context.session?.user.uuid === (await root.getOwner()).uuid
   }
 
   return true

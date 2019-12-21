@@ -4,7 +4,6 @@ import { ContextFunction } from 'apollo-server-core'
 import { ExpressContext } from 'apollo-server-express/src/ApolloServer'
 
 import { Session } from '@/modules/session/session.model'
-import { User } from '@/modules/user/user.model'
 import { isNil, isUuid } from '@/utils'
 
 export const setTokenCookie = (res: Response) => (session: Session) =>
@@ -15,14 +14,12 @@ export const setTokenCookie = (res: Response) => (session: Session) =>
 
 type NoSessionContext = {
   session: null
-  user: null
   isLoggedIn: false
   setSession: (session: Session) => void
 }
 
 type UserSessionContext = {
   session: Session
-  user: User
   isLoggedIn: true
   setSession: (session: Session) => void
 }
@@ -36,7 +33,6 @@ const getContextSession = async (
   if (isNil(session)) {
     return {
       session: null,
-      user: null,
       isLoggedIn: false,
       setSession,
     }
@@ -44,7 +40,6 @@ const getContextSession = async (
 
   return {
     session: session,
-    user: session.user,
     isLoggedIn: true,
     setSession,
   }
