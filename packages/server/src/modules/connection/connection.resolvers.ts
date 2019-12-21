@@ -2,11 +2,15 @@ import { Arg, Authorized, Ctx, ID, Mutation, Resolver } from 'type-graphql'
 
 import { User } from '@/modules/user/user.model'
 import { SessionContext } from '@/modules/session/session.lib'
-import { isNil } from '@/utils'
+import { createDescription, isNil } from '@/utils'
 
 @Resolver()
 export class ConnectionResolver {
-  @Mutation(() => User)
+  @Mutation(() => User, {
+    description: createDescription('Disconnect from a service.', {
+      login: true,
+    }),
+  })
   @Authorized()
   public async disconnect(
     @Ctx() context: SessionContext,

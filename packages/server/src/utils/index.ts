@@ -47,3 +47,12 @@ export const isUuid = (str: string) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
     str,
   )
+
+export const createDescription = (
+  desc: string,
+  options?: { login?: true },
+) => {
+  const loginStr = options?.login ? '\n_Requires login._' : ''
+
+  return `${desc}${loginStr}`
+}

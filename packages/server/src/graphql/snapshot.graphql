@@ -73,10 +73,20 @@ type Match {
 type Mutation {
   addBoardgame(minPlayers: Int, rulebook: String, type: GAME_TYPE, url: String, resultSchema: JSONObject!, maxPlayers: Int!, name: String!): Boardgame!
   addClub(name: String!): Club!
+
+  """
+  Disconnect from a service.
+  _Requires login._
+  """
   disconnect(uuid: ID!): User!
   addMatch(club: ID, game: ID!, results: JSONObject!): Match!
   addUser(name: String!): User!
   useUser(uuid: String!): Boolean!
+
+  """
+  Update the name of the logged in user.
+  _Requires login._
+  """
   updateName(name: String!): User!
 }
 
