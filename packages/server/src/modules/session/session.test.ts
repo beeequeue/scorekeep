@@ -23,7 +23,7 @@ describe('contextProvider', () => {
 
     const context = await contextProvider(
       httpMock.createMocks({
-        headers: { authorization: `Bearer ${session.uuid}` },
+        headers: { authorization: `Bearer ${await session.getJWT()}` },
       }),
     )
 
@@ -38,7 +38,7 @@ describe('contextProvider', () => {
     const context = await contextProvider(
       httpMock.createMocks({
         cookies: {
-          token: session.uuid,
+          token: await session.getJWT(),
         },
       }),
     )
@@ -51,7 +51,7 @@ describe('contextProvider', () => {
   test('should handle bad token format without crashing', async () => {
     const context = await contextProvider(
       httpMock.createMocks({
-        headers: { authorization: `asdasdasdasd` },
+        headers: { authorization: 'asdasdasdasd' },
       }),
     )
 

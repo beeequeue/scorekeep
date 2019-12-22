@@ -64,9 +64,17 @@ export class Session extends BaseEntity {
   public static async findByJWT(token?: string): Promise<Session | null> {
     if (isNil(token) || token.length < 1) return null
 
-    const data = jwt.verify(token, 'scorekeep') as JWTData
+    let data: JWTData | null = null
 
-    if (isNil(data.session) && !isUuid(data.session)) {
+    try {
+      data = jwt.verify(token, 'scorekeep') as JWTData
+    } catch(err) {
+      if (err.message !== 'jwt malformed') {
+        throw err
+      }
+    }
+
+    if (isNil(data) || !isUuid(data.session)) {
       return null
     }
 
