@@ -13,7 +13,6 @@ describe('schema-generator', () => {
     const result = generateSchemaFromProperties(properties)
 
     expect(JSON.parse(result)).toEqual({
-      schema: {
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',
         required: ['playerResults'],
@@ -37,8 +36,7 @@ describe('schema-generator', () => {
           metaData: {
             type: 'object',
           },
-        },
-      },
+        }
     })
   })
 })

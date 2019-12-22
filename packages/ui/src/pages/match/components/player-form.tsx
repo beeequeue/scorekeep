@@ -2,7 +2,7 @@ import React, { ChangeEvent, useCallback, useState, useEffect } from 'react'
 import { getInput, PlayerDropdown } from '@/pages/match/components/inputs'
 import styled from 'styled-components'
 import { InputFieldContainer } from '@/components/input-fields'
-import { getTypesFromSchema } from '@/utils/game-schema-types'
+import { PropertyType } from '@/pages/boardgame/components/property-form'
 
 const Row = styled(InputFieldContainer)`
   margin-bottom: 32px;
@@ -50,15 +50,15 @@ const Close = styled.button`
 `
 
 export const MatchForm = ({
-  schema,
+                            schemaTypes,
   onChange,
   maxPlayers,
 }: {
-  schema: JSON
+  schemaTypes: { [k: string]: PropertyType }
   maxPlayers: number
   onChange: (players: any) => void
 }) => {
-  const schemaTypes = getTypesFromSchema(schema)
+
   const emptyResult = Object.keys(schemaTypes).reduce(
     (acc, type) => ({ ...acc, [type]: null }),
     {},

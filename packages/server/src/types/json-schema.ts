@@ -41,7 +41,6 @@ export interface JsonSchemaNumber extends JsonSchemaPropertyBase {
 }
 
 export interface JsonSchemaObject extends JsonSchemaPropertyBase {
-  schema: {
     type: 'object'
     additionalProperties?: JsonSchemaProperty
     required?: string[]
@@ -56,7 +55,6 @@ export interface JsonSchemaObject extends JsonSchemaPropertyBase {
     dependencies?: {
       [key: string]: string[]
     }
-  }
 }
 
 export interface JsonSchemaArray extends JsonSchemaPropertyBase {

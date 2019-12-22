@@ -24,7 +24,7 @@ const schema = `{
    }`
 describe('Utils for game schema', () => {
   test('returns an array of property name and type for a given schema', () => {
-    const result = getTypesFromSchema({ schema: JSON.parse(schema) })
+    const result = getTypesFromSchema(JSON.parse(schema))
 
     expect(result).toEqual({
       player: PropertyType.STRING,

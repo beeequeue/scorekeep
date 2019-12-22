@@ -14,6 +14,7 @@ import {
   Boardgame,
   BoardgamesQuery, useAddMatchMutation,
 } from '@/graphql/generated'
+import { getTypesFromSchema, toSchemaType } from '@/utils/game-schema-types'
 
 const Row = styled(InputFieldContainer)`
   margin-bottom: 32px;
@@ -26,10 +27,12 @@ const Form = styled.form`
 const Boardgames = gql`
   query Boardgames {
     boardgames {
-      uuid
-      maxPlayers
-      name
-      resultSchema
+        items {
+            uuid
+            maxPlayers
+            name
+            resultSchema
+        }
     }
   }
 `
@@ -45,7 +48,7 @@ const Add = () => {
   const onBoardgameChange = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
       if (data) {
-        const selectedBoardgame = (data.boardgames ?? []).find(
+        const selectedBoardgame = (data.boardgames.items ?? []).find(
           bg => e.target.value === bg.uuid,
         )
         if (selectedBoardgame) {
@@ -70,19 +73,24 @@ const Add = () => {
           e.preventDefault()
           const variables : AddMatchMutationVariables = {
             boardgame: boardgame!.uuid,
-            result: { playerResults }
+            result: {
+              playerResults: toSchemaType(
+                playerResults,
+                getTypesFromSchema(boardgame!.resultSchema)
+              )
+            }
           }
           await addMatch({variables})
 
         }}
       >
         <Row>
-          {boardgames && boardgames.length > 0 && (
+          {boardgames?.items?.length > 0 && (
             <Select name="Boardgame" onChange={onBoardgameChange}>
               <option disabled selected>
                 -- Select a boardgame --
               </option>
-              {boardgames.map(({ uuid, name }) => (
+              {boardgames.items.map(({ uuid, name }) => (
                 <option key={uuid} value={uuid}>
                   {name}
                 </option>
@@ -93,7 +101,7 @@ const Add = () => {
         {boardgame && (
           <>
             <MatchForm
-              schema={boardgame.resultSchema}
+              schemaTypes={getTypesFromSchema(boardgame.resultSchema)}
               maxPlayers={boardgame.maxPlayers}
               onChange={setPlayerResults}
             />

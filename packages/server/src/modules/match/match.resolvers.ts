@@ -31,7 +31,7 @@ export class MatchResolver {
       throw new Error('Not found!')
     }
 
-    const improvedSchema = game.resultSchema!.schema
+    const improvedSchema = game.resultSchema!
     ;(improvedSchema.properties!.playerResults as JsonSchemaArray).minItems =
       game.minPlayers
     ;(improvedSchema.properties!.playerResults as JsonSchemaArray).maxItems =

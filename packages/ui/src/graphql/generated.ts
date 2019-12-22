@@ -30,6 +30,13 @@ export type Boardgame = {
   resultSchema: Scalars['JSONObject']
 }
 
+export type BoardgamesPage = {
+  __typename?: 'BoardgamesPage'
+  items: Array<Boardgame>
+  nextOffset: Maybe<Scalars['Int']>
+  total: Scalars['Int']
+}
+
 export type Club = {
   __typename?: 'Club'
   uuid: Scalars['ID']
@@ -45,6 +52,7 @@ export type Connection = {
   type: ConnectionService
   user: User
   serviceId: Scalars['ID']
+  name: Scalars['String']
   email: Scalars['String']
   image: Scalars['String']
 }
@@ -73,9 +81,19 @@ export type Mutation = {
   __typename?: 'Mutation'
   addBoardgame: Boardgame
   addClub: Club
+  /**
+   * Disconnect from a service.
+   * _Requires login._
+   */
+  disconnect: User
   addMatch: Match
   addUser: User
   useUser: Scalars['Boolean']
+  /**
+   * Update the name of the logged in user.
+   * _Requires login._
+   */
+  updateName: User
 }
 
 export type MutationAddBoardgameArgs = {
@@ -92,6 +110,10 @@ export type MutationAddClubArgs = {
   name: Scalars['String']
 }
 
+export type MutationDisconnectArgs = {
+  uuid: Scalars['ID']
+}
+
 export type MutationAddMatchArgs = {
   club: Maybe<Scalars['ID']>
   game: Scalars['ID']
@@ -106,10 +128,14 @@ export type MutationUseUserArgs = {
   uuid: Scalars['String']
 }
 
+export type MutationUpdateNameArgs = {
+  name: Scalars['String']
+}
+
 export type Query = {
   __typename?: 'Query'
   boardgame: Maybe<Boardgame>
-  boardgames: Maybe<Array<Boardgame>>
+  boardgames: BoardgamesPage
   club: Maybe<Club>
   match: Maybe<Match>
   user: Maybe<User>
@@ -119,6 +145,11 @@ export type Query = {
 
 export type QueryBoardgameArgs = {
   uuid: Scalars['ID']
+}
+
+export type QueryBoardgamesArgs = {
+  offset?: Maybe<Scalars['Int']>
+  limit?: Maybe<Scalars['Int']>
 }
 
 export type QueryClubArgs = {
@@ -168,14 +199,14 @@ export type AddMatchMutation = { __typename?: 'Mutation' } & {
 export type BoardgamesQueryVariables = {}
 
 export type BoardgamesQuery = { __typename?: 'Query' } & {
-  boardgames: Maybe<
-    Array<
+  boardgames: { __typename?: 'BoardgamesPage' } & {
+    items: Array<
       { __typename?: 'Boardgame' } & Pick<
         Boardgame,
         'uuid' | 'maxPlayers' | 'name' | 'resultSchema'
       >
     >
-  >
+  }
 }
 
 export type PlayersQueryVariables = {}
@@ -252,7 +283,7 @@ export type AddBoardgameMutationOptions = ApolloReactCommon.BaseMutationOptions<
 export const AddMatchDocument = gql`
   mutation addMatch($result: JSONObject!, $boardgame: ID!) {
     addMatch(
-      club: "40d950d8-4bb1-419d-9616-2fb0d7dc7aa7"
+      club: "7a13f91c-8488-4379-8bb6-998a72862566"
       game: $boardgame
       results: $result
     ) {
@@ -305,10 +336,12 @@ export type AddMatchMutationOptions = ApolloReactCommon.BaseMutationOptions<
 export const BoardgamesDocument = gql`
   query Boardgames {
     boardgames {
-      uuid
-      maxPlayers
-      name
-      resultSchema
+      items {
+        uuid
+        maxPlayers
+        name
+        resultSchema
+      }
     }
   }
 `
