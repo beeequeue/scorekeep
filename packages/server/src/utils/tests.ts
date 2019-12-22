@@ -6,6 +6,7 @@ import {
   ConnectionService,
 } from '@/modules/connection/connection.model'
 import { Session } from '@/modules/session/session.model'
+import { isNil } from './functional'
 
 export const assertObjectEquals = <T extends {}>(result: T, user: T) => {
   expect(JSON.stringify(result, null, 2)).toEqual(JSON.stringify(user, null, 2))
@@ -39,8 +40,17 @@ export const createConnection = async ({
   return connection
 }
 
-export const generateUser = async () => {
-  const connectionUuid = faker.random.uuid()
+type GenerateUserOptions = {
+  connectionUuid?: string
+}
+
+export const generateUser = async ({
+  connectionUuid,
+}: GenerateUserOptions = {}) => {
+  if (isNil(connectionUuid)) {
+    connectionUuid = faker.random.uuid()
+  }
+
   const fullName = `${faker.name.firstName()} ${faker.name.lastName()}`
 
   const user = await new User({
