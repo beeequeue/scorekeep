@@ -2,7 +2,6 @@
 import request from 'supertest'
 import cookie from 'cookie'
 import jwt from 'jsonwebtoken'
-import uuid from 'uuid/v4'
 import { Connection as DBConnection } from 'typeorm'
 import { mocked } from 'ts-jest/utils'
 import { AuthErrorCode, JWTData } from '@scorekeep/constants'
@@ -10,12 +9,9 @@ import { AuthErrorCode, JWTData } from '@scorekeep/constants'
 import { createApp } from '@/apollo'
 import { connectToDatabase } from '@/db'
 import { Google, GoogleUser } from '@/modules/google/google.lib'
-import { User } from '@/modules/user/user.model'
-import {
-  Connection,
-  ConnectionService,
-} from '@/modules/connection/connection.model'
+import { Connection } from '@/modules/connection/connection.model'
 import { Session } from '@/modules/session/session.model'
+import { generateUser } from '@/utils/tests'
 
 jest.mock('@/modules/google/google.lib')
 const mockedGoogle = mocked(Google)
@@ -84,22 +80,7 @@ describe('register', () => {
 
 describe('login', () => {
   test('should log in if not logged in and connection exists', async () => {
-    const connectionUuid = uuid()
-
-    const user = await new User({
-      name: 'ExistingUser',
-      mainConnectionUuid: connectionUuid,
-    }).save()
-    const connection = await new Connection({
-      uuid: connectionUuid,
-      type: ConnectionService.GOOGLE,
-      userUuid: user.uuid,
-      serviceId: '1234',
-      name: user.name,
-      email: 'coolguy@gmail.com',
-      image: '',
-    }).save()
-    const session = await Session.generate(user)
+    const { connection, session } = await generateUser()
 
     mockedGoogle.getUserFromToken.mockResolvedValue(({
       id: connection.serviceId,
@@ -122,21 +103,7 @@ describe('login', () => {
 
 describe('connect', () => {
   test('should create connection if logged in already and connection doesnt exist', async () => {
-    const oldConnectionUuid = uuid()
-
-    const user = await new User({
-      name: 'ExistingUser',
-      mainConnectionUuid: oldConnectionUuid,
-    }).save()
-    await user.connectTo({
-      uuid: oldConnectionUuid,
-      type: ConnectionService.GOOGLE,
-      serviceId: '1234',
-      name: user.name,
-      email: 'coolguy@gmail.com',
-      image: '',
-    })
-    const session = await Session.generate(user)
+    const { user, session } = await generateUser()
 
     const newConnectionEmail = 'another@email.com'
     mockedGoogle.getUserFromToken.mockResolvedValue(({
@@ -164,40 +131,13 @@ describe('connect', () => {
   })
 
   test('should fail if service account already connected to someone else', async () => {
-    const connectionUuid = uuid()
+    const { user: oldUser, connection: oldConnection } = await generateUser()
 
-    const oldUser = await new User({
-      name: 'FirstUser',
-      mainConnectionUuid: connectionUuid,
-    }).save()
-    const oldConnection = await new Connection({
-      uuid: connectionUuid,
-      type: ConnectionService.GOOGLE,
-      userUuid: oldUser.uuid,
-      serviceId: '1234',
-      name: oldUser.name,
-      email: 'coolguy@gmail.com',
-      image: '',
-    }).save()
-
-    const badConnectionUuid = uuid()
-    const badUser = await new User({
-      name: 'BadUser',
-      mainConnectionUuid: badConnectionUuid,
-    }).save()
-    await new Connection({
-      uuid: badConnectionUuid,
-      type: ConnectionService.GOOGLE,
-      userUuid: badUser.uuid,
-      serviceId: '123456',
-      email: 'badguy@gmail.com',
-      image: '',
-    }).save()
-    const session = await Session.generate(badUser)
+    const { session } = await generateUser()
 
     mockedGoogle.getUserFromToken.mockResolvedValue(({
       id: oldConnection.serviceId,
-      name: badUser.name,
+      name: oldUser.name,
       email: oldConnection.email,
       verified_email: true,
       picture: oldConnection.image,
