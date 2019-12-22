@@ -47,15 +47,15 @@ export class User extends ExtendedEntity {
 
   public async connectTo(options: Omit<ConnectionConstructor, 'userUuid'>) {
     const connection = await new Connection({
-      uuid: options.uuid,
-      type: options.type,
+      ...options,
       userUuid: this.uuid,
-      email: options.email,
-      serviceId: options.serviceId,
-      image: options.image,
     }).save()
 
-    this.mainConnectionUuid = this.mainConnectionUuid ?? connection.uuid
-    return this.save()
+    if (isNil(this.mainConnectionUuid)) {
+      this.mainConnectionUuid = connection.uuid
+      await this.save()
+    }
+
+    return connection
   }
 }

@@ -1,10 +1,18 @@
-import { Arg, Ctx, ID, Query, Resolver, Mutation } from 'type-graphql'
+import {
+  Arg,
+  Authorized,
+  Ctx,
+  ID,
+  Mutation,
+  Query,
+  Resolver,
+} from 'type-graphql'
+import uuid from 'uuid/v4'
 
 import { User } from '@/modules/user/user.model'
 import { SessionContext } from '@/modules/session/session.lib'
 import { Session } from '@/modules/session/session.model'
-import { isNil, isUuid } from '@/utils'
-import uuid from 'uuid/v4'
+import { createDescription, isNil, isUuid } from '@/utils'
 
 @Resolver()
 export class UserResolver {
@@ -17,7 +25,7 @@ export class UserResolver {
 
   @Query(() => User, { nullable: true })
   public async viewer(@Ctx() context: SessionContext): Promise<User | null> {
-    return context.user
+    return context.session?.user ?? null
   }
 
   @Mutation(() => User)
@@ -45,5 +53,23 @@ export class UserResolver {
     context.setSession(session)
 
     return true
+  }
+
+  @Mutation(() => User, {
+    description: createDescription('Update the name of the logged in user.', {
+      login: true,
+    }),
+  })
+  @Authorized()
+  public async updateName(
+    @Ctx() context: SessionContext,
+    @Arg('name') name: string,
+  ) {
+    const user = context.session!.user
+
+    user.name = name
+    await user.save()
+
+    return user
   }
 }

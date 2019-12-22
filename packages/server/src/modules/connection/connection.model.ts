@@ -1,7 +1,7 @@
 import { Column, Entity } from 'typeorm'
 import { Field, ID, ObjectType, registerEnumType } from 'type-graphql'
 
-import { ExtendedEntity } from '@/modules/exented-entity'
+import { EntityWithOwner } from '@/modules/exented-entity'
 import { User } from '@/modules/user/user.model'
 import { isNil, OptionalUuid } from '@/utils'
 
@@ -12,7 +12,7 @@ export enum ConnectionService {
 export type ConnectionConstructor = OptionalUuid<
   Pick<
     Connection,
-    'uuid' | 'type' | 'userUuid' | 'serviceId' | 'email' | 'image'
+    'uuid' | 'type' | 'userUuid' | 'name' | 'serviceId' | 'email' | 'image'
   >
 >
 
@@ -22,7 +22,7 @@ registerEnumType(ConnectionService, {
 
 @Entity()
 @ObjectType()
-export class Connection extends ExtendedEntity {
+export class Connection extends EntityWithOwner {
   @Column()
   @Field(() => ConnectionService)
   public type: ConnectionService
@@ -46,6 +46,10 @@ export class Connection extends ExtendedEntity {
 
   @Column()
   @Field()
+  public name: string
+
+  @Column()
+  @Field()
   public email: string
 
   @Column()
@@ -60,7 +64,12 @@ export class Connection extends ExtendedEntity {
     this.type = options.type
     this.userUuid = options.userUuid
     this.serviceId = options.serviceId
+    this.name = options.name
     this.email = options.email
     this.image = options.image
+  }
+
+  public async getOwner() {
+    return this.user()
   }
 }

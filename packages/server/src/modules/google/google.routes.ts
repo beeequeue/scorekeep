@@ -89,6 +89,7 @@ googleRouter.get('/callback', async (req, res) => {
   if (!isNil(req.session)) {
     await req.session.user.connectTo({
       type: ConnectionService.GOOGLE,
+      name: googleUser.name,
       email: googleUser.email,
       serviceId: googleUser.id,
       image: googleUser.picture,
@@ -104,6 +105,7 @@ googleRouter.get('/callback', async (req, res) => {
 
   await newUser.connectTo({
     type: ConnectionService.GOOGLE,
+    name: googleUser.name,
     email: googleUser.email,
     serviceId: googleUser.id,
     image: googleUser.picture,
