@@ -41,20 +41,20 @@ export interface JsonSchemaNumber extends JsonSchemaPropertyBase {
 }
 
 export interface JsonSchemaObject extends JsonSchemaPropertyBase {
-    type: 'object'
-    additionalProperties?: JsonSchemaProperty
-    required?: string[]
-    propertyNames?: {
-      pattern: string
-    }
-    minProperties?: number
-    maxProperties?: number
-    properties?: {
-      [key: string]: JsonSchemaProperty
-    }
-    dependencies?: {
-      [key: string]: string[]
-    }
+  type: 'object'
+  additionalProperties?: JsonSchemaProperty
+  required?: string[]
+  propertyNames?: {
+    pattern: string
+  }
+  minProperties?: number
+  maxProperties?: number
+  properties?: {
+    [key: string]: JsonSchemaProperty
+  }
+  dependencies?: {
+    [key: string]: string[]
+  }
 }
 
 export interface JsonSchemaArray extends JsonSchemaPropertyBase {

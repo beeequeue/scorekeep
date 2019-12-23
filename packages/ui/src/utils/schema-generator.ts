@@ -3,23 +3,23 @@ import { isNil } from '@/utils'
 
 type PropertiesObject = { [k: string]: { type: string; pattern?: string } }
 const SchemaTemplate = (properties: PropertiesObject) => ({
-    $schema: 'http://json-schema.org/draft-07/schema#',
-    type: 'object',
-    required: ['playerResults'],
-    properties: {
-      playerResults: {
-        type: 'array',
-        required: Object.keys(properties),
-        items: {
-          type: 'object',
-          required: Object.keys(properties),
-          properties,
-        },
-      },
-      metaData: {
+  $schema: 'http://json-schema.org/draft-07/schema#',
+  type: 'object',
+  required: ['playerResults'],
+  properties: {
+    playerResults: {
+      type: 'array',
+      required: Object.keys(properties),
+      items: {
         type: 'object',
+        required: Object.keys(properties),
+        properties,
       },
-    }
+    },
+    metaData: {
+      type: 'object',
+    },
+  },
 })
 export const generateSchemaFromProperties = (properties: {
   [k: string]: Property | null

@@ -9,15 +9,15 @@ const toPropertyType = (value: string): PropertyType => {
   )
 }
 
-type SCHEMA = {
-    properties: {
-      playerResults: any
-    }
+type Schema = {
+  properties: {
+    playerResults: any
+  }
 }
 
 export const getTypesFromSchema = (
-  schema
-: SCHEMA): { [k: string]: PropertyType } => {
+  schema: Schema,
+): { [k: string]: PropertyType } => {
   const properties: { [k: string]: { type: string } } =
     schema.properties.playerResults.items.properties
 
@@ -38,7 +38,8 @@ const transformFunction = (type: PropertyType) => {
 export const toSchemaType = (
   playerResults: [{ [k: string]: string }],
   schemaPropertyTypes: { [k: string]: PropertyType },
-) => playerResults.map(playerResult =>
+) =>
+  playerResults.map(playerResult =>
     Object.keys(playerResult).reduce(
       (transformedResult, property) => ({
         ...transformedResult,
@@ -47,6 +48,5 @@ export const toSchemaType = (
         ),
       }),
       {},
-    )
+    ),
   )
-

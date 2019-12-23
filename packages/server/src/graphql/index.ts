@@ -13,6 +13,12 @@ export const createSchema = async (generateSnapshot = true) =>
       ? false
       : { path: resolve(__dirname, 'snapshot.graphql') },
     dateScalarMode: 'isoDate',
-    resolvers: [BoardgameResolver, ClubResolver, ConnectionResolver, MatchResolver, UserResolver],
+    resolvers: [
+      BoardgameResolver,
+      ClubResolver,
+      ConnectionResolver,
+      MatchResolver,
+      UserResolver,
+    ],
     authChecker,
   })

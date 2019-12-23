@@ -13,30 +13,30 @@ describe('schema-generator', () => {
     const result = generateSchemaFromProperties(properties)
 
     expect(JSON.parse(result)).toEqual({
-        $schema: 'http://json-schema.org/draft-07/schema#',
-        type: 'object',
-        required: ['playerResults'],
-        properties: {
-          playerResults: {
-            type: 'array',
+      $schema: 'http://json-schema.org/draft-07/schema#',
+      type: 'object',
+      required: ['playerResults'],
+      properties: {
+        playerResults: {
+          type: 'array',
+          required: ['player', 'the-number'],
+          items: {
+            type: 'object',
             required: ['player', 'the-number'],
-            items: {
-              type: 'object',
-              required: ['player', 'the-number'],
-              properties: {
-                player: {
-                  type: 'string',
-                  pattern:
-                    '^[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}$',
-                },
-                'the-number': { type: 'number' },
+            properties: {
+              player: {
+                type: 'string',
+                pattern:
+                  '^[0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12}$',
               },
+              'the-number': { type: 'number' },
             },
           },
-          metaData: {
-            type: 'object',
-          },
-        }
+        },
+        metaData: {
+          type: 'object',
+        },
+      },
     })
   })
 })
