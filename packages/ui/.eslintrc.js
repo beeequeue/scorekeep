@@ -19,6 +19,12 @@ module.exports = {
       { env: 'apollo', requiredFields: ['uuid'] },
     ],
   },
+  overrides: [{
+    files: '*.stories.*',
+    rules: {
+      'import/no-default-export': 0,
+    },
+  }],
   settings: {
     react: {
       version: 'detect',
