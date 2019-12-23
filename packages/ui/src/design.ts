@@ -10,6 +10,8 @@ export const colors = {
     tertiary: '#6c9389',
   },
   highlights: {
+    one: '#1AD692',
+    two: '#5CDBE7',
     gradients: {
       main: 'linear-gradient(90deg, #1AD692, #5CDBE7)',
     },
