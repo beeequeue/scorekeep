@@ -1,39 +1,40 @@
 import { configure, addParameters } from '@storybook/react'
-import { themes, create } from '@storybook/theming'
+import { create } from '@storybook/theming'
+import { colors } from '../src/design'
 import './styles.css'
 
-export default create({
+const theme = create({
   base: 'dark',
 
-  colorPrimary: '#21e6c1',
-  colorSecondary: '#FAD8D6',
+  colorPrimary: colors.highlights.one,
+  colorSecondary: colors.background.secondary,
 
   // UI
-  appBg: '#041224',
-  appContentBg: '#1c1e31',
-  appBorderColor: '#278ea5',
-  appBorderRadius: 4,
+  appBg: colors.background.primary,
+  appContentBg: colors.background.body,
+  appBorderColor: colors.highlights.one,
+  appBorderRadius: 3,
 
   // Text colors
-  textColor: 'white',
-  textInverseColor: 'black',
+  textColor: colors.text.primary,
+  textInverseColor: colors.text.tertiary,
 
   // Toolbar default and active colors
-  barTextColor: 'silver',
-  barSelectedColor: 'black',
-  barBg: 'hotpink',
+  barTextColor: '#111',
+  barSelectedColor: '#111',
+  barBg: colors.highlights.gradients.main,
 
   // Form colors
-  inputBg: 'white',
-  inputBorder: 'silver',
-  inputTextColor: 'black',
-  inputBorderRadius: 4,
+  inputBg: colors.background.primary,
+  inputBorder: colors.highlights.one,
+  inputTextColor: colors.text.secondary,
+  inputBorderRadius: 3,
 })
 
 // Option defaults.
 addParameters({
   options: {
-    theme: themes.dark,
+    theme: theme,
   },
 })
 
