@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { GraphQLJSONObject } from 'graphql-type-json'
 import { Field, Int, ObjectType, registerEnumType } from 'type-graphql'
-import { Column, Entity } from 'typeorm'
+import { Column, Entity, Index } from 'typeorm'
 import { IsUrl, MaxLength, Min } from 'class-validator'
 
 import { ExtendedEntity } from '@/modules/exented-entity'
@@ -54,11 +54,13 @@ export class Boardgame extends ExtendedEntity {
   public type: GAME_TYPE
 
   @Column()
+  @Index()
   @Field()
   @MaxLength(50)
   public name: string
 
   @Column({ type: 'simple-array', transformer: aliasTransformer })
+  @Index()
   @Field(() => [String])
   public aliases: string[]
 
