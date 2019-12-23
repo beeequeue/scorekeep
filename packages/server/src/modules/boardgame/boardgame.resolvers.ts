@@ -58,6 +58,8 @@ export class BoardgameResolver {
     @Arg('resultSchema', () => GraphQLJSONObject)
     resultSchema: object,
     // Nullable
+    @Arg('aliases', () => [String], { nullable: true })
+    aliases: string[] = [],
     @Arg('url', () => String, { nullable: true })
     url: string | null,
     @Arg('type', () => GAME_TYPE, { nullable: true })
@@ -78,6 +80,7 @@ export class BoardgameResolver {
     const boardgame = new Boardgame({
       type,
       name,
+      aliases,
       url,
       rulebook,
       resultSchema,
