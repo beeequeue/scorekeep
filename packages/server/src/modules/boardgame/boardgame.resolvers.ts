@@ -43,11 +43,13 @@ export class BoardgameResolver {
     @Args() args: BoardgamesArgs,
   ): Promise<BoardgamesPage> {
     const boardgames = await Boardgame.find({ ...args.getFilters() })
+    const count = await Boardgame.count({ ...args.getFilters() })
 
+    const nextOffset = args.offset + args.limit
     return {
       items: boardgames,
-      nextOffset: 0,
-      total: 0,
+      nextOffset: nextOffset < count ? nextOffset : null,
+      total: count,
     }
   }
 
