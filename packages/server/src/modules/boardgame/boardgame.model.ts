@@ -25,6 +25,7 @@ type BoardgameConstructor = OptionalUuid<
     Boardgame,
     | 'uuid'
     | 'name'
+    | 'shortName'
     | 'aliases'
     | 'type'
     | 'url'
@@ -42,8 +43,10 @@ export enum GAME_TYPE {
 registerEnumType(GAME_TYPE, { name: 'GAME_TYPE' })
 
 const aliasTransformer = {
-  from: (arr: string[]) => arr.map(alias => alias.replace(/{escaped_comma}/g, ',')),
-  to: (arr: string[]) => arr.map(alias => alias.replace(/,/g, '{escaped_comma}')),
+  from: (arr: string[]) =>
+    arr.map(alias => alias.replace(/{escaped_comma}/g, ',')),
+  to: (arr: string[]) =>
+    arr.map(alias => alias.replace(/,/g, '{escaped_comma}')),
 }
 
 @Entity()
@@ -58,6 +61,12 @@ export class Boardgame extends ExtendedEntity {
   @Field()
   @MaxLength(50)
   public name: string
+
+  @Column()
+  @Index({ unique: true })
+  @Field()
+  @MaxLength(20)
+  public shortName: string
 
   @Column({ type: 'simple-array', transformer: aliasTransformer })
   @Index()
@@ -107,6 +116,7 @@ export class Boardgame extends ExtendedEntity {
 
     this.type = options.type
     this.name = options.name
+    this.shortName = options.shortName
     this.aliases = options.aliases
     this.url = options.url
     this.rulebook = options.rulebook

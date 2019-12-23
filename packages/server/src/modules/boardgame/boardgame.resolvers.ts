@@ -54,6 +54,7 @@ export class BoardgameResolver {
   @Mutation(() => Boardgame)
   public async addBoardgame(
     @Arg('name') name: string,
+    @Arg('shortName') shortName: string,
     @Arg('maxPlayers', () => Int) maxPlayers: number,
     @Arg('resultSchema', () => GraphQLJSONObject)
     resultSchema: object,
@@ -80,6 +81,7 @@ export class BoardgameResolver {
     const boardgame = new Boardgame({
       type,
       name,
+      shortName,
       aliases,
       url,
       rulebook,
