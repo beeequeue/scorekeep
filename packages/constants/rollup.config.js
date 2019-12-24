@@ -14,15 +14,15 @@ export default {
     typescript(),
     babel({ include: "src/**/*", extensions, externalHelpers: true })
   ],
-  external: [...Object.keys(pkg.peerDependencies), ...Object.keys(pkg.dependencies)],
+  external: [...Object.keys(pkg.peerDependencies || []), ...Object.keys(pkg.dependencies || [])],
   preserveModules: true,
   output: [
     {
-      dir: "lib/es",
+      dir: "dist/es",
       format: "es"
     },
     {
-      dir: "lib/cjs",
+      dir: "dist/cjs",
       format: "cjs"
     }
   ]
