@@ -20,6 +20,12 @@ module.exports = {
     ],
     'react/prop-types': 0,
   },
+  overrides: [{
+    files: '*.stories.*',
+    rules: {
+      'import/no-default-export': 0,
+    },
+  }],
   settings: {
     react: {
       version: 'detect',
