@@ -10,7 +10,7 @@ const Sideline = styled.span<{ right?: boolean }>`
   top: 0;
 
   background: ${colors.highlights.gradients.main()};
-  box-shadow: 0 0 3px ${colors.highlights.one}a0;
+  box-shadow: 0 0 3px ${colors.highlights.one.fade(0.6).string()};
 
   ${p => (p.right ? 'left: 0;' : 'right: 0;')}
 `
@@ -27,8 +27,8 @@ const StyledButton = styled.button`
   font-weight: 700;
   font-family: 'Nunito', sans-serif;
 
-  color: ${colors.text.primary};
-  background: ${colors.background.body}bf;
+  color: ${colors.text.primary.string()};
+  background: ${colors.background.body.fade(0.25).string()};
   border: 0;
 
   overflow: hidden;
