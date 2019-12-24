@@ -101,6 +101,7 @@ type Query {
   club(uuid: ID!): Club
   match(uuid: ID!): Match
   user(uuid: ID!): User
+  users: [User!]
   viewer: User
 }
 

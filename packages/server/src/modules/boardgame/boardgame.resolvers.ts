@@ -35,7 +35,7 @@ export class BoardgameResolver {
   public async boardgame(
     @Arg('uuid', () => ID) uuid: string,
   ): Promise<Boardgame | null> {
-    return (await Boardgame.findOne({ uuid })) || null
+    return (await Boardgame.findOne({ uuid })) ?? null
   }
 
   @Query(() => BoardgamesPage)

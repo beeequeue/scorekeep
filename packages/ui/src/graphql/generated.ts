@@ -30,6 +30,13 @@ export type Boardgame = {
   resultSchema: Scalars['JSONObject']
 }
 
+export type BoardgamesPage = {
+  __typename?: 'BoardgamesPage'
+  items: Array<Boardgame>
+  nextOffset: Maybe<Scalars['Int']>
+  total: Scalars['Int']
+}
+
 export type Club = {
   __typename?: 'Club'
   uuid: Scalars['ID']
@@ -37,6 +44,21 @@ export type Club = {
   members: Array<User>
   /** A club owner must be a claimed player */
   owner: User
+}
+
+export type Connection = {
+  __typename?: 'Connection'
+  uuid: Scalars['ID']
+  type: ConnectionService
+  user: User
+  serviceId: Scalars['ID']
+  name: Scalars['String']
+  email: Scalars['String']
+  image: Scalars['String']
+}
+
+export enum ConnectionService {
+  Google = 'GOOGLE',
 }
 
 export enum Game_Type {
@@ -59,9 +81,19 @@ export type Mutation = {
   __typename?: 'Mutation'
   addBoardgame: Boardgame
   addClub: Club
+  /**
+   * Disconnect from a service.
+   * _Requires login._
+   */
+  disconnect: User
   addMatch: Match
   addUser: User
   useUser: Scalars['Boolean']
+  /**
+   * Update the name of the logged in user.
+   * _Requires login._
+   */
+  updateName: User
 }
 
 export type MutationAddBoardgameArgs = {
@@ -78,6 +110,10 @@ export type MutationAddClubArgs = {
   name: Scalars['String']
 }
 
+export type MutationDisconnectArgs = {
+  uuid: Scalars['ID']
+}
+
 export type MutationAddMatchArgs = {
   club: Maybe<Scalars['ID']>
   game: Scalars['ID']
@@ -92,17 +128,28 @@ export type MutationUseUserArgs = {
   uuid: Scalars['String']
 }
 
+export type MutationUpdateNameArgs = {
+  name: Scalars['String']
+}
+
 export type Query = {
   __typename?: 'Query'
   boardgame: Maybe<Boardgame>
+  boardgames: BoardgamesPage
   club: Maybe<Club>
   match: Maybe<Match>
   user: Maybe<User>
+  users: Maybe<Array<User>>
   viewer: Maybe<User>
 }
 
 export type QueryBoardgameArgs = {
   uuid: Scalars['ID']
+}
+
+export type QueryBoardgamesArgs = {
+  offset?: Maybe<Scalars['Int']>
+  limit?: Maybe<Scalars['Int']>
 }
 
 export type QueryClubArgs = {
@@ -122,6 +169,7 @@ export type User = {
   uuid: Scalars['ID']
   name: Scalars['String']
   clubs: Array<Club>
+  connections: Array<Connection>
   mainConnectionUuid: Maybe<Scalars['ID']>
 }
 
@@ -137,6 +185,34 @@ export type AddBoardgameMutation = { __typename?: 'Mutation' } & {
     Boardgame,
     'uuid' | 'name' | 'resultSchema'
   >
+}
+
+export type AddMatchMutationVariables = {
+  result: Scalars['JSONObject']
+  boardgame: Scalars['ID']
+}
+
+export type AddMatchMutation = { __typename?: 'Mutation' } & {
+  addMatch: { __typename?: 'Match' } & Pick<Match, 'uuid'>
+}
+
+export type BoardgamesQueryVariables = {}
+
+export type BoardgamesQuery = { __typename?: 'Query' } & {
+  boardgames: { __typename?: 'BoardgamesPage' } & {
+    items: Array<
+      { __typename?: 'Boardgame' } & Pick<
+        Boardgame,
+        'uuid' | 'maxPlayers' | 'name' | 'resultSchema'
+      >
+    >
+  }
+}
+
+export type PlayersQueryVariables = {}
+
+export type PlayersQuery = { __typename?: 'Query' } & {
+  users: Maybe<Array<{ __typename?: 'User' } & Pick<User, 'uuid' | 'name'>>>
 }
 
 export const AddBoardgameDocument = gql`
@@ -203,4 +279,167 @@ export type AddBoardgameMutationResult = ApolloReactCommon.MutationResult<
 export type AddBoardgameMutationOptions = ApolloReactCommon.BaseMutationOptions<
   AddBoardgameMutation,
   AddBoardgameMutationVariables
+>
+export const AddMatchDocument = gql`
+  mutation addMatch($result: JSONObject!, $boardgame: ID!) {
+    addMatch(
+      club: "7a13f91c-8488-4379-8bb6-998a72862566"
+      game: $boardgame
+      results: $result
+    ) {
+      uuid
+    }
+  }
+`
+export type AddMatchMutationFn = ApolloReactCommon.MutationFunction<
+  AddMatchMutation,
+  AddMatchMutationVariables
+>
+
+/**
+ * __useAddMatchMutation__
+ *
+ * To run a mutation, you first call `useAddMatchMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddMatchMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addMatchMutation, { data, loading, error }] = useAddMatchMutation({
+ *   variables: {
+ *      result: // value for 'result'
+ *      boardgame: // value for 'boardgame'
+ *   },
+ * });
+ */
+export function useAddMatchMutation(
+  baseOptions?: ApolloReactHooks.MutationHookOptions<
+    AddMatchMutation,
+    AddMatchMutationVariables
+  >,
+) {
+  return ApolloReactHooks.useMutation<
+    AddMatchMutation,
+    AddMatchMutationVariables
+  >(AddMatchDocument, baseOptions)
+}
+export type AddMatchMutationHookResult = ReturnType<typeof useAddMatchMutation>
+export type AddMatchMutationResult = ApolloReactCommon.MutationResult<
+  AddMatchMutation
+>
+export type AddMatchMutationOptions = ApolloReactCommon.BaseMutationOptions<
+  AddMatchMutation,
+  AddMatchMutationVariables
+>
+export const BoardgamesDocument = gql`
+  query Boardgames {
+    boardgames {
+      items {
+        uuid
+        maxPlayers
+        name
+        resultSchema
+      }
+    }
+  }
+`
+
+/**
+ * __useBoardgamesQuery__
+ *
+ * To run a query within a React component, call `useBoardgamesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBoardgamesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useBoardgamesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useBoardgamesQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    BoardgamesQuery,
+    BoardgamesQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<BoardgamesQuery, BoardgamesQueryVariables>(
+    BoardgamesDocument,
+    baseOptions,
+  )
+}
+export function useBoardgamesLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    BoardgamesQuery,
+    BoardgamesQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<
+    BoardgamesQuery,
+    BoardgamesQueryVariables
+  >(BoardgamesDocument, baseOptions)
+}
+export type BoardgamesQueryHookResult = ReturnType<typeof useBoardgamesQuery>
+export type BoardgamesLazyQueryHookResult = ReturnType<
+  typeof useBoardgamesLazyQuery
+>
+export type BoardgamesQueryResult = ApolloReactCommon.QueryResult<
+  BoardgamesQuery,
+  BoardgamesQueryVariables
+>
+export const PlayersDocument = gql`
+  query players {
+    users {
+      uuid
+      name
+    }
+  }
+`
+
+/**
+ * __usePlayersQuery__
+ *
+ * To run a query within a React component, call `usePlayersQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePlayersQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePlayersQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function usePlayersQuery(
+  baseOptions?: ApolloReactHooks.QueryHookOptions<
+    PlayersQuery,
+    PlayersQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useQuery<PlayersQuery, PlayersQueryVariables>(
+    PlayersDocument,
+    baseOptions,
+  )
+}
+export function usePlayersLazyQuery(
+  baseOptions?: ApolloReactHooks.LazyQueryHookOptions<
+    PlayersQuery,
+    PlayersQueryVariables
+  >,
+) {
+  return ApolloReactHooks.useLazyQuery<PlayersQuery, PlayersQueryVariables>(
+    PlayersDocument,
+    baseOptions,
+  )
+}
+export type PlayersQueryHookResult = ReturnType<typeof usePlayersQuery>
+export type PlayersLazyQueryHookResult = ReturnType<typeof usePlayersLazyQuery>
+export type PlayersQueryResult = ApolloReactCommon.QueryResult<
+  PlayersQuery,
+  PlayersQueryVariables
 >

@@ -36,7 +36,6 @@ export class MatchResolver {
       game.minPlayers
     ;(improvedSchema.properties!.playerResults as JsonSchemaArray).maxItems =
       game.maxPlayers
-
     const validate = ajv.compile(game.resultSchema) as CustomValidator<
       ResultBase
     >

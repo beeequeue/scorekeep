@@ -23,6 +23,11 @@ export class UserResolver {
     return (await User.findOne({ uuid })) ?? null
   }
 
+  @Query(() => [User], { nullable: true })
+  public async users(): Promise<User[] | null> {
+    return await User.find()
+  }
+
   @Query(() => User, { nullable: true })
   public async viewer(@Ctx() context: SessionContext): Promise<User | null> {
     return context.session?.user ?? null
