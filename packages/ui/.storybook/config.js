@@ -22,7 +22,7 @@ const theme = create({
   // Toolbar default and active colors
   barTextColor: '#111',
   barSelectedColor: '#111',
-  barBg: colors.highlights.gradients.main,
+  barBg: colors.highlights.gradients.main(90),
 
   // Form colors
   inputBg: colors.background.primary,

@@ -13,7 +13,7 @@ export const colors = {
     one: '#1AD692',
     two: '#5CDBE7',
     gradients: {
-      main: 'linear-gradient(90deg, #1AD692, #5CDBE7)',
+      main: (deg: number = 0) => `linear-gradient(${deg}deg, #1AD692, #5CDBE7)`,
     },
   },
 } as const

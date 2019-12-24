@@ -17,7 +17,7 @@ const Underline = styled.span`
   bottom: 0;
   height: 2px;
   width: 100%;
-  background: ${colors.highlights.gradients.main};
+  background: ${colors.highlights.gradients.main(90)};
   box-shadow: 0 0 3px ${colors.highlights.one}c0;
 `
 
