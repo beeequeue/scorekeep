@@ -11,7 +11,6 @@ const Sideline = styled.span<{ right?: boolean }>`
 
   background: ${colors.highlights.gradients.main()};
   box-shadow: 0 0 3px ${colors.highlights.one}a0;
-  transition: box-shadow 0.15s;
 
   ${p => (p.right ? 'left: 0;' : 'right: 0;')}
 `
@@ -25,18 +24,20 @@ const StyledButton = styled.button`
   border-radius: 3px;
 
   font-size: 20px;
-  font-weight: 400;
+  font-weight: 700;
   font-family: 'Nunito', sans-serif;
 
   color: ${colors.text.primary};
-  background: ${colors.background.secondary};
+  background: ${colors.background.body}bf;
   border: 0;
 
   overflow: hidden;
   cursor: pointer;
 
-  &:hover > ${Sideline} {
-    box-shadow: 0 0 5px ${colors.highlights.one};
+  transition: background 0.15s;
+
+  &:hover {
+    background: rgba(105, 205, 225, 0.075);
   }
 `
 
