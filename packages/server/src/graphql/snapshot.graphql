@@ -7,6 +7,8 @@ type Boardgame {
   uuid: ID!
   type: GAME_TYPE!
   name: String!
+  shortName: String!
+  aliases: [String!]!
 
   """Link to boardgamegeek"""
   url: String
@@ -71,7 +73,7 @@ type Match {
 }
 
 type Mutation {
-  addBoardgame(minPlayers: Int, rulebook: String, type: GAME_TYPE, url: String, resultSchema: JSONObject!, maxPlayers: Int!, name: String!): Boardgame!
+  addBoardgame(minPlayers: Int, rulebook: String, type: GAME_TYPE, url: String, aliases: [String!], resultSchema: JSONObject!, maxPlayers: Int!, shortName: String!, name: String!): Boardgame!
   addClub(name: String!): Club!
 
   """

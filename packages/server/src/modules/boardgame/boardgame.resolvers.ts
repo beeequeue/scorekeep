@@ -43,21 +43,26 @@ export class BoardgameResolver {
     @Args() args: BoardgamesArgs,
   ): Promise<BoardgamesPage> {
     const boardgames = await Boardgame.find({ ...args.getFilters() })
+    const count = await Boardgame.count({ ...args.getFilters() })
 
+    const nextOffset = args.offset + args.limit
     return {
       items: boardgames,
-      nextOffset: 0,
-      total: 0,
+      nextOffset: nextOffset < count ? nextOffset : null,
+      total: count,
     }
   }
 
   @Mutation(() => Boardgame)
   public async addBoardgame(
     @Arg('name') name: string,
+    @Arg('shortName') shortName: string,
     @Arg('maxPlayers', () => Int) maxPlayers: number,
     @Arg('resultSchema', () => GraphQLJSONObject)
     resultSchema: object,
     // Nullable
+    @Arg('aliases', () => [String], { nullable: true })
+    aliases: string[] = [],
     @Arg('url', () => String, { nullable: true })
     url: string | null,
     @Arg('type', () => GAME_TYPE, { nullable: true })
@@ -78,6 +83,8 @@ export class BoardgameResolver {
     const boardgame = new Boardgame({
       type,
       name,
+      shortName,
+      aliases,
       url,
       rulebook,
       resultSchema,

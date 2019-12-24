@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { GraphQLJSONObject } from 'graphql-type-json'
 import { Field, Int, ObjectType, registerEnumType } from 'type-graphql'
-import { Column, Entity } from 'typeorm'
+import { Column, Entity, Index } from 'typeorm'
 import { IsUrl, MaxLength, Min } from 'class-validator'
 
 import { ExtendedEntity } from '@/modules/exented-entity'
@@ -25,6 +25,8 @@ type BoardgameConstructor = OptionalUuid<
     Boardgame,
     | 'uuid'
     | 'name'
+    | 'shortName'
+    | 'aliases'
     | 'type'
     | 'url'
     | 'rulebook'
@@ -40,6 +42,13 @@ export enum GAME_TYPE {
 }
 registerEnumType(GAME_TYPE, { name: 'GAME_TYPE' })
 
+const aliasTransformer = {
+  from: (arr: string[]) =>
+    arr.map(alias => alias.replace(/{escaped_comma}/g, ',')),
+  to: (arr: string[]) =>
+    arr.map(alias => alias.replace(/,/g, '{escaped_comma}')),
+}
+
 @Entity()
 @ObjectType()
 export class Boardgame extends ExtendedEntity {
@@ -48,9 +57,21 @@ export class Boardgame extends ExtendedEntity {
   public type: GAME_TYPE
 
   @Column()
+  @Index()
   @Field()
   @MaxLength(50)
   public name: string
+
+  @Column()
+  @Index({ unique: true })
+  @Field()
+  @MaxLength(20)
+  public shortName: string
+
+  @Column({ type: 'simple-array', transformer: aliasTransformer })
+  @Index()
+  @Field(() => [String])
+  public aliases: string[]
 
   @Column({ type: 'varchar', nullable: true })
   @Field(() => String, {
@@ -95,6 +116,8 @@ export class Boardgame extends ExtendedEntity {
 
     this.type = options.type
     this.name = options.name
+    this.shortName = options.shortName
+    this.aliases = options.aliases
     this.url = options.url
     this.rulebook = options.rulebook
     this.minPlayers = options.minPlayers
