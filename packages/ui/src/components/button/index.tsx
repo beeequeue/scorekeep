@@ -19,7 +19,7 @@ const bgColor = colors.background.body.fade(0.25)
 
 const StyledButton = styled.button`
   position: relative;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 5px 25px;
