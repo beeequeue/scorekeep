@@ -21,9 +21,9 @@ const Underline = styled.span`
   box-shadow: 0 0 3px ${colors.highlights.one}c0;
 `
 
-export const Title = ({ children }: { children: ReactNode }) => {
+export const Title = ({ children, marginTop }: { children: ReactNode, marginTop?: number }) => {
   return (
-    <StyledH1>
+    <StyledH1 style={{ marginTop }}>
       {children}
 
       <Underline />

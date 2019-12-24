@@ -1,30 +1,43 @@
 import React from 'react'
 import { hot } from 'react-hot-loader'
-import styled, { css } from 'styled-components'
-import { Icon } from '@mdi/react'
-import { mdiGoogle } from '@mdi/js'
+import styled from 'styled-components'
 
+import googleSvg from '@/assets/google.svg'
 import { useUser } from '@/providers/user'
-import { useLoginConnectionsQuery } from '@/graphql/generated'
+import { Title } from '@/components/text'
 
 const Container = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 `
 
-const Section = styled.div`
+const Logo = styled.div`
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 15px 25px;
-  background: #0c0c0c;
-  border-right: 2px solid;
-  border-left: 2px solid;
-  border-color: #78e22d;
+  font-size: 65px;
+`
+
+const LoginButton = styled.a`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: 0;
+  border: 0;
+  transition: transform 0.1s;
+
+  & > svg {
+    height: 50px;
+  }
+
+  &:hover {
+  transform: scale(1.05);
+  }
 `
 
 const User = styled.div`
@@ -34,28 +47,10 @@ const User = styled.div`
   padding: 5px 10px;
   margin-bottom: 10px;
 
-  ${(p: { main?: boolean }) =>
-    p.main &&
-    css`
-      background: #222;
-    `}
-
   & > img {
     height: 25px;
     margin-right: 10px;
     border-radius: 100%;
-  }
-`
-
-const Button = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 5px 15px;
-  border-radius: 5px;
-
-  & > svg {
-    margin-right: 5px;
   }
 `
 
@@ -65,43 +60,26 @@ url.searchParams.append('redirect_uri', location.href)
 const Login = () => {
   const { user } = useUser()
 
-  const { data, loading } = useLoginConnectionsQuery({
-    skip: user == null,
-  })
-
   return (
     <Container>
-      <Section>
-        {user && (
-          <User main>
-            {user.mainConnection!.image && (
-              <img src={user.mainConnection!.image} />
-            )}
+      <Logo>Scorekeep</Logo>
 
-            {user.mainConnection!.email}
-          </User>
-        )}
+      <Title marginTop={0}>Login / Register</Title>
 
-        {user &&
-          !loading &&
-          data!.viewer!.connections.map(
-            conn =>
-              user.mainConnection!.uuid !== conn.uuid && (
-                <User key={conn.uuid}>
-                  {conn.image && <img src={conn.image} />}
+      <LoginButton
+        href={url.toString()}
+        dangerouslySetInnerHTML={{ __html: googleSvg }}
+      />
 
-                  {conn.email}
-                </User>
-              ),
+      {user && (
+        <User>
+          {user.mainConnection!.image && (
+            <img src={user.mainConnection!.image}/>
           )}
 
-        <a href={url.toString()}>
-          <Button>
-            {<Icon path={mdiGoogle} size={0.75} />}
-            {user ? 'Connect a new account' : 'Login / Register'}
-          </Button>
-        </a>
-      </Section>
+          {user.name}
+        </User>
+      )}
     </Container>
   )
 }
