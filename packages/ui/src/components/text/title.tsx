@@ -18,6 +18,7 @@ const Underline = styled.span`
   height: 2px;
   width: 100%;
   background: ${colors.highlights.gradients.main};
+  box-shadow: 0 0 3px ${colors.highlights.one}c0;
 `
 
 export const Title = ({ children }: { children: ReactNode }) => {
