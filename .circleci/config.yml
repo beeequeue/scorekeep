@@ -206,6 +206,9 @@ workflows:
           requires:
             - server_build
             - server_test
+          filters:
+            branches:
+              ignore: master
       - deploy_storybook:
           requires:
             - ui_build
