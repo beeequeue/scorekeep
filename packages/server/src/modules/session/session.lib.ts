@@ -4,10 +4,10 @@ import { ContextFunction } from 'apollo-server-core'
 import { ExpressContext } from 'apollo-server-express/src/ApolloServer'
 
 import { Session } from '@/modules/session/session.model'
-import { isNil, isUuid } from '@/utils'
+import { isNil } from '@/utils'
 
-export const setTokenCookie = (res: Response) => (session: Session) =>
-  res.cookie('token', session.uuid, {
+export const setTokenCookie = (res: Response) => async (session: Session) =>
+  res.cookie('token', await session.getJWT(), {
     expires: session.expiresAt,
     secure: process.env.NODE_ENV === 'production',
   })
@@ -28,7 +28,7 @@ export type SessionContext = UserSessionContext | NoSessionContext
 
 const getContextSession = async (
   session: Session | null,
-  setSession: (session: Session) => Response,
+  setSession: (session: Session) => Promise<Response>,
 ): Promise<SessionContext> => {
   if (isNil(session)) {
     return {
@@ -39,7 +39,7 @@ const getContextSession = async (
   }
 
   return {
-    session: session,
+    session,
     isLoggedIn: true,
     setSession,
   }
@@ -52,21 +52,21 @@ export const contextProvider: ContextFunction<
   let session: Session | null = null
 
   const header = req.header('Authorization')
-  const token = header?.slice(7) // Removes `Bearer `
 
-  if (isUuid(token)) {
-    session = (await Session.findOne({ uuid: token })) ?? null
+  if (!isNil(header)) {
+    const token = header.slice(7) // Removes `Bearer `
+    session = await Session.findByJWT(token)
   }
 
   // No Bearer session found
-  if (isNil(session) && isUuid(req.cookies.token)) {
-    session = (await Session.findOne({ uuid: req.cookies.token })) ?? null
+  if (isNil(session)) {
+    session = await Session.findByJWT(req.cookies.token)
   }
 
   const contextSetSession = setTokenCookie(res)
 
   if (!isNil(session)) {
-    contextSetSession(session)
+    await contextSetSession(session)
   }
 
   return getContextSession(session || null, contextSetSession)

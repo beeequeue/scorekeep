@@ -1,6 +1,8 @@
 import { Response, Router } from 'express'
+import { URL } from 'url'
+import { AuthErrorCode } from '@scorekeep/constants'
 
-import { AuthErrorCode } from '@/constants/auth.constants'
+import { config } from '@/config'
 import { Session } from '@/modules/session/session.model'
 import { User } from '@/modules/user/user.model'
 import {
@@ -15,7 +17,7 @@ const redirectToFailure = (
   code: AuthErrorCode,
   extraParams: { [key: string]: string } = {},
 ) => {
-  const url = new URL('http://frontend.url/connect/failed')
+  const url = new URL(`${config.frontendBaseUrl}/connect/failed`)
 
   url.searchParams.append('code', code)
   url.searchParams.append('service', ConnectionService.GOOGLE)
@@ -40,29 +42,22 @@ type ICallbackQuery = {
 
 googleRouter.get('/callback', async (req, res) => {
   const { code } = req.query as ICallbackQuery
-  let currentSession: Session | null = null
 
   if (isNil(code)) {
     // Did not get a code back from Google...
     return redirectToFailure(res, AuthErrorCode.NO_CODE)
   }
 
-  if (req.cookies.token) {
-    currentSession = await Session.findByUuid(req.cookies.token)
-
-    if (isNil(currentSession)) {
-      // User not found
-      return redirectToFailure(res, AuthErrorCode.USER_NOT_FOUND)
-    }
-  }
-
   const tokens = await Google.getTokens(code, req)
   const googleUser = await Google.getUserFromToken(tokens.token)
 
-  if (isNil(googleUser.email) || googleUser.verified_email) {
+  if (isNil(googleUser.email) || !googleUser.verified_email) {
     // You need to have a verified email address on Google to connect.
     return redirectToFailure(res, AuthErrorCode.EMAIL_REQUIRED)
   }
+
+  const redirectToSuccess = () =>
+    res.redirect(decodeURIComponent(req.query.state))
 
   const existingConnection = await Connection.findOne({
     where: {
@@ -82,7 +77,7 @@ googleRouter.get('/callback', async (req, res) => {
 
     await Session.login(req, await existingConnection.user())
 
-    return res.redirect('/')
+    return redirectToSuccess()
   }
 
   // If user is logged in and is connecting a new account
@@ -95,7 +90,7 @@ googleRouter.get('/callback', async (req, res) => {
       image: googleUser.picture,
     })
 
-    return res.redirect('/')
+    return redirectToSuccess()
   }
 
   const newUser = new User({
@@ -113,5 +108,5 @@ googleRouter.get('/callback', async (req, res) => {
 
   await Session.login(req, newUser)
 
-  res.redirect('/')
+  redirectToSuccess()
 })

@@ -47,11 +47,9 @@ export class Club extends EntityWithOwner {
   constructor(options: ClubConstructor) {
     super(options)
 
-    if (isNil(options)) options = {} as any
-
-    this.name = options.name
-    this.memberUuids = options.memberUuids
-    this.ownerUuid = options.ownerUuid
+    this.name = options?.name
+    this.memberUuids = options?.memberUuids
+    this.ownerUuid = options?.ownerUuid
   }
 
   public async getOwner() {

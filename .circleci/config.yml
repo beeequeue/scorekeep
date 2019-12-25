@@ -24,13 +24,41 @@ jobs:
     steps:
       - attach_workspace:
           at: .
+      - restore_cache:
+          name: Restore Yarn Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+            - yarn-packages-
       - run:
           name: Install NPM dependencies
           command: yarn install --frozen-lockfile
+      - run:
+          name: Bootstrap
+          command: yarn lerna link
+      - save_cache:
+          name: Save Yarn Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
       - persist_to_workspace:
           root: ~/app
           paths:
             - node_modules
+            - packages/*/node_modules
+
+  constants_build:
+    executor: node
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          working_directory: ~/app/packages/constants
+          name: Build
+          command: yarn run build
+      - persist_to_workspace:
+          root: ~/app
+          paths:
+            - packages/constants/dist
 
   ui_build:
     executor: node
@@ -153,27 +181,29 @@ workflows:
       - dependencies:
           requires:
             - checkout_code
+      - constants_build:
+          requires:
+            - dependencies
       - ui_build:
           requires:
-            - dependencies
+            - constants_build
       - ui_test:
           requires:
-            - dependencies
+            - constants_build
       - ui_lint:
           requires:
-            - dependencies
+            - constants_build
       - server_build:
           requires:
-            - dependencies
+            - constants_build
       - server_test:
           requires:
-            - dependencies
+            - constants_build
       - server_lint:
           requires:
-            - dependencies
+            - constants_build
       - server_breaking_changes:
           requires:
-            - dependencies
             - server_build
             - server_test
       - deploy_storybook:

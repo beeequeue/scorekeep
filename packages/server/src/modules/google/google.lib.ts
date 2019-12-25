@@ -32,7 +32,7 @@ export class Google {
       access_type: 'offline',
       scope: SCOPE,
       redirect_uri: this.getRedirectUri(request),
-      state: request.query.user,
+      state: request.query.redirect_uri,
     })
   }
 
@@ -43,7 +43,7 @@ export class Google {
     })
 
     const { access_token, id_token, refresh_token } = response.tokens
-    if (isNil(access_token) || isNil(id_token) || isNil(refresh_token)) {
+    if (isNil(access_token) || isNil(id_token)) {
       throw new Error('Did not receive one of the tokens from Google')
     }
 

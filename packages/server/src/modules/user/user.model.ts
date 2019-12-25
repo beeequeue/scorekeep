@@ -1,5 +1,5 @@
 import { Column, Entity } from 'typeorm'
-import { Field, ID, ObjectType } from 'type-graphql'
+import { Field, ObjectType } from 'type-graphql'
 import { MaxLength } from 'class-validator'
 
 import { ExtendedEntity } from '@/modules/exented-entity'
@@ -33,16 +33,19 @@ export class User extends ExtendedEntity {
   }
 
   @Column({ type: 'uuid', nullable: true })
-  @Field(() => ID, { nullable: true })
   public mainConnectionUuid: string | null
+  @Field(() => Connection, { nullable: true })
+  public async mainConnection(): Promise<Connection | null> {
+    if (isNil(this.mainConnectionUuid)) return null
+
+    return await Connection.findOneOrFail({ uuid: this.mainConnectionUuid })
+  }
 
   constructor(options: UserConstructor) {
     super(options)
 
-    if (isNil(options)) options = {} as any
-
-    this.name = options.name
-    this.mainConnectionUuid = options.mainConnectionUuid
+    this.name = options?.name
+    this.mainConnectionUuid = options?.mainConnectionUuid
   }
 
   public async connectTo(options: Omit<ConnectionConstructor, 'userUuid'>) {

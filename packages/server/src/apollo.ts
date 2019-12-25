@@ -1,7 +1,6 @@
 import { ApolloServer } from 'apollo-server-express'
 import Express, { Express as IExpress } from 'express'
 import Helmet from 'helmet'
-import cors from 'cors'
 import CookieParser from 'cookie-parser'
 
 import { config } from '@/config'
@@ -15,7 +14,6 @@ export const createApp = (): IExpress => {
   app.use(Helmet())
   app.use(CookieParser())
 
-  app.use(cors())
   app.use(router)
 
   return app
@@ -23,6 +21,7 @@ export const createApp = (): IExpress => {
 
 export const connectApolloServer = async (app: IExpress) => {
   const server = new ApolloServer({
+
     schema: await createSchema(),
     introspection: true,
     context: contextProvider,
@@ -39,7 +38,13 @@ export const connectApolloServer = async (app: IExpress) => {
     },
   })
 
-  server.applyMiddleware({ app })
+  server.applyMiddleware({
+    app,
+    cors: {
+      origin: [/^http:\/\/localhost/],
+      credentials: true,
+    },
+  })
 
   return server
 }

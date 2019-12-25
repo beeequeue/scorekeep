@@ -6,7 +6,7 @@ import { IsUrl, MaxLength, Min } from 'class-validator'
 
 import { ExtendedEntity } from '@/modules/exented-entity'
 import { JsonSchemaObject } from '@/types/json-schema'
-import { isNil, OptionalUuid } from '@/utils'
+import { OptionalUuid } from '@/utils'
 
 export type ResultBase = {
   playerResults: Array<{
@@ -112,16 +112,14 @@ export class Boardgame extends ExtendedEntity {
   constructor(options: BoardgameConstructor) {
     super(options)
 
-    if (isNil(options)) options = {} as any
-
-    this.type = options.type
-    this.name = options.name
-    this.shortName = options.shortName
-    this.aliases = options.aliases
-    this.url = options.url
-    this.rulebook = options.rulebook
-    this.minPlayers = options.minPlayers
-    this.maxPlayers = options.maxPlayers
-    this.resultSchema = options.resultSchema
+    this.type = options?.type
+    this.name = options?.name
+    this.shortName = options?.shortName
+    this.aliases = options?.aliases
+    this.url = options?.url
+    this.rulebook = options?.rulebook
+    this.minPlayers = options?.minPlayers
+    this.maxPlayers = options?.maxPlayers
+    this.resultSchema = options?.resultSchema
   }
 }

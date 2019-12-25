@@ -34,7 +34,9 @@ const disconnectQuery = `
   mutation Disconnect($uuid: ID!) {
     disconnect(uuid: $uuid) {
       uuid
-      mainConnectionUuid
+      mainConnection {
+        uuid
+      }
       connections {
         uuid
       }
@@ -50,7 +52,7 @@ describe('disconnect', () => {
     client.setOptions({
       request: {
         headers: {
-          authorization: `Bearer ${session.uuid}`,
+          authorization: `Bearer ${await session.getJWT()}`,
         },
       },
     })
@@ -64,7 +66,9 @@ describe('disconnect', () => {
     expect(result.errors).toBeUndefined()
     expect(result.data?.disconnect).toMatchObject({
       uuid: user.uuid,
-      mainConnectionUuid: secondConnection.uuid,
+      mainConnection: {
+        uuid: secondConnection.uuid,
+      },
     })
 
     expect((await user.connections()).length).toBe(1)
@@ -76,7 +80,7 @@ describe('disconnect', () => {
     client.setOptions({
       request: {
         headers: {
-          authorization: `Bearer ${session.uuid}`,
+          authorization: `Bearer ${await session.getJWT()}`,
         },
       },
     })

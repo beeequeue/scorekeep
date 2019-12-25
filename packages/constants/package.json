@@ -1,0 +1,32 @@
+{
+  "name": "@scorekeep/constants",
+  "description": "Constants",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Scorekeep",
+  "bugs": {
+    "url": "https://github.com/BeeeQueue/scorekeep/issues"
+  },
+  "directories": {
+    "lib": "dist"
+  },
+  "homepage": "https://github.com/BeeeQueue/scorekeep#readme",
+  "license": "AGPL-3.0-only",
+  "sideEffects": false,
+  "main": "dist/cjs/index.js",
+  "module": "dist/es/index.js",
+  "types": "dist/es/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BeeeQueue/scorekeep.git"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "rollup": "1.27.13",
+    "rollup-plugin-babel": "4.3.3",
+    "rollup-plugin-typescript2": "0.25.3"
+  }
+}

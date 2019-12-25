@@ -59,14 +59,12 @@ export class Connection extends EntityWithOwner {
   constructor(options: ConnectionConstructor) {
     super(options)
 
-    if (isNil(options)) options = {} as any
-
-    this.type = options.type
-    this.userUuid = options.userUuid
-    this.serviceId = options.serviceId
-    this.name = options.name
-    this.email = options.email
-    this.image = options.image
+    this.type = options?.type
+    this.userUuid = options?.userUuid
+    this.serviceId = options?.serviceId
+    this.name = options?.name
+    this.email = options?.email
+    this.image = options?.image
   }
 
   public async getOwner() {

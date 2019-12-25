@@ -112,5 +112,5 @@ type User {
   name: String!
   clubs: [Club!]!
   connections: [Connection!]!
-  mainConnectionUuid: ID
+  mainConnection: Connection
 }
