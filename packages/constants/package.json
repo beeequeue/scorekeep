@@ -21,7 +21,8 @@
     "url": "git+https://github.com/BeeeQueue/scorekeep.git"
   },
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "clean": "rimraf dist"
   },
   "devDependencies": {
     "rollup": "1.27.13",
