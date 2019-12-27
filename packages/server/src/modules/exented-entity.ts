@@ -53,5 +53,5 @@ export abstract class ExtendedEntity extends BaseEntity {
 
 @ObjectType({ isAbstract: true })
 export abstract class EntityWithOwner extends ExtendedEntity {
-  public abstract async getOwner(): Promise<User>
+  public abstract async getOwners(): Promise<User[]>
 }

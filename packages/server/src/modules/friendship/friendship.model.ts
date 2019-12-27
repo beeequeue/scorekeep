@@ -46,7 +46,7 @@ export class Friendship extends EntityWithOwner {
     this.accepted = options?.accepted ?? false
   }
 
-  public async getOwner() {
-    return this.initiator()
+  public async getOwners() {
+    return [await this.initiator(), await this.receiver()]
   }
 }

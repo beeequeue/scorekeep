@@ -52,7 +52,7 @@ export class Club extends EntityWithOwner {
     this.ownerUuid = options?.ownerUuid
   }
 
-  public async getOwner() {
-    return this.owner()
+  public async getOwners() {
+    return [await this.owner()]
   }
 }

@@ -1,6 +1,7 @@
 import { AuthChecker } from 'type-graphql'
 import { SessionContext } from '@/modules/session/session.lib'
 import { EntityWithOwner } from '@/modules/exented-entity'
+import { isNil } from '@/utils'
 
 export enum Role {
   OWNER = 'OWNER',
@@ -21,7 +22,11 @@ export const authChecker: AuthChecker<SessionContext, Role> = async (
       )
     }
 
-    return context.session?.user.uuid === (await root.getOwner()).uuid
+    const owners = await root.getOwners()
+
+    return !isNil(
+      owners.find(owner => owner.uuid === context.session?.user.uuid),
+    )
   }
 
   return true

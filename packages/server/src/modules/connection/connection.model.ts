@@ -67,7 +67,7 @@ export class Connection extends EntityWithOwner {
     this.image = options?.image
   }
 
-  public async getOwner() {
-    return this.user()
+  public async getOwners() {
+    return [await this.user()]
   }
 }
