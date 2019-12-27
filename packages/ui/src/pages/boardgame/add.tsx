@@ -152,7 +152,7 @@ const Add = () => {
 
         <AddProperty onClick={addProperty}>+ Add Property</AddProperty>
 
-        <Button type="submit" onClick={() => {}}>Submit</Button>
+        <Button type="submit">Submit</Button>
       </Form>
     </PageGrid>
   )

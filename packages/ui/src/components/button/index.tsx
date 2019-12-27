@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-type-definitions */
 import React, { ReactNode } from 'react'
 import styled from 'styled-components'
 
@@ -44,12 +45,20 @@ const StyledButton = styled.button`
   }
 `
 
-export type ButtonProps = {
+interface BaseButtonProps {
   action?: Action
   type?: 'submit'
   className?: string
   children: ReactNode
+}
+
+export interface ButtonProps extends BaseButtonProps {
   onClick: () => void
+}
+
+interface SubmitButtonProps extends BaseButtonProps {
+  type: 'submit'
+  onClick?: () => void
 }
 
 export const Button = ({
@@ -58,7 +67,7 @@ export const Button = ({
   className,
   children,
   onClick,
-}: ButtonProps) => {
+}: ButtonProps | SubmitButtonProps) => {
   return (
     <StyledButton className={className} type={type} onClick={onClick}>
       <Sideline type={action} />
