@@ -55,7 +55,7 @@ const insertBoardgames = async () =>
         properties: {
           faction: {
             type: 'string' as const,
-            enum: ['Red', 'Blue'],
+            enum: ['Red', 'Green', 'Blue', 'Yellow', 'Black'],
           },
           popularity: {
             type: 'number' as const,
