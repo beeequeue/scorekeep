@@ -24,8 +24,8 @@ const highlights = {
 } as const
 
 const gradients = {
-  primary: (deg: number = 0) => `linear-gradient(${deg}deg, ${highlights.primary.one}, ${highlights.primary.two})`,
-  danger: (deg: number = 0) => `linear-gradient(${deg}deg, ${highlights.danger.one}, ${highlights.danger.two})`,
+  primary: (deg: number = 0) => `linear-gradient(${deg}deg, ${highlights.primary.one} 25%, ${highlights.primary.two})`,
+  danger: (deg: number = 0) => `linear-gradient(${deg}deg, ${highlights.danger.one} 25%, ${highlights.danger.two})`,
 } as const
 
 // const transparent = new Color('transparent')
