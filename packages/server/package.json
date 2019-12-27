@@ -74,6 +74,7 @@
     "start": "ts-node --files -r tsconfig-paths/register src/index.ts",
     "pre-commit": "lint-staged",
     "pretest": "cross-env NODE_ENV=development yarn run migrate",
+    "seed": "ts-node -T -r tsconfig-paths/register ./seeders/main.ts",
     "test": "cross-env NODE_ENV=test jest server -i",
     "test:coverage": "yarn run test --coverage",
     "typeorm": "ts-node -T -r tsconfig-paths/register ../../node_modules/typeorm/cli.js",
