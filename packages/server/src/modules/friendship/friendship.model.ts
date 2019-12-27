@@ -5,7 +5,8 @@ import { User } from '@/modules/user/user.model'
 import { isNil, OptionalUuid } from '@/utils'
 
 type FriendshipConstructor = OptionalUuid<
-  Pick<Friendship, 'uuid' | 'initiatorUuid' | 'receiverUuid'>
+  Pick<Friendship, 'uuid' | 'initiatorUuid' | 'receiverUuid'> &
+    Partial<Pick<Friendship, 'accepted'>>
 >
 
 @Entity()
@@ -34,11 +35,15 @@ export class Friendship extends EntityWithOwner {
     return receiver
   }
 
+  @Column()
+  public accepted: boolean
+
   constructor(options: FriendshipConstructor) {
     super(options)
 
     this.initiatorUuid = options?.initiatorUuid
     this.receiverUuid = options?.receiverUuid
+    this.accepted = options?.accepted ?? false
   }
 
   public async getOwner() {
