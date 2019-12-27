@@ -16,13 +16,13 @@ import {
 import jsonSchema from '@/assets/json-schema-07.json'
 import { PaginatedResponse, PaginationArgs } from '@/modules/pagination'
 import { Boardgame, GAME_TYPE } from '@/modules/boardgame/boardgame.model'
-import { CustomValidator, JsonSchemaObject } from '@/types/json-schema'
+import { CustomValidator, JSONSchema } from '@/types/json-schema'
 import { createValidationError } from '@/utils/validations'
 import { isNil } from '@/utils'
 
 const ajv = new Ajv({ allErrors: true })
 
-const validate = ajv.compile(jsonSchema) as CustomValidator<JsonSchemaObject>
+const validate = ajv.compile(jsonSchema) as CustomValidator<JSONSchema>
 
 @ObjectType()
 class BoardgamesPage extends PaginatedResponse(Boardgame) {}
