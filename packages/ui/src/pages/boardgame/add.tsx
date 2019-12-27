@@ -44,21 +44,8 @@ const Form = styled.form`
   ${box};
 `
 
-const AddProperty = styled.button`
-  display: flex;
-  width: 100%;
-  padding: 0 16px;
-  margin-bottom: 32px;
-  height: 52px;
-  border: 0;
-  background: #004e7080;
-  color: white;
-  font-size: 20px;
-  transition: background 200ms ease-in-out;
-
-  &:hover {
-    background: #004e70b3;
-  }
+const AddProperty = styled(Button)`
+  margin-bottom: 15px;
 `
 
 const NumberInputContainer = styled(InputFieldContainer)`
@@ -162,8 +149,10 @@ const Add = () => {
             removable={prop !== 'property-0'}
           />
         ))}
+
         <AddProperty onClick={addProperty}>+ Add Property</AddProperty>
-        <Button type="submit">Submit</Button>
+
+        <Button type="submit" onClick={() => {}}>Submit</Button>
       </Form>
     </PageGrid>
   )

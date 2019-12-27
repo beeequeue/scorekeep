@@ -44,17 +44,23 @@ const StyledButton = styled.button`
   }
 `
 
+export type ButtonProps = {
+  action?: Action
+  type?: 'submit'
+  className?: string
+  children: ReactNode
+  onClick: () => void
+}
+
 export const Button = ({
   action = 'primary',
   type,
+  className,
   children,
-}: {
-  action?: Action
-  type?: 'submit'
-  children: ReactNode
-}) => {
+  onClick,
+}: ButtonProps) => {
   return (
-    <StyledButton type={type}>
+    <StyledButton className={className} type={type} onClick={onClick}>
       <Sideline type={action} />
 
       {children}

@@ -30,16 +30,20 @@ const InnerContainer = styled.div`
   border-radius: 3px;
 `
 
+const noop = () => {
+  /* no-op */
+}
+
 export const main = () => (
   <Container>
     <div>
-      <Button>Cancel</Button>
-      <Button>Continue</Button>
+      <Button onClick={noop}>Cancel</Button>
+      <Button onClick={noop}>Continue</Button>
     </div>
 
     <InnerContainer>
-      <Button action="danger">Delete</Button>
-      <Button>Continue</Button>
+      <Button action="danger" onClick={noop}>Delete</Button>
+      <Button onClick={noop}>Continue</Button>
     </InnerContainer>
   </Container>
 )
