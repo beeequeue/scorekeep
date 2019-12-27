@@ -38,7 +38,7 @@ export const main = () => (
     </div>
 
     <InnerContainer>
-      <Button>Cancel</Button>
+      <Button type="danger">Delete</Button>
       <Button>Continue</Button>
     </InnerContainer>
   </Container>

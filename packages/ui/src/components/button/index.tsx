@@ -1,16 +1,17 @@
 import React, { ReactNode } from 'react'
 import styled from 'styled-components'
 
-import { colors } from '@/design'
+import { Action, colors } from '@/design'
 
-const Sideline = styled.span<{ right?: boolean }>`
+const Sideline = styled.span<{ type: Action; right?: boolean }>`
   position: absolute;
   height: 100%;
   width: 4px;
   top: 0;
 
-  background: ${colors.highlights.gradients.main()};
-  box-shadow: 0 0 5px ${colors.highlights.one.fade(0.5).string()};
+  background: ${p => colors.actions[p.type].gradient()};
+  box-shadow: 0 0 5px
+    ${p => colors.actions[p.type].highlight.fade(0.5).string()};
 
   ${p => (p.right ? 'left: 0;' : 'right: 0;')}
 `
@@ -43,14 +44,20 @@ const StyledButton = styled.button`
   }
 `
 
-export const Button = ({ children }: { children: ReactNode }) => {
+export const Button = ({
+  type = 'primary',
+  children,
+}: {
+  type?: Action
+  children: ReactNode
+}) => {
   return (
     <StyledButton>
-      <Sideline />
+      <Sideline type={type} />
 
       {children}
 
-      <Sideline right />
+      <Sideline right type={type} />
     </StyledButton>
   )
 }
