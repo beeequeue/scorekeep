@@ -15,7 +15,7 @@ import { generateSchemaFromProperties } from '@/utils/schema-generator'
 import { InputFieldContainer } from '@/components/input-fields'
 import { Button } from '@/components/button'
 import { box, Header, PageGrid } from '@/components/layout'
-import { Input } from '../../components/input'
+import { Input } from '@/components/input'
 
 const PlayerNumberInput = styled(Input).attrs({
   type: 'number',

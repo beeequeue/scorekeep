@@ -33,7 +33,6 @@ const gradients = {
 export const colors = {
   background,
   text,
-  gradients,
   actions: {
     primary: {
       background: background.primary,
