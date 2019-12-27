@@ -6,13 +6,13 @@ import './styles.css'
 const theme = create({
   base: 'dark',
 
-  colorPrimary: colors.highlights.one.string(),
+  colorPrimary: colors.actions.primary.highlight.string(),
   colorSecondary: colors.background.secondary.string(),
 
   // UI
   appBg: colors.background.primary.string(),
   appContentBg: colors.background.body.string(),
-  appBorderColor: colors.highlights.one.string(),
+  appBorderColor: colors.actions.primary.highlight.string(),
   appBorderRadius: 3,
 
   // Text colors
@@ -22,11 +22,11 @@ const theme = create({
   // Toolbar default and active colors
   barTextColor: '#111',
   barSelectedColor: '#111',
-  barBg: colors.highlights.gradients.main(90),
+  barBg: colors.gradients.primary(90),
 
   // Form colors
   inputBg: colors.background.primary.string(),
-  inputBorder: colors.highlights.one.string(),
+  inputBorder: colors.actions.primary.highlight.string(),
   inputTextColor: colors.text.secondary.string(),
   inputBorderRadius: 3,
 })
