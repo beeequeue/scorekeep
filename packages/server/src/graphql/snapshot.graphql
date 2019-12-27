@@ -107,6 +107,11 @@ type Query {
   viewer: User
 }
 
+type UnclaimedUser {
+  uuid: ID!
+  name: String!
+}
+
 type User {
   uuid: ID!
   name: String!

@@ -1,8 +1,7 @@
 import { Column, Entity } from 'typeorm'
 import { Field, ObjectType } from 'type-graphql'
-import { MaxLength } from 'class-validator'
 
-import { ExtendedEntity } from '@/modules/exented-entity'
+import { UserBase } from '@/modules/user/user-base.model'
 import { Club } from '@/modules/club/club.model'
 import {
   Connection,
@@ -16,12 +15,7 @@ type UserConstructor = OptionalUuid<
 
 @Entity()
 @ObjectType()
-export class User extends ExtendedEntity {
-  @Column()
-  @Field()
-  @MaxLength(50)
-  public name: string
-
+export class User extends UserBase {
   @Field(() => [Club])
   public async clubs(): Promise<Club[]> {
     throw new Error('Not implemented yet')
