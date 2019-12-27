@@ -28,7 +28,7 @@ const gradients = {
   danger: (deg: number = 0) => `linear-gradient(${deg}deg, ${highlights.danger.one}, ${highlights.danger.two})`,
 } as const
 
-const transparent = new Color('transparent')
+// const transparent = new Color('transparent')
 
 export const colors = {
   background,
@@ -40,18 +40,21 @@ export const colors = {
       text: text.primary,
       highlight: highlights.primary.one,
       gradient: gradients.primary,
+      shine: highlights.primary.one.fade(0.25),
     },
     secondary: {
-      background: transparent,
+      background: background.primary,
       text: text.secondary,
-      highlight: transparent,
-      gradient: (_deg?: number) => 'transparent',
+      highlight: highlights.primary.one,
+      gradient: gradients.primary,
+      shine: highlights.primary.one.fade(0.25),
     },
     danger: {
       background: background.primary,
       text: text.primary,
       highlight: highlights.danger.one,
       gradient: gradients.danger,
+      shine: highlights.danger.one.fade(0),
     },
   },
 } as const

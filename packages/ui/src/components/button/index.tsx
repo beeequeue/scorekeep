@@ -11,7 +11,7 @@ const Sideline = styled.span<{ type: Action; right?: boolean }>`
 
   background: ${p => colors.actions[p.type].gradient()};
   box-shadow: 0 0 5px
-    ${p => colors.actions[p.type].highlight.fade(0.5).string()};
+    ${p => colors.actions[p.type].shine.string()};
 
   ${p => (p.right ? 'left: 0;' : 'right: 0;')}
 `
@@ -45,19 +45,21 @@ const StyledButton = styled.button`
 `
 
 export const Button = ({
-  type = 'primary',
+  action = 'primary',
+  type,
   children,
 }: {
-  type?: Action
+  action?: Action
+  type?: 'submit'
   children: ReactNode
 }) => {
   return (
-    <StyledButton>
-      <Sideline type={type} />
+    <StyledButton type={type}>
+      <Sideline type={action} />
 
       {children}
 
-      <Sideline right type={type} />
+      <Sideline right type={action} />
     </StyledButton>
   )
 }

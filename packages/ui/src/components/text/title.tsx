@@ -23,7 +23,7 @@ const Underline = styled.span<ActionProps>`
   width: 100%;
   background: ${p => colors.actions[p.type!].gradient(90)};
   box-shadow: 0 0 4px
-    ${p => colors.actions[p.type!].highlight.fade(0.5).string()};
+    ${p => colors.actions[p.type!].shine.string()};
 `
 
 type Props = ActionProps & {

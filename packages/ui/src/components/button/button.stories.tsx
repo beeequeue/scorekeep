@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { colors } from '@/design'
-import { Button } from './index'
+import { Button } from '.'
 
 export default {
   title: 'Button',
@@ -38,7 +38,7 @@ export const main = () => (
     </div>
 
     <InnerContainer>
-      <Button type="danger">Delete</Button>
+      <Button action="danger">Delete</Button>
       <Button>Continue</Button>
     </InnerContainer>
   </Container>
