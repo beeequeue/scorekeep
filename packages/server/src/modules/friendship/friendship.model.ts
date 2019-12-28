@@ -35,15 +35,15 @@ export class Friendship extends EntityWithOwner {
     return receiver
   }
 
-  @Column()
-  public accepted: boolean
+  @Column({ type: 'timestamp', nullable: true })
+  public accepted: Date | null
 
   constructor(options: FriendshipConstructor) {
     super(options)
 
     this.initiatorUuid = options?.initiatorUuid
     this.receiverUuid = options?.receiverUuid
-    this.accepted = options?.accepted ?? false
+    this.accepted = options?.accepted ?? null
   }
 
   public async getOwners() {

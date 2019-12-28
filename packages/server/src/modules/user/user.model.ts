@@ -7,6 +7,7 @@ import {
   Connection,
   ConnectionConstructor,
 } from '@/modules/connection/connection.model'
+import { Friendship } from '@/modules/friendship/friendship.model'
 import { isNil, OptionalUuid } from '@/utils'
 
 type UserConstructor = OptionalUuid<
@@ -35,6 +36,19 @@ export class User extends UserBase {
     return await Connection.findOneOrFail({ uuid: this.mainConnectionUuid })
   }
 
+  @Field(() => [User])
+  public async friends(): Promise<User[]> {
+    const friendships = await Friendship.find({
+      where: [{ initiatorUuid: this.uuid }, { receiverUuid: this.uuid }],
+    })
+
+    return Promise.all(
+      friendships.map(f =>
+        f.initiatorUuid === this.uuid ? f.receiver() : f.initiator(),
+      ),
+    )
+  }
+
   constructor(options: UserConstructor) {
     super(options)
 
@@ -54,5 +68,14 @@ export class User extends UserBase {
     }
 
     return connection
+  }
+
+  public async requestFriendship(initiatorUuid: string) {
+    const friendship = new Friendship({
+      initiatorUuid,
+      receiverUuid: this.uuid,
+    })
+
+    await friendship.save()
   }
 }
