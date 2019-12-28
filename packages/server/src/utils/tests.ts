@@ -1,5 +1,8 @@
 import faker from 'faker'
+import { GraphQLError } from 'graphql'
+import { createTestClient } from 'apollo-server-integration-testing'
 
+import { connectApolloServer, createApp } from '@/apollo'
 import { User } from '@/modules/user/user.model'
 import {
   Connection,
@@ -63,4 +66,52 @@ export const generateUser = async ({
   const session = await Session.generate(user)
 
   return { user, session, connection }
+}
+
+export const createApolloClient = async () =>{
+  const server = await connectApolloServer(createApp())
+  const client = createTestClient({
+    apolloServer: server,
+  })
+
+  type GraphQLResponse<D = any> = {
+    errors?: GraphQLError[]
+    data: D | null
+  }
+
+  const graphqlRequest = (type: 'query' | 'mutate') => async <D = any, V extends {} | undefined = undefined>(
+    query: string,
+    options: { variables?: V; session?: Session } = {},
+  ): Promise<GraphQLResponse<D>> => {
+    if (options.session) {
+      client.setOptions({
+        request: {
+          headers: {
+            authorization: `Bearer ${await options.session.getJWT()}`,
+          },
+        },
+      })
+    }
+
+    const result = await client[type]<GraphQLResponse<D>>(query, {
+      variables: options.variables,
+    })
+
+    client.setOptions({
+      request: {
+        headers: {
+          authorization: undefined,
+        },
+      },
+    })
+
+    return result
+  }
+
+  return {
+    client,
+    server,
+    query: graphqlRequest('query'),
+    mutate: graphqlRequest('mutate'),
+  }
 }
