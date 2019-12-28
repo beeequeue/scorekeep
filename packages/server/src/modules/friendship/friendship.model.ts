@@ -3,6 +3,7 @@ import { Column, Entity } from 'typeorm'
 import { EntityWithOwner } from '@/modules/exented-entity'
 import { User } from '@/modules/user/user.model'
 import { isNil, OptionalUuid } from '@/utils'
+import { Field, ID, ObjectType } from 'type-graphql'
 
 type FriendshipConstructor = OptionalUuid<
   Pick<Friendship, 'uuid' | 'initiatorUuid' | 'receiverUuid'> &
@@ -48,5 +49,23 @@ export class Friendship extends EntityWithOwner {
 
   public async getOwners() {
     return [await this.initiator(), await this.receiver()]
+  }
+}
+
+@ObjectType()
+export class FriendRequest {
+  @Field(() => ID)
+  public uuid: string
+
+  @Field(() => User)
+  public initiator: User
+
+  @Field(() => User)
+  public receiver: User
+
+  constructor(options: { uuid: string; initiator: User; receiver: User }) {
+    this.uuid = options.uuid
+    this.initiator = options.initiator
+    this.receiver = options.receiver
   }
 }

@@ -52,6 +52,12 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 """
 scalar DateTime
 
+type FriendRequest {
+  uuid: ID!
+  initiator: User!
+  receiver: User!
+}
+
 enum GAME_TYPE {
   COLLABORATIVE
   COMPETITIVE
@@ -121,5 +127,5 @@ type User {
   connections: [Connection!]!
   mainConnection: Connection
   friends: [User!]!
-  friendRequests: [User!]!
+  friendRequests: [FriendRequest!]!
 }
