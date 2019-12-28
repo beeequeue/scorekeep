@@ -16,7 +16,7 @@ export class FriendshipResolver {
     const user = await User.findOne({ uuid })
 
     if (isNil(user)) {
-      throw new Error('Could not find user!')
+      throw new Error('Could not find User!')
     }
 
     await user.requestFriendship(context.session!.user.uuid)
