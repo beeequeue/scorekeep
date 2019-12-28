@@ -88,7 +88,7 @@ type Mutation {
   """
   disconnect(uuid: ID!): User!
   addFriend(uuid: ID!): User!
-  acceptFriendship(userUuid: ID!): User!
+  acceptFriendRequest(userUuid: ID!): User!
   addMatch(club: ID, game: ID!, results: JSONObject!): Match!
   addUser(name: String!): User!
   useUser(uuid: String!): Boolean!

@@ -66,11 +66,11 @@ export class User extends UserBase {
 
     return Promise.all(
       friendships.map(
-        async ({ uuid, initiator, receiver }) =>
+        async f =>
           new FriendRequest({
-            uuid,
-            initiator: await initiator(),
-            receiver: await receiver(),
+            uuid: f.uuid,
+            initiator: await f.initiator(),
+            receiver: await f.receiver(),
           }),
       ),
     )

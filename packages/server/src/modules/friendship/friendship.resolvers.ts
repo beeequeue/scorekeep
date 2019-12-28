@@ -26,7 +26,7 @@ export class FriendshipResolver {
 
   @Mutation(() => User)
   @Authorized()
-  public async acceptFriendship(
+  public async acceptFriendRequest(
     @Ctx() context: SessionContext,
     @Arg('userUuid', () => ID) userUuid: string,
   ): Promise<User> {
