@@ -1,22 +1,15 @@
-import { ApolloServer } from 'apollo-server-express'
-import { createTestClient } from 'apollo-server-integration-testing'
-import { GraphQLError } from 'graphql'
-import { Connection as DBConnection } from 'typeorm'
+import { Connection as DBConnection, Not, IsNull } from 'typeorm'
+import uuid from 'uuid/v4'
 
-import { connectApolloServer, createApp } from '@/apollo'
 import { connectToDatabase } from '@/db'
-import { generateUser } from '@/utils/tests'
-import { Session } from '@/modules/session/session.model'
+import { createApolloClient, generateUser } from '@/utils/tests'
+import { Friendship } from '@/modules/friendship/friendship.model'
 
-let server: ApolloServer
-let client: ReturnType<typeof createTestClient>
+let client: PromiseReturnType<typeof createApolloClient>
 let dbConnection: DBConnection
 
 beforeAll(async () => {
-  server = await connectApolloServer(createApp())
-  client = createTestClient({
-    apolloServer: server,
-  })
+  client = await createApolloClient()
   dbConnection = await connectToDatabase()
 })
 
@@ -26,46 +19,127 @@ beforeEach(async () => {
   await dbConnection.synchronize(true)
 })
 
-type GraphQLResponse<D = any> = {
-  errors?: GraphQLError[]
-  data: D | null
-}
-
-const query = async <D = any, V extends {} | undefined = undefined>(
-  query: string,
-  options: { variables?: V; session?: Session } = {},
-): Promise<GraphQLResponse<D>> => {
-  if (options.session) {
-    client.setOptions({
-      request: {
-        headers: {
-          authorization: `Bearer ${await options.session.getJWT()}`,
-        },
-      },
-    })
-  }
-
-  const result = await client.query<GraphQLResponse<D>>(query, {
-    variables: options.variables,
-  })
-
-  client.setOptions({
-    request: {
-      headers: {
-        authorization: undefined
+describe('resolvers', () => {
+  const addFriend = `
+    mutation AddFriend($uuid: ID!) {
+      addFriend(uuid: $uuid) {
+        uuid
+        friendRequests {
+          uuid
+          initiator {
+            uuid
+          }
+          receiver {
+            uuid
+          }
+        }
       }
     }
+  `
+
+  test('addFriend should request a friendship', async () => {
+    const generated = await Promise.all([generateUser(), generateUser()])
+
+    const response = await client.mutate(addFriend, {
+      session: generated[0].session,
+      variables: { uuid: generated[1].user.uuid },
+    })
+
+    expect(response.errors).toBeUndefined()
+    expect(response.data).toMatchObject({
+      addFriend: {
+        uuid: generated[0].user.uuid,
+        friendRequests: [
+          {
+            initiator: {
+              uuid: generated[0].user.uuid,
+            },
+            receiver: {
+              uuid: generated[1].user.uuid,
+            },
+          },
+        ],
+      },
+    })
+
+    await expect(
+      Friendship.findOneOrFail({
+        initiatorUuid: generated[0].user.uuid,
+        receiverUuid: generated[1].user.uuid,
+      }),
+    ).resolves.toBeDefined()
   })
 
-  return result
-}
+  test('addFriend handles missing user', async () => {
+    const generated = await Promise.all([generateUser()])
 
-describe('addFriend', () => {
-  const make
+    const response = await client.mutate(addFriend, {
+      session: generated[0].session,
+      variables: { uuid: uuid() },
+    })
 
-  test('should request a friendship', async () => {
-    const users = await Promise.all([generateUser(), generateUser()])
+    expect(response.data).toBeNull()
+    expect(response.errors).toMatchObject([
+      {
+        message: 'Could not find User!',
+      },
+    ])
+  })
 
-    query
+  const acceptFriendRequest = `
+    mutation AcceptFriendRequest($userUuid: ID!) {
+      acceptFriendRequest(userUuid: $userUuid) {
+        uuid
+        friends {
+          uuid
+        }
+        friendRequests {
+          uuid
+          initiator {
+            uuid
+          }
+          receiver {
+            uuid
+          }
+        }
+      }
+    }
+  `
+
+  test('acceptFriendRequest should accept a friendship', async () => {
+    const generated = await Promise.all([generateUser(), generateUser()])
+
+    await new Friendship({
+      initiatorUuid: generated[0].user.uuid,
+      receiverUuid: generated[1].user.uuid,
+    }).save()
+
+    const response = await client.mutate(acceptFriendRequest, {
+      session: generated[1].session,
+      variables: { userUuid: generated[0].user.uuid },
+    })
+
+    expect(response.errors).toBeUndefined()
+    expect(response.data).toMatchObject({
+      acceptFriendRequest: {
+        uuid: generated[1].user.uuid,
+        friends: [
+          {
+            uuid: generated[0].user.uuid,
+          },
+        ],
+        friendRequests: [],
+      },
+    })
+
+    await expect(
+      Friendship.findOneOrFail({
+        initiatorUuid: generated[0].user.uuid,
+        receiverUuid: generated[1].user.uuid,
+        accepted: Not(IsNull()),
+      }),
+    ).resolves.toMatchObject({
+      accepted: expect.any(Date),
+    })
   })
 })

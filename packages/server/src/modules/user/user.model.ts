@@ -1,4 +1,4 @@
-import { Column, Entity, Not } from 'typeorm'
+import { Column, Entity, IsNull, Not } from 'typeorm'
 import { Field, ObjectType } from 'type-graphql'
 
 import { UserBase } from '@/modules/user/user-base.model'
@@ -43,8 +43,8 @@ export class User extends UserBase {
   public async friends(): Promise<User[]> {
     const friendships = await Friendship.find({
       where: [
-        { initiatorUuid: this.uuid, accepted: Not(null) },
-        { receiverUuid: this.uuid, accepted: Not(null) },
+        { initiatorUuid: this.uuid, accepted: Not(IsNull()) },
+        { receiverUuid: this.uuid, accepted: Not(IsNull()) },
       ],
     })
 
@@ -59,8 +59,8 @@ export class User extends UserBase {
   public async friendRequests(): Promise<FriendRequest[]> {
     const friendships = await Friendship.find({
       where: [
-        { initiatorUuid: this.uuid, accepted: null },
-        { receiverUuid: this.uuid, accepted: null },
+        { initiatorUuid: this.uuid, accepted: IsNull() },
+        { receiverUuid: this.uuid, accepted: IsNull() },
       ],
     })
 
