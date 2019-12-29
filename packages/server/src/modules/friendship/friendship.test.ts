@@ -20,126 +20,130 @@ beforeEach(async () => {
 })
 
 describe('resolvers', () => {
-  const addFriend = `
-    mutation AddFriend($uuid: ID!) {
-      addFriend(uuid: $uuid) {
-        uuid
-        friendRequests {
+  describe('addFriend', () => {
+    const addFriend = `
+      mutation AddFriend($uuid: ID!) {
+        addFriend(uuid: $uuid) {
           uuid
-          initiator {
+          friendRequests {
             uuid
-          }
-          receiver {
-            uuid
+            initiator {
+              uuid
+            }
+            receiver {
+              uuid
+            }
           }
         }
       }
-    }
-  `
+    `
 
-  test('addFriend should request a friendship', async () => {
-    const generated = await Promise.all([generateUser(), generateUser()])
+    test('should request a friendship', async () => {
+      const generated = await Promise.all([generateUser(), generateUser()])
 
-    const response = await client.mutate(addFriend, {
-      session: generated[0].session,
-      variables: { uuid: generated[1].user.uuid },
+      const response = await client.mutate(addFriend, {
+        session: generated[0].session,
+        variables: { uuid: generated[1].user.uuid },
+      })
+
+      expect(response.errors).toBeUndefined()
+      expect(response.data).toMatchObject({
+        addFriend: {
+          uuid: generated[0].user.uuid,
+          friendRequests: [
+            {
+              initiator: {
+                uuid: generated[0].user.uuid,
+              },
+              receiver: {
+                uuid: generated[1].user.uuid,
+              },
+            },
+          ],
+        },
+      })
+
+      await expect(
+        Friendship.findOneOrFail({
+          initiatorUuid: generated[0].user.uuid,
+          receiverUuid: generated[1].user.uuid,
+        }),
+      ).resolves.toBeDefined()
     })
 
-    expect(response.errors).toBeUndefined()
-    expect(response.data).toMatchObject({
-      addFriend: {
-        uuid: generated[0].user.uuid,
-        friendRequests: [
-          {
-            initiator: {
+    test('handles missing user', async () => {
+      const generated = await Promise.all([generateUser()])
+
+      const response = await client.mutate(addFriend, {
+        session: generated[0].session,
+        variables: { uuid: uuid() },
+      })
+
+      expect(response.data).toBeNull()
+      expect(response.errors).toMatchObject([
+        {
+          message: 'Could not find User!',
+        },
+      ])
+    })
+  })
+
+  describe('acceptFriendRequest', () => {
+    const acceptFriendRequest = `
+      mutation AcceptFriendRequest($userUuid: ID!) {
+        acceptFriendRequest(userUuid: $userUuid) {
+          uuid
+          friends {
+            uuid
+          }
+          friendRequests {
+            uuid
+            initiator {
+              uuid
+            }
+            receiver {
+              uuid
+            }
+          }
+        }
+      }
+    `
+
+    test('should accept a friendship', async () => {
+      const generated = await Promise.all([generateUser(), generateUser()])
+
+      await new Friendship({
+        initiatorUuid: generated[0].user.uuid,
+        receiverUuid: generated[1].user.uuid,
+      }).save()
+
+      const response = await client.mutate(acceptFriendRequest, {
+        session: generated[1].session,
+        variables: { userUuid: generated[0].user.uuid },
+      })
+
+      expect(response.errors).toBeUndefined()
+      expect(response.data).toMatchObject({
+        acceptFriendRequest: {
+          uuid: generated[1].user.uuid,
+          friends: [
+            {
               uuid: generated[0].user.uuid,
             },
-            receiver: {
-              uuid: generated[1].user.uuid,
-            },
-          },
-        ],
-      },
-    })
+          ],
+          friendRequests: [],
+        },
+      })
 
-    await expect(
-      Friendship.findOneOrFail({
-        initiatorUuid: generated[0].user.uuid,
-        receiverUuid: generated[1].user.uuid,
-      }),
-    ).resolves.toBeDefined()
-  })
-
-  test('addFriend handles missing user', async () => {
-    const generated = await Promise.all([generateUser()])
-
-    const response = await client.mutate(addFriend, {
-      session: generated[0].session,
-      variables: { uuid: uuid() },
-    })
-
-    expect(response.data).toBeNull()
-    expect(response.errors).toMatchObject([
-      {
-        message: 'Could not find User!',
-      },
-    ])
-  })
-
-  const acceptFriendRequest = `
-    mutation AcceptFriendRequest($userUuid: ID!) {
-      acceptFriendRequest(userUuid: $userUuid) {
-        uuid
-        friends {
-          uuid
-        }
-        friendRequests {
-          uuid
-          initiator {
-            uuid
-          }
-          receiver {
-            uuid
-          }
-        }
-      }
-    }
-  `
-
-  test('acceptFriendRequest should accept a friendship', async () => {
-    const generated = await Promise.all([generateUser(), generateUser()])
-
-    await new Friendship({
-      initiatorUuid: generated[0].user.uuid,
-      receiverUuid: generated[1].user.uuid,
-    }).save()
-
-    const response = await client.mutate(acceptFriendRequest, {
-      session: generated[1].session,
-      variables: { userUuid: generated[0].user.uuid },
-    })
-
-    expect(response.errors).toBeUndefined()
-    expect(response.data).toMatchObject({
-      acceptFriendRequest: {
-        uuid: generated[1].user.uuid,
-        friends: [
-          {
-            uuid: generated[0].user.uuid,
-          },
-        ],
-        friendRequests: [],
-      },
-    })
-
-    await expect(
-      Friendship.findOneOrFail({
-        initiatorUuid: generated[0].user.uuid,
-        receiverUuid: generated[1].user.uuid,
-        accepted: Not(IsNull()),
-      }),
-    ).resolves.toMatchObject({
-      accepted: expect.any(Date),
+      await expect(
+        Friendship.findOneOrFail({
+          initiatorUuid: generated[0].user.uuid,
+          receiverUuid: generated[1].user.uuid,
+          accepted: Not(IsNull()),
+        }),
+      ).resolves.toMatchObject({
+        accepted: expect.any(Date),
+      })
     })
   })
 })
