@@ -102,7 +102,17 @@ type Mutation {
   _Requires login._
   """
   createFriend(name: String!): UnclaimedUser!
+
+  """
+  Create a User without a Connection.
+  _Development only._
+  """
   addUser(name: String!): User!
+
+  """
+  Gives a session cookie for the specified User.
+  _Development only._
+  """
   useUser(uuid: String!): Boolean!
 }
 

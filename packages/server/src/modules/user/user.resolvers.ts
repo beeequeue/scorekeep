@@ -78,8 +78,16 @@ export class UserResolver {
 
   // Development shit
 
-  @Mutation(() => User)
+  @Mutation(() => User, {
+    description: createDescription('Create a User without a Connection.', {
+      dev: true,
+    }),
+  })
   public async addUser(@Arg('name') name: string) {
+    if (process.env.NODE_ENV !== 'development') {
+      throw new Error('NOT_IN_DEVELOPMENT')
+    }
+
     const user = new User({
       name,
       mainConnectionUuid: uuid(),
@@ -88,11 +96,19 @@ export class UserResolver {
     return user.save()
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => Boolean, {
+    description: createDescription('Gives a session cookie for the specified User.', {
+      dev: true,
+    }),
+  })
   public async useUser(
     @Ctx() context: SessionContext,
     @Arg('uuid') uuid: string,
   ) {
+    if (process.env.NODE_ENV !== 'development') {
+      throw new Error('NOT_IN_DEVELOPMENT')
+    }
+
     const user = await User.findOne({ uuid })
     if (isNil(user)) {
       throw new Error('User does not exist!')

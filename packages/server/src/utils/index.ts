@@ -51,8 +51,9 @@ export const isUuid = (str?: string) =>
     str,
   )
 
-export const createDescription = (desc: string, options?: { login?: true }) => {
+export const createDescription = (desc: string, options?: { login?: true, dev?: true }) => {
   const loginStr = options?.login ? '\n_Requires login._' : ''
+  const devStr = options?.dev ? '\n_Development only._' : ''
 
-  return `${desc}${loginStr}`
+  return `${desc}${loginStr}${devStr}`
 }
