@@ -9,6 +9,7 @@ import {
 } from 'type-graphql'
 import uuid from 'uuid/v4'
 
+import { Friendship } from '@/modules/friendship/friendship.model'
 import { User } from '@/modules/user/user.model'
 import { UnclaimedUser } from '@/modules/user/unclaimed-user.model'
 import { SessionContext } from '@/modules/session/session.lib'
@@ -58,11 +59,21 @@ export class UserResolver {
     }),
   })
   @Authorized()
-  public async createFriend(@Arg('name') name: string): Promise<UnclaimedUser> {
-    const user = new UnclaimedUser({ name })
-    await user.save()
+  public async createFriend(
+    @Ctx() context: SessionContext,
+    @Arg('name') name: string,
+  ): Promise<UnclaimedUser> {
+    const newUser = new UnclaimedUser({ name })
+    await newUser.save()
 
-    return user
+    const friendship = new Friendship({
+      initiatorUuid: context.session!.user.uuid,
+      receiverUuid: newUser.uuid,
+      accepted: new Date(),
+    })
+    await friendship.save()
+
+    return newUser
   }
 
   // Development shit
