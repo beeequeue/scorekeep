@@ -91,7 +91,7 @@ jobs:
       - run:
           working_directory: ~/app/packages/ui
           name: Test
-          command: yarn run test --ci --reporters=jest-junit --reporters=default
+          command: yarn run test --ci --verbose --reporters=jest-junit --reporters=default
       - store_test_results:
           when: always
           path: test-results
@@ -113,7 +113,7 @@ jobs:
       - run:
           working_directory: ~/app/packages/server
           name: Test
-          command: yarn run test --ci --reporters=jest-junit --reporters=default
+          command: yarn run test --ci --verbose --reporters=jest-junit --reporters=default
       - store_test_results:
           when: always
           path: test-results
