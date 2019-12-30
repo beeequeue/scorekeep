@@ -1,9 +1,11 @@
 import { Column, Entity } from 'typeorm'
+import { Field, ID, ObjectType } from 'type-graphql'
 
 import { EntityWithOwner } from '@/modules/exented-entity'
 import { User } from '@/modules/user/user.model'
+import { UnclaimedUser } from '@/modules/user/unclaimed-user.model'
+import { UsersUnionType } from '@/modules/user/user.types'
 import { isNil, OptionalUuid } from '@/utils'
-import { Field, ID, ObjectType } from 'type-graphql'
 
 type FriendshipConstructor = OptionalUuid<
   Pick<Friendship, 'uuid' | 'initiatorUuid' | 'receiverUuid'> &
@@ -26,8 +28,10 @@ export class Friendship extends EntityWithOwner {
 
   @Column({ type: 'uuid' })
   public receiverUuid: string
-  public async receiver(): Promise<User> {
-    const receiver = await User.findOne({ uuid: this.receiverUuid })
+  public async receiver(): Promise<User | UnclaimedUser> {
+    const receiver =
+      (await User.findOne({ uuid: this.receiverUuid })) ??
+      (await UnclaimedUser.findOne({ uuid: this.receiverUuid }))
 
     if (isNil(receiver)) {
       throw this.shouldExistError(User, this.receiverUuid)
@@ -60,10 +64,14 @@ export class FriendRequest {
   @Field(() => User)
   public initiator: User
 
-  @Field(() => User)
-  public receiver: User
+  @Field(() => UsersUnionType)
+  public receiver: User | UnclaimedUser
 
-  constructor(options: { uuid: string; initiator: User; receiver: User }) {
+  constructor(options: {
+    uuid: string
+    initiator: FriendRequest['initiator']
+    receiver: FriendRequest['receiver']
+  }) {
     this.uuid = options.uuid
     this.initiator = options.initiator
     this.receiver = options.receiver

@@ -55,7 +55,7 @@ scalar DateTime
 type FriendRequest {
   uuid: ID!
   initiator: User!
-  receiver: User!
+  receiver: UsersUnion!
 }
 
 enum GAME_TYPE {
@@ -134,6 +134,7 @@ type Query {
 type UnclaimedUser {
   uuid: ID!
   name: String!
+  friends: [User!]!
 }
 
 type User {
@@ -142,6 +143,8 @@ type User {
   clubs: [Club!]!
   connections: [Connection!]!
   mainConnection: Connection
-  friends: [User!]!
+  friends: [UsersUnion!]!
   friendRequests: [FriendRequest!]!
 }
+
+union UsersUnion = User | UnclaimedUser

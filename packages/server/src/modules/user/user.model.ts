@@ -12,6 +12,8 @@ import {
   Friendship,
 } from '@/modules/friendship/friendship.model'
 import { isNil, OptionalUuid } from '@/utils'
+import { UsersUnionType } from '@/modules/user/user.types'
+import { UnclaimedUser } from '@/modules/user/unclaimed-user.model'
 
 type UserConstructor = OptionalUuid<
   Pick<User, 'uuid' | 'name' | 'mainConnectionUuid'>
@@ -39,8 +41,8 @@ export class User extends UserBase {
     return await Connection.findOneOrFail({ uuid: this.mainConnectionUuid })
   }
 
-  @Field(() => [User])
-  public async friends(): Promise<User[]> {
+  @Field(() => [UsersUnionType])
+  public async friends(): Promise<Array<User | UnclaimedUser>> {
     const friendships = await Friendship.find({
       where: [
         { initiatorUuid: this.uuid, accepted: Not(IsNull()) },
