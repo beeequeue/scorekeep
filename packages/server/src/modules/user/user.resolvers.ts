@@ -33,6 +33,26 @@ export class UserResolver {
     return context.session?.user ?? null
   }
 
+  @Mutation(() => User, {
+    description: createDescription('Update the name of the logged in user.', {
+      login: true,
+    }),
+  })
+  @Authorized()
+  public async updateName(
+    @Ctx() context: SessionContext,
+    @Arg('name') name: string,
+  ) {
+    const user = context.session!.user
+
+    user.name = name
+    await user.save()
+
+    return user
+  }
+
+  // Development shit
+
   @Mutation(() => User)
   public async addUser(@Arg('name') name: string) {
     const user = new User({
@@ -58,23 +78,5 @@ export class UserResolver {
     context.setSession(session)
 
     return true
-  }
-
-  @Mutation(() => User, {
-    description: createDescription('Update the name of the logged in user.', {
-      login: true,
-    }),
-  })
-  @Authorized()
-  public async updateName(
-    @Ctx() context: SessionContext,
-    @Arg('name') name: string,
-  ) {
-    const user = context.session!.user
-
-    user.name = name
-    await user.save()
-
-    return user
   }
 }
