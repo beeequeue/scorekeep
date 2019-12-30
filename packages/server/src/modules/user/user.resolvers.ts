@@ -10,6 +10,7 @@ import {
 import uuid from 'uuid/v4'
 
 import { User } from '@/modules/user/user.model'
+import { UnclaimedUser } from '@/modules/user/unclaimed-user.model'
 import { SessionContext } from '@/modules/session/session.lib'
 import { Session } from '@/modules/session/session.model'
 import { createDescription, isNil, isUuid } from '@/utils'
@@ -46,6 +47,19 @@ export class UserResolver {
     const user = context.session!.user
 
     user.name = name
+    await user.save()
+
+    return user
+  }
+
+  @Mutation(() => UnclaimedUser, {
+    description: createDescription('Create a new UnclaimedUser as a friend.', {
+      login: true,
+    }),
+  })
+  @Authorized()
+  public async createFriend(@Arg('name') name: string): Promise<UnclaimedUser> {
+    const user = new UnclaimedUser({ name })
     await user.save()
 
     return user

@@ -98,6 +98,12 @@ type Mutation {
   _Requires login._
   """
   updateName(name: String!): User!
+
+  """
+  Create a new UnclaimedUser as a friend.
+  _Requires login._
+  """
+  createFriend(name: String!): UnclaimedUser!
 }
 
 type Query {
