@@ -12,7 +12,8 @@ import { MatchForm } from '@/pages/match/components/player-form'
 import {
   AddMatchMutationVariables,
   Boardgame,
-  BoardgamesQuery, useAddMatchMutation,
+  BoardgamesQuery,
+  useAddMatchMutation,
 } from '@/graphql/generated'
 import { getTypesFromSchema, toSchemaType } from '@/utils/game-schema-types'
 
@@ -27,12 +28,12 @@ const Form = styled.form`
 const Boardgames = gql`
   query Boardgames {
     boardgames {
-        items {
-            uuid
-            maxPlayers
-            name
-            resultSchema
-        }
+      items {
+        uuid
+        maxPlayers
+        name
+        resultSchema
+      }
     }
   }
 `
@@ -43,7 +44,7 @@ const Add = () => {
   > | null>(null)
   const { data, loading } = useQuery<BoardgamesQuery>(Boardgames)
   const [playerResults, setPlayerResults] = useState<any>(null)
-  const [ addMatch ] = useAddMatchMutation()
+  const [addMatch] = useAddMatchMutation()
 
   const onBoardgameChange = useCallback(
     (e: ChangeEvent<HTMLSelectElement>) => {
@@ -71,17 +72,16 @@ const Add = () => {
       <Form
         onSubmit={async e => {
           e.preventDefault()
-          const variables : AddMatchMutationVariables = {
+          const variables: AddMatchMutationVariables = {
             boardgame: boardgame!.uuid,
             result: {
               playerResults: toSchemaType(
                 playerResults,
-                getTypesFromSchema(boardgame!.resultSchema)
-              )
-            }
+                getTypesFromSchema(boardgame!.resultSchema),
+              ),
+            },
           }
-          await addMatch({variables})
-
+          await addMatch({ variables })
         }}
       >
         <Row>
@@ -105,6 +105,7 @@ const Add = () => {
               maxPlayers={boardgame.maxPlayers}
               onChange={setPlayerResults}
             />
+
             <Button type="submit">Submit</Button>
           </>
         )}

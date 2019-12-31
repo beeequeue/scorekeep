@@ -1,7 +1,11 @@
 import React, { ReactNode } from 'react'
 import styled from 'styled-components'
 
-import { colors } from '@/design'
+import { Action, colors } from '@/design'
+
+type ActionProps = {
+  type?: Action
+}
 
 const StyledH1 = styled.h1`
   position: relative;
@@ -11,22 +15,28 @@ const StyledH1 = styled.h1`
   margin: 25px;
 `
 
-const Underline = styled.span`
+const Underline = styled.span<ActionProps>`
   position: absolute;
   left: 0;
   bottom: 0;
   height: 2px;
   width: 100%;
-  background: ${colors.highlights.gradients.main};
-  box-shadow: 0 0 3px ${colors.highlights.one}c0;
+  background: ${p => colors.actions[p.type!].gradient(90)};
+  box-shadow: 0 0 4px
+    ${p => colors.actions[p.type!].shine.string()};
 `
 
-export const Title = ({ children, marginTop }: { children: ReactNode, marginTop?: number }) => {
+type Props = ActionProps & {
+  marginTop?: number
+  children: ReactNode
+}
+
+export const Title = ({ type = 'primary', marginTop, children }: Props) => {
   return (
     <StyledH1 style={{ marginTop }}>
       {children}
 
-      <Underline />
+      <Underline type={type} />
     </StyledH1>
   )
 }

@@ -6,28 +6,28 @@ import './styles.css'
 const theme = create({
   base: 'dark',
 
-  colorPrimary: colors.highlights.one,
-  colorSecondary: colors.background.secondary,
+  colorPrimary: colors.actions.primary.highlight.string(),
+  colorSecondary: colors.background.secondary.string(),
 
   // UI
-  appBg: colors.background.primary,
-  appContentBg: colors.background.body,
-  appBorderColor: colors.highlights.one,
+  appBg: colors.background.primary.string(),
+  appContentBg: colors.background.body.string(),
+  appBorderColor: colors.actions.primary.highlight.string(),
   appBorderRadius: 3,
 
   // Text colors
-  textColor: colors.text.primary,
-  textInverseColor: colors.text.tertiary,
+  textColor: colors.text.primary.string(),
+  textInverseColor: colors.text.tertiary.string(),
 
   // Toolbar default and active colors
   barTextColor: '#111',
   barSelectedColor: '#111',
-  barBg: colors.highlights.gradients.main,
+  barBg: colors.actions.primary.gradient(90),
 
   // Form colors
-  inputBg: colors.background.primary,
-  inputBorder: colors.highlights.one,
-  inputTextColor: colors.text.secondary,
+  inputBg: colors.background.primary.string(),
+  inputBorder: colors.actions.primary.highlight.string(),
+  inputTextColor: colors.text.secondary.string(),
   inputBorderRadius: 3,
 })
 
