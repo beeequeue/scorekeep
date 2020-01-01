@@ -42,7 +42,7 @@ export abstract class ExtendedEntity extends BaseEntity {
   }
 
   public static toLoggable(uuid: string) {
-    return `[${this.constructor.name}:${uuid}]`
+    return `[${this.name ?? this.constructor.name}:${uuid}]`
   }
 }
 
