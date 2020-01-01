@@ -1,18 +1,11 @@
 import { Column, Entity, IsNull } from 'typeorm'
-import { Authorized, Ctx, Field, ObjectType } from 'type-graphql'
+import { Field, ObjectType } from 'type-graphql'
 
 import { UserBase } from '@/modules/user/user-base.model'
 import { Club } from '@/modules/club/club.model'
-import {
-  Connection,
-  ConnectionConstructor,
-} from '@/modules/connection/connection.model'
-import {
-  FriendRequest,
-  Friendship,
-} from '@/modules/friendship/friendship.model'
+import { Connection, ConnectionConstructor } from '@/modules/connection/connection.model'
+import { FriendRequest, Friendship } from '@/modules/friendship/friendship.model'
 import { isNil, OptionalUuid } from '@/utils'
-import { SessionContext } from '@/modules/session/session.lib'
 
 type UserConstructor = OptionalUuid<
   Pick<User, 'uuid' | 'name' | 'mainConnectionUuid'>
@@ -38,19 +31,6 @@ export class User extends UserBase {
     if (isNil(this.mainConnectionUuid)) return null
 
     return await Connection.findOneOrFail({ uuid: this.mainConnectionUuid })
-  }
-
-  @Field(() => Date)
-  @Authorized()
-  public async friendsSince(
-    @Ctx() context: SessionContext,
-  ): Promise<Date | null> {
-    const { uuid } = context.session!.user
-    const friendship = await Friendship.findOne({
-      where: [{ initiatorUuid: uuid }, { receiverUuid: uuid }],
-    })
-
-    return friendship?.accepted ?? null
   }
 
   @Field(() => [FriendRequest])

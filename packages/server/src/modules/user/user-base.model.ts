@@ -10,6 +10,4 @@ export abstract class UserBase extends ExtendedEntity {
   @Field()
   @MaxLength(50)
   public name!: string
-
-  public abstract friendsSince(...any: any[]): Promise<Date | null>
 }

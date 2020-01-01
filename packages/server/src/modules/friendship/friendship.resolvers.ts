@@ -77,6 +77,20 @@ export class FriendshipUserResolver {
       ),
     )
   }
+
+  @FieldResolver(() => Date, { nullable: true })
+  public async friendsSince(
+    @Ctx() context: SessionContext,
+  ): Promise<Date | null> {
+    if (isNil(context.session)) return null
+
+    const { uuid } = context.session.user
+    const friendship = await Friendship.findOne({
+      where: [{ initiatorUuid: uuid }, { receiverUuid: uuid }],
+    })
+
+    return friendship?.accepted ?? null
+  }
 }
 
 @Resolver(() => UnclaimedUser)
@@ -94,5 +108,19 @@ export class FriendshipUnclaimedUserResolver {
     })
 
     return Promise.all(friendships.map(f => f.initiator()))
+  }
+
+  @FieldResolver(() => Date, { nullable: true })
+  public async friendsSince(
+    @Ctx() context: SessionContext,
+  ): Promise<Date | null> {
+    if (isNil(context.session)) return null
+
+    const { uuid } = context.session.user
+    const friendship = await Friendship.findOne({
+      where: [{ initiatorUuid: uuid }],
+    })
+
+    return friendship?.accepted ?? null
   }
 }
