@@ -1,5 +1,5 @@
-import { Column, Entity, IsNull, Not } from 'typeorm'
-import { Field, ObjectType } from 'type-graphql'
+import { Column, Entity, IsNull } from 'typeorm'
+import { Authorized, Ctx, Field, ObjectType } from 'type-graphql'
 
 import { UserBase } from '@/modules/user/user-base.model'
 import { Club } from '@/modules/club/club.model'
@@ -12,8 +12,7 @@ import {
   Friendship,
 } from '@/modules/friendship/friendship.model'
 import { isNil, OptionalUuid } from '@/utils'
-import { UsersUnionType } from '@/modules/user/user.types'
-import { UnclaimedUser } from '@/modules/user/unclaimed-user.model'
+import { SessionContext } from '@/modules/session/session.lib'
 
 type UserConstructor = OptionalUuid<
   Pick<User, 'uuid' | 'name' | 'mainConnectionUuid'>
@@ -41,20 +40,17 @@ export class User extends UserBase {
     return await Connection.findOneOrFail({ uuid: this.mainConnectionUuid })
   }
 
-  @Field(() => [UsersUnionType])
-  public async friends(): Promise<Array<User | UnclaimedUser>> {
-    const friendships = await Friendship.find({
-      where: [
-        { initiatorUuid: this.uuid, accepted: Not(IsNull()) },
-        { receiverUuid: this.uuid, accepted: Not(IsNull()) },
-      ],
+  @Field(() => Date)
+  @Authorized()
+  public async friendsSince(
+    @Ctx() context: SessionContext,
+  ): Promise<Date | null> {
+    const { uuid } = context.session!.user
+    const friendship = await Friendship.findOne({
+      where: [{ initiatorUuid: uuid }, { receiverUuid: uuid }],
     })
 
-    return Promise.all(
-      friendships.map(f =>
-        f.initiatorUuid === this.uuid ? f.receiver() : f.initiator(),
-      ),
-    )
+    return friendship?.accepted ?? null
   }
 
   @Field(() => [FriendRequest])
@@ -64,6 +60,9 @@ export class User extends UserBase {
         { initiatorUuid: this.uuid, accepted: IsNull() },
         { receiverUuid: this.uuid, accepted: IsNull() },
       ],
+      order: {
+        accepted: 'DESC',
+      },
     })
 
     return Promise.all(

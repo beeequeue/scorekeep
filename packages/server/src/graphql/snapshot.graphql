@@ -134,6 +134,7 @@ type Query {
 type UnclaimedUser {
   uuid: ID!
   name: String!
+  friendsSince: DateTime!
   friends: [User!]!
 }
 
@@ -143,8 +144,9 @@ type User {
   clubs: [Club!]!
   connections: [Connection!]!
   mainConnection: Connection
-  friends: [UsersUnion!]!
+  friendsSince: DateTime!
   friendRequests: [FriendRequest!]!
+  friends: [UsersUnion!]!
 }
 
 union UsersUnion = User | UnclaimedUser

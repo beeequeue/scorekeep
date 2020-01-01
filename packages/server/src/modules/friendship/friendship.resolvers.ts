@@ -1,9 +1,21 @@
-import { Arg, Authorized, Ctx, ID, Mutation, Resolver } from 'type-graphql'
+import {
+  Arg,
+  Authorized,
+  Ctx,
+  FieldResolver,
+  ID,
+  Mutation,
+  Resolver,
+  Root,
+} from 'type-graphql'
 
 import { SessionContext } from '@/modules/session/session.lib'
-import { User } from '@/modules/user/user.model'
-import { isNil } from '@/utils'
 import { Friendship } from '@/modules/friendship/friendship.model'
+import { User } from '@/modules/user/user.model'
+import { UnclaimedUser } from '@/modules/user/unclaimed-user.model'
+import { isNil } from '@/utils'
+import { UsersUnionType } from '@/modules/user/user.types'
+import { IsNull, Not } from 'typeorm'
 
 @Resolver()
 export class FriendshipResolver {
@@ -40,5 +52,47 @@ export class FriendshipResolver {
     await user.save()
 
     return context.session!.user
+  }
+}
+
+@Resolver(() => User)
+export class FriendshipUserResolver {
+  @FieldResolver(() => [UsersUnionType])
+  public async friends(
+    @Root() user: User,
+  ): Promise<Array<typeof UsersUnionType>> {
+    const friendships = await Friendship.find({
+      where: [
+        { initiatorUuid: user.uuid, accepted: Not(IsNull()) },
+        { receiverUuid: user.uuid, accepted: Not(IsNull()) },
+      ],
+      order: {
+        updatedAt: 'ASC',
+      },
+    })
+
+    return Promise.all(
+      friendships.map(f =>
+        f.initiatorUuid === user.uuid ? f.receiver() : f.initiator(),
+      ),
+    )
+  }
+}
+
+@Resolver(() => UnclaimedUser)
+export class FriendshipUnclaimedUserResolver {
+  @FieldResolver(() => [User])
+  public async friends(@Root() user: User): Promise<User[]> {
+    const friendships = await Friendship.find({
+      where: [
+        { initiatorUuid: user.uuid, accepted: Not(IsNull()) },
+        { receiverUuid: user.uuid, accepted: Not(IsNull()) },
+      ],
+      order: {
+        updatedAt: 'ASC',
+      },
+    })
+
+    return Promise.all(friendships.map(f => f.initiator()))
   }
 }
