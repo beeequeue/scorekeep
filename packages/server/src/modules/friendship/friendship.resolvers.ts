@@ -70,7 +70,7 @@ export class FriendshipUserResolver {
         { receiverUuid: user.uuid, accepted: Not(IsNull()) },
       ],
       order: {
-        updatedAt: 'ASC',
+        accepted: 'DESC',
       },
     })
 
@@ -84,12 +84,16 @@ export class FriendshipUserResolver {
   @FieldResolver(() => Date, { nullable: true })
   public async friendsSince(
     @Ctx() context: SessionContext,
+    @Root() root: User,
   ): Promise<Date | null> {
     if (isNil(context.session)) return null
 
     const { uuid } = context.session.user
     const friendship = await Friendship.findOne({
-      where: [{ initiatorUuid: uuid }, { receiverUuid: uuid }],
+      where: [
+        { initiatorUuid: uuid, receiverUuid: root.uuid },
+        { initiatorUuid: root.uuid, receiverUuid: uuid },
+      ],
     })
 
     return friendship?.accepted ?? null
@@ -130,7 +134,7 @@ export class FriendshipUnclaimedUserResolver {
         { receiverUuid: user.uuid, accepted: Not(IsNull()) },
       ],
       order: {
-        updatedAt: 'ASC',
+        updatedAt: 'DESC',
       },
     })
 
@@ -140,12 +144,13 @@ export class FriendshipUnclaimedUserResolver {
   @FieldResolver(() => Date, { nullable: true })
   public async friendsSince(
     @Ctx() context: SessionContext,
+    @Root() root: User,
   ): Promise<Date | null> {
     if (isNil(context.session)) return null
 
     const { uuid } = context.session.user
     const friendship = await Friendship.findOne({
-      where: [{ initiatorUuid: uuid }],
+      where: [{ initiatorUuid: uuid, receiverUuid: root.uuid }],
     })
 
     return friendship?.accepted ?? null
