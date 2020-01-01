@@ -115,3 +115,5 @@ export const createApolloClient = async () =>{
     mutate: graphqlRequest('mutate'),
   }
 }
+
+export type TestClient = UnwrapPromise<ReturnType<typeof createApolloClient>>

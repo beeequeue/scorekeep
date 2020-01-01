@@ -2,10 +2,10 @@ import { Connection as DBConnection, Not, IsNull } from 'typeorm'
 import uuid from 'uuid/v4'
 
 import { connectToDatabase } from '@/db'
-import { createApolloClient, generateUser } from '@/utils/tests'
+import { createApolloClient, generateUser, TestClient } from '@/utils/tests'
 import { Friendship } from '@/modules/friendship/friendship.model'
 
-let client: PromiseReturnType<typeof createApolloClient>
+let client: TestClient
 let dbConnection: DBConnection
 
 beforeAll(async () => {
