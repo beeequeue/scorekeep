@@ -151,95 +151,99 @@ describe('resolvers', () => {
   })
 
   describe('User', () => {
-    describe('friends', () => {
-      const friendsQuery = `
-        query Friends {
-          viewer {
-            uuid
-            friends {
-              ... on User {
-                uuid
-                friendsSince
-              }
-              ... on UnclaimedUser {
-                uuid
-                friendsSince
-              }
+    const friendsQuery = `
+      query Friends {
+        viewer {
+          uuid
+          friends {
+            ... on User {
+              uuid
+              friendsSince
+            }
+            ... on UnclaimedUser {
+              uuid
+              friendsSince
             }
           }
         }
-      `
+      }
+    `
 
-      test('Gets all accepted friend Users and UnclaimedUsers', async () => {
-        const now = new Date()
-        const generated = await Promise.all([
-          generateUser(), // 0
-          generateUser(), // 1
-          generateUser(), // 2
-          generateUser(), // 3
-          // 4
-          new UnclaimedUser({
-            name: faker.name.firstName() + faker.name.lastName(),
-          }).save(),
-          // 5
-          new UnclaimedUser({
-            name: faker.name.firstName() + faker.name.lastName(),
-          }).save(),
-        ] as const)
+    test('[friends,friendsSince] Gets all accepted friend Users and UnclaimedUsers', async () => {
+      const now = new Date()
+      const generated = await Promise.all([
+        generateUser(), // 0
+        generateUser(), // 1
+        generateUser(), // 2
+        generateUser(), // 3
+        // 4
+        new UnclaimedUser({
+          name: faker.name.firstName() + faker.name.lastName(),
+        }).save(),
+        // 5
+        new UnclaimedUser({
+          name: faker.name.firstName() + faker.name.lastName(),
+        }).save(),
+      ] as const)
 
-        const friendships = (
-          await Promise.all([
-            new Friendship({
-              initiatorUuid: generated[0].user.uuid,
-              receiverUuid: generated[1].user.uuid,
-              accepted: addDays(now, 1),
-            }).save(),
-            new Friendship({
-              initiatorUuid: generated[0].user.uuid,
-              receiverUuid: generated[2].user.uuid,
-              accepted: addDays(now, 2),
-            }).save(),
-            new Friendship({
-              initiatorUuid: generated[0].user.uuid,
-              receiverUuid: generated[3].user.uuid,
-            }).save(),
-            new Friendship({
-              initiatorUuid: generated[0].user.uuid,
-              receiverUuid: generated[4].uuid,
-              accepted: addDays(now, 3),
-            }).save(),
-            new Friendship({
-              initiatorUuid: generated[0].user.uuid,
-              receiverUuid: generated[5].uuid,
-              accepted: addDays(now, 4),
-            }).save(),
-          ])
-        ).sort(
-          (a, b) => (b.accepted?.getTime() ?? 0) - (a.accepted?.getTime() ?? 0),
-        )
+      await Promise.all([
+        new Friendship({
+          initiatorUuid: generated[0].user.uuid,
+          receiverUuid: generated[1].user.uuid,
+          accepted: addDays(now, 1),
+        }).save(),
+        new Friendship({
+          initiatorUuid: generated[0].user.uuid,
+          receiverUuid: generated[2].user.uuid,
+          accepted: addDays(now, 2),
+        }).save(),
+        new Friendship({
+          initiatorUuid: generated[0].user.uuid,
+          receiverUuid: generated[3].user.uuid,
+        }).save(),
+        new Friendship({
+          initiatorUuid: generated[0].user.uuid,
+          receiverUuid: generated[4].uuid,
+          accepted: addDays(now, 3),
+        }).save(),
+        new Friendship({
+          initiatorUuid: generated[0].user.uuid,
+          receiverUuid: generated[5].uuid,
+          accepted: addDays(now, 4),
+        }).save(),
+      ])
 
-        console.log(friendships)
+      const response = await client.query(friendsQuery, {
+        session: generated[0].session,
+      })
 
-        const response = await client.query(friendsQuery, {
-          session: generated[0].session,
-        })
+      expect(response.errors).toBeUndefined()
+      expect(response.data).toMatchObject({
+        viewer: {
+          uuid: generated[0].user.uuid,
+          friends: [
+            {
+              uuid: generated[5].uuid,
+              friendsSince: addDays(now, 4).toISOString(),
+            },
+            {
+              uuid: generated[4].uuid,
+              friendsSince: addDays(now, 3).toISOString(),
+            },
+            {
+              uuid: generated[2].user.uuid,
+              friendsSince: addDays(now, 2).toISOString(),
+            },
+            {
+              uuid: generated[1].user.uuid,
+              friendsSince: addDays(now, 1).toISOString(),
+            },
+          ],
+        },
+      })
 
-        expect(response.errors).toBeUndefined()
-        expect(response.data).toMatchObject({
-          viewer: {
-            uuid: generated[0].user.uuid,
-            friends: [
-              { uuid: generated[5].uuid, friendsSince: addDays(now, 4).toISOString() },
-              { uuid: generated[4].uuid, friendsSince: addDays(now, 3).toISOString() },
-              { uuid: generated[2].user.uuid, friendsSince: addDays(now, 2).toISOString() },
-              { uuid: generated[1].user.uuid, friendsSince: addDays(now, 1).toISOString() },
-            ],
-          },
-        })
-
-        expect(response.data.viewer.friends).not.toContain({
-          uuid: generated[3].user.uuid,
-        })
+      expect(response.data.viewer.friends).not.toContain({
+        uuid: generated[3].user.uuid,
       })
     })
   })
