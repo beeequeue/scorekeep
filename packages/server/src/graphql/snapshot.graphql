@@ -144,9 +144,9 @@ type User {
   clubs: [Club!]!
   connections: [Connection!]!
   mainConnection: Connection
-  friendRequests: [FriendRequest!]!
   friends: [UsersUnion!]!
   friendsSince: DateTime
+  friendRequests: [FriendRequest!]!
 }
 
 union UsersUnion = User | UnclaimedUser

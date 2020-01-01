@@ -1,10 +1,10 @@
-import { Column, Entity, IsNull } from 'typeorm'
+import { Column, Entity } from 'typeorm'
 import { Field, ObjectType } from 'type-graphql'
 
 import { UserBase } from '@/modules/user/user-base.model'
 import { Club } from '@/modules/club/club.model'
 import { Connection, ConnectionConstructor } from '@/modules/connection/connection.model'
-import { FriendRequest, Friendship } from '@/modules/friendship/friendship.model'
+import { Friendship } from '@/modules/friendship/friendship.model'
 import { isNil, OptionalUuid } from '@/utils'
 
 type UserConstructor = OptionalUuid<
@@ -31,30 +31,6 @@ export class User extends UserBase {
     if (isNil(this.mainConnectionUuid)) return null
 
     return await Connection.findOneOrFail({ uuid: this.mainConnectionUuid })
-  }
-
-  @Field(() => [FriendRequest])
-  public async friendRequests(): Promise<FriendRequest[]> {
-    const friendships = await Friendship.find({
-      where: [
-        { initiatorUuid: this.uuid, accepted: IsNull() },
-        { receiverUuid: this.uuid, accepted: IsNull() },
-      ],
-      order: {
-        accepted: 'DESC',
-      },
-    })
-
-    return Promise.all(
-      friendships.map(
-        async f =>
-          new FriendRequest({
-            uuid: f.uuid,
-            initiator: await f.initiator(),
-            receiver: await f.receiver(),
-          }),
-      ),
-    )
   }
 
   constructor(options: UserConstructor) {

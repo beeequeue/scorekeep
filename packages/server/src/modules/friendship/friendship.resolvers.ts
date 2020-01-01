@@ -10,7 +10,10 @@ import {
 } from 'type-graphql'
 
 import { SessionContext } from '@/modules/session/session.lib'
-import { Friendship } from '@/modules/friendship/friendship.model'
+import {
+  FriendRequest,
+  Friendship,
+} from '@/modules/friendship/friendship.model'
 import { User } from '@/modules/user/user.model'
 import { UnclaimedUser } from '@/modules/user/unclaimed-user.model'
 import { isNil } from '@/utils'
@@ -90,6 +93,30 @@ export class FriendshipUserResolver {
     })
 
     return friendship?.accepted ?? null
+  }
+
+  @FieldResolver(() => [FriendRequest])
+  public async friendRequests(@Root() user: User): Promise<FriendRequest[]> {
+    const friendships = await Friendship.find({
+      where: [
+        { initiatorUuid: user.uuid, accepted: IsNull() },
+        { receiverUuid: user.uuid, accepted: IsNull() },
+      ],
+      order: {
+        accepted: 'DESC',
+      },
+    })
+
+    return Promise.all(
+      friendships.map(
+        async f =>
+          new FriendRequest({
+            uuid: f.uuid,
+            initiator: await f.initiator(),
+            receiver: await f.receiver(),
+          }),
+      ),
+    )
   }
 }
 
