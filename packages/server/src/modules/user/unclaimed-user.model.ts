@@ -18,7 +18,7 @@ export class UnclaimedUser extends UserBase {
   public async getOwners() {
     const friendship = await Friendship.findOne(
       { receiverUuid: this.uuid },
-      { order: { createdAt: 'DESC' } },
+      { order: { createdAt: 'ASC' } },
     )
 
     const arr: UserBase[] = [this]

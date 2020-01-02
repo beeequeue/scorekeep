@@ -1,5 +1,6 @@
 import faker from 'faker'
 import gql from 'graphql-tag'
+import { addDays } from 'date-fns'
 import { Connection as DBConnection } from 'typeorm'
 
 import { connectToDatabase } from '@/db'
@@ -35,6 +36,7 @@ describe('UnclaimedUser', () => {
   describe('getOwners', () => {
     test('returns self and first friend (creator)', async () => {
       const { user } = await generateUser()
+      const { user: laterFriend } = await generateUser()
 
       const unclaimedUser = await new UnclaimedUser({
         name: 'Poor Guy',
@@ -42,6 +44,12 @@ describe('UnclaimedUser', () => {
 
       await new Friendship({
         initiatorUuid: user.uuid,
+        receiverUuid: unclaimedUser.uuid,
+        accepted: addDays(new Date(), -10),
+      }).save()
+
+      await new Friendship({
+        initiatorUuid: laterFriend.uuid,
         receiverUuid: unclaimedUser.uuid,
         accepted: new Date(),
       }).save()
