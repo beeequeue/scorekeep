@@ -1,5 +1,6 @@
 import { Connection as DBConnection, Not, IsNull } from 'typeorm'
 import { addDays } from 'date-fns'
+import gql from 'graphql-tag'
 import faker from 'faker'
 import uuid from 'uuid/v4'
 
@@ -24,7 +25,7 @@ beforeEach(async () => {
 
 describe('resolvers', () => {
   describe('addFriend', () => {
-    const addFriend = `
+    const addFriend = gql`
       mutation AddFriend($uuid: ID!) {
         addFriend(uuid: $uuid) {
           uuid
@@ -97,7 +98,7 @@ describe('resolvers', () => {
   })
 
   describe('acceptFriendRequest', () => {
-    const acceptFriendRequest = `
+    const acceptFriendRequest = gql`
       mutation AcceptFriendRequest($userUuid: ID!) {
         acceptFriendRequest(userUuid: $userUuid) {
           uuid
@@ -166,7 +167,7 @@ describe('resolvers', () => {
   })
 
   describe('User', () => {
-    const friendsQuery = `
+    const friendsQuery = gql`
       query Friends {
         viewer {
           uuid

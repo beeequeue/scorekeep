@@ -1,4 +1,5 @@
 import faker from 'faker'
+import gql from 'graphql-tag'
 import { Connection as DBConnection } from 'typeorm'
 
 import { connectToDatabase } from '@/db'
@@ -20,7 +21,7 @@ beforeEach(async () => {
 
 describe('resolvers', () => {
   describe('createFriend', () => {
-    const createFriend = `
+    const createFriend = gql`
       mutation CreateFriend($name: String!) {
         createFriend(name: $name) {
           __typename

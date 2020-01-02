@@ -1,0 +1,14 @@
+{
+  "schemaPath": "./packages/server/src/graphql/snapshot.graphql",
+  "includes": [
+    "packages/**/*.graphql",
+    "packages/**/*.graphqls",
+    "packages/**/*.ts",
+    "packages/**/*.tsx"
+  ],
+  "extensions": {
+    "endpoints": {
+      "default": "http://localhost:3000/graphql"
+    }
+  }
+}

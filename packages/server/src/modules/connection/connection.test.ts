@@ -1,4 +1,5 @@
 import { GraphQLError } from 'graphql'
+import gql from 'graphql-tag'
 import { Connection as DBConnection } from 'typeorm'
 import { connectToDatabase } from '@/db'
 import { createApolloClient, createConnection, generateUser } from '@/utils/tests'
@@ -22,7 +23,7 @@ type GraphQLResponse<D = any> = {
   data: D | null
 }
 
-const disconnectQuery = `
+const disconnectQuery = gql`
   mutation Disconnect($uuid: ID!) {
     disconnect(uuid: $uuid) {
       uuid
