@@ -72,8 +72,8 @@
     "migrate:create": "typeorm migration:create -d migrations -n",
     "start": "ts-node --files -r dotenv/config -r tsconfig-paths/register src/index.ts",
     "pre-commit": "lint-staged",
-    "pretest": "NODE_ENV=development yarn run migrate",
-    "test": "NODE_ENV=test jest server -i",
+    "pretest": "cross-env NODE_ENV=development yarn run migrate",
+    "test": "cross-env NODE_ENV=test jest server -i",
     "test:coverage": "yarn run test --coverage",
     "typeorm": "ts-node -T -r tsconfig-paths/register ../../node_modules/typeorm/cli.js",
     "snapshot": "ts-node -T -r tsconfig-paths/register src/index.ts -shot"

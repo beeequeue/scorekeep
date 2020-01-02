@@ -106,13 +106,13 @@
     "url": "git+https://github.com/BeeeQueue/scorekeep.git"
   },
   "scripts": {
-    "build": "NODE_ENV=production webpack -p",
+    "build": "cross-env NODE_ENV=production webpack -p",
     "clean": "rimraf dist",
     "dev": "webpack-dev-server --hot",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook -o .storybook/dist",
-    "test": "NODE_ENV=test jest ui",
+    "test": "cross-env NODE_ENV=test jest ui",
     "pre-commit": "lint-staged"
   }
 }
