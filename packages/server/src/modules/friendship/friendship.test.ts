@@ -34,7 +34,12 @@ describe('resolvers', () => {
               uuid
             }
             receiver {
-              uuid
+              ... on User {
+                uuid
+              }
+              ... on UnclaimedUser {
+                uuid
+              }
             }
           }
         }
@@ -97,7 +102,12 @@ describe('resolvers', () => {
         acceptFriendRequest(userUuid: $userUuid) {
           uuid
           friends {
-            uuid
+            ... on User {
+              uuid
+            }
+            ... on UnclaimedUser {
+              uuid
+            }
           }
           friendRequests {
             uuid
@@ -105,7 +115,12 @@ describe('resolvers', () => {
               uuid
             }
             receiver {
-              uuid
+              ... on User {
+                uuid
+              }
+              ... on UnclaimedUser {
+                uuid
+              }
             }
           }
         }
