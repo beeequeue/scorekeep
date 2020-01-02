@@ -2,10 +2,10 @@ import { Column } from 'typeorm'
 import { Field, ObjectType } from 'type-graphql'
 import { MaxLength } from 'class-validator'
 
-import { ExtendedEntity } from '@/modules/exented-entity'
+import { EntityWithOwner } from '@/modules/exented-entity'
 
 @ObjectType({ isAbstract: true })
-export abstract class UserBase extends ExtendedEntity {
+export abstract class UserBase extends EntityWithOwner {
   @Column()
   @Field()
   @MaxLength(50)

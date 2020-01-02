@@ -62,4 +62,8 @@ export class User extends UserBase {
 
     await friendship.save()
   }
+
+  public async getOwners() {
+    return [this]
+  }
 }

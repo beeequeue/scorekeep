@@ -4,6 +4,8 @@ import { Connection as DBConnection } from 'typeorm'
 
 import { connectToDatabase } from '@/db'
 import { createApolloClient, generateUser, TestClient } from '@/utils/tests'
+import { UnclaimedUser } from '@/modules/user/unclaimed-user.model'
+import { Friendship } from '@/modules/friendship/friendship.model'
 
 let client: TestClient
 let dbConnection: DBConnection
@@ -17,6 +19,36 @@ afterAll(() => dbConnection.close())
 
 beforeEach(async () => {
   await dbConnection.synchronize(true)
+})
+
+describe('User', () => {
+  describe('getOwners', () => {
+    test('returns self', async () => {
+      const { user } = await generateUser()
+
+      await expect(user.getOwners()).resolves.toEqual([user])
+    })
+  })
+})
+
+describe('UnclaimedUser', () => {
+  describe('getOwners', () => {
+    test('returns self and first friend (creator)', async () => {
+      const { user } = await generateUser()
+
+      const unclaimedUser = await new UnclaimedUser({
+        name: 'Poor Guy',
+      }).save()
+
+      await new Friendship({
+        initiatorUuid: user.uuid,
+        receiverUuid: unclaimedUser.uuid,
+        accepted: new Date(),
+      }).save()
+
+      await expect(unclaimedUser.getOwners()).resolves.toEqual([unclaimedUser, user])
+    })
+  })
 })
 
 describe('resolvers', () => {
