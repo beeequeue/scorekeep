@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 import React from 'react'
 import styled, { css } from 'styled-components'
+import { formatDistance } from 'date-fns'
 import { Person, AccessTime } from 'styled-icons/material'
 import { colors } from '@/design'
 
@@ -35,6 +36,7 @@ const Name = styled.h3`
   font-size: 20px;
   line-height: 20px;
   font-weight: 900;
+  margin-bottom: 4px;
 `
 
 const SmallText = styled.div`
@@ -67,7 +69,11 @@ export const BoardgameListItem = ({name, imageUrl, players, lastPlayed}:Props) =
           <Player />{players[0]} - {players[1]}
         </SmallText>
         <SmallText>
-          {lastPlayed && <><Clock /> {lastPlayed}</>}
+          <Clock />
+          {lastPlayed ?
+            `Last played ${formatDistance(new Date(lastPlayed), new Date())}`
+            : "Never played"
+          }
         </SmallText>
       </Info>
       <Image src={imageUrl}/>
