@@ -146,6 +146,11 @@ type User {
   mainConnection: Connection
   friends: [UsersUnion!]!
   friendsSince: DateTime
+
+  """
+  Returns the user's friend requests.
+  _Only accessible by the owner._
+  """
   friendRequests: [FriendRequest!]!
 }
 

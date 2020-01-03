@@ -8,7 +8,9 @@ import {
   Resolver,
   Root,
 } from 'type-graphql'
+import { IsNull, Not } from 'typeorm'
 
+import { Role } from '@/graphql/auth'
 import { SessionContext } from '@/modules/session/session.lib'
 import {
   FriendRequest,
@@ -16,9 +18,8 @@ import {
 } from '@/modules/friendship/friendship.model'
 import { User } from '@/modules/user/user.model'
 import { UnclaimedUser } from '@/modules/user/unclaimed-user.model'
-import { isNil } from '@/utils'
 import { UsersUnionType } from '@/modules/user/user.types'
-import { IsNull, Not } from 'typeorm'
+import { createDescription, isNil, mapAsync } from '@/utils'
 
 @Resolver()
 export class FriendshipResolver {
@@ -99,7 +100,12 @@ export class FriendshipUserResolver {
     return friendship?.accepted ?? null
   }
 
-  @FieldResolver(() => [FriendRequest])
+  @FieldResolver(() => [FriendRequest], {
+    description: createDescription("Returns the user's friend requests.", {
+      owner: true,
+    }),
+  })
+  @Authorized(Role.OWNER)
   public async friendRequests(@Root() user: User): Promise<FriendRequest[]> {
     const friendships = await Friendship.find({
       where: [
@@ -111,15 +117,14 @@ export class FriendshipUserResolver {
       },
     })
 
-    return Promise.all(
-      friendships.map(
-        async f =>
-          new FriendRequest({
-            uuid: f.uuid,
-            initiator: await f.initiator(),
-            receiver: await f.receiver(),
-          }),
-      ),
+    return mapAsync(
+      friendships,
+      async f =>
+        new FriendRequest({
+          uuid: f.uuid,
+          initiator: await f.initiator(),
+          receiver: await f.receiver(),
+        }),
     )
   }
 }
