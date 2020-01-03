@@ -1,6 +1,6 @@
 import * as React from 'react'
 import styled from 'styled-components'
-import { useTrail, animated } from 'react-spring'
+import { useTrail, animated, OpaqueInterpolation } from 'react-spring'
 
 const trailConfig = {
   config: { mass: 5, tension: 1200, friction: 120 },
@@ -26,7 +26,7 @@ export const AnimatedList : React.FC = ({children} ) => {
         <animated.div
           key={index}
           style={{
-            ...rest, transform: x.interpolate(x => `translate3d(0,${x}px,0)`)
+            ...rest, transform: (x as OpaqueInterpolation<number>).interpolate(x => `translate3d(0,${x}px,0)`)
           }}>
           {elements[index]}
         </animated.div>

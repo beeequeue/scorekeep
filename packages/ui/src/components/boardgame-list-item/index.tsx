@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/consistent-type-definitions */
 import React from 'react'
 import styled, { css } from 'styled-components'
 import { formatDistance } from 'date-fns'
