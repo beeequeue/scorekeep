@@ -262,5 +262,109 @@ describe('resolvers', () => {
         uuid: generated[3].user.uuid,
       })
     })
+
+    describe('friendRequests', () => {
+      const fragment = gql`
+        fragment FriendRequestFragment on FriendRequest {
+          uuid
+          initiator {
+            uuid
+          }
+          receiver {
+            ... on User {
+              uuid
+            }
+          }
+        }
+      `
+      const friendRequestQueries = {
+        viewer: gql`
+          query FriendsRequests {
+            viewer {
+              uuid
+              friendRequests {
+                ...FriendRequestFragment
+              }
+            }
+          }
+
+          ${fragment}
+        `,
+        user: gql`
+          query FriendsRequests($uuid: ID!) {
+            user(uuid: $uuid) {
+              uuid
+              friendRequests {
+                ...FriendRequestFragment
+              }
+            }
+          }
+
+          ${fragment}
+        `,
+      }
+
+      test('returns friend requests for user', async () => {
+        const generated = await Promise.all([
+          generateUser(),
+          generateUser(),
+          generateUser(),
+        ] as const)
+
+        await Promise.all([
+          new Friendship({
+            initiatorUuid: generated[1].user.uuid,
+            receiverUuid: generated[0].user.uuid,
+          }).save(),
+          new Friendship({
+            initiatorUuid: generated[0].user.uuid,
+            receiverUuid: generated[2].user.uuid,
+          }).save(),
+        ])
+
+        const response = client.query(friendRequestQueries.viewer, {
+          session: generated[0].session,
+        })
+
+        await expect(response).resolves.toMatchObject({
+          data: {
+            viewer: {
+              uuid: generated[0].user.uuid,
+              friendRequests: [
+                {
+                  initiator: { uuid: generated[1].user.uuid },
+                  receiver: { uuid: generated[0].user.uuid },
+                },
+                {
+                  initiator: { uuid: generated[0].user.uuid },
+                  receiver: { uuid: generated[2].user.uuid },
+                },
+              ],
+            },
+          },
+        })
+      })
+
+      test('fails if not owner of user', async () => {
+        const generated = await Promise.all([
+          generateUser(),
+          generateUser(),
+        ] as const)
+
+        const response = await client.query(friendRequestQueries.user, {
+          session: generated[0].session,
+          variables: {
+            uuid: generated[1].user.uuid,
+          },
+        })
+
+        expect(response.errors).toMatchObject([
+          {
+            message:
+              "Access denied! You don't have permission for this action!",
+          },
+        ])
+      })
+    })
   })
 })
