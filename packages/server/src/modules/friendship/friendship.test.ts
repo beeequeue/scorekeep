@@ -164,6 +164,38 @@ describe('resolvers', () => {
         accepted: expect.any(Date),
       })
     })
+
+    test('should fail if not receiver of friendship', async () => {
+      const generated = await Promise.all([
+        generateUser(),
+        generateUser(),
+        generateUser(),
+      ])
+
+      await new Friendship({
+        initiatorUuid: generated[0].user.uuid,
+        receiverUuid: generated[1].user.uuid,
+      }).save()
+
+      const responses = await Promise.all([
+        client.mutate(acceptFriendRequest, {
+          session: generated[0].session,
+          variables: { userUuid: generated[0].user.uuid },
+        }),
+        client.mutate(acceptFriendRequest, {
+          session: generated[2].session,
+          variables: { userUuid: generated[0].user.uuid },
+        }),
+      ])
+
+      expect(
+        responses.map(r => r.errors?.map(e => e.message)).flat(),
+      ).toMatchObject([
+        'No friendship with that User was found!',
+        'No friendship with that User was found!',
+      ])
+      expect(responses.map(r => r.data)).toMatchObject([null, null])
+    })
   })
 
   describe('User', () => {

@@ -46,14 +46,17 @@ export class FriendshipResolver {
     @Ctx() context: SessionContext,
     @Arg('userUuid', () => ID) userUuid: string,
   ): Promise<User> {
-    const user = await Friendship.findOne({ initiatorUuid: userUuid })
+    const friendship = await Friendship.findOne({
+      receiverUuid: context.session?.user.uuid,
+      initiatorUuid: userUuid,
+    })
 
-    if (isNil(user)) {
-      throw new Error('Could not find user!')
+    if (isNil(friendship)) {
+      throw new Error('No friendship with that User was found!')
     }
 
-    user.accepted = new Date()
-    await user.save()
+    friendship.accepted = new Date()
+    await friendship.save()
 
     return context.session!.user
   }
