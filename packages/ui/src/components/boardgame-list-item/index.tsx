@@ -1,7 +1,7 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
 import { formatDistance } from 'date-fns'
-import { Person, AccessTime } from 'styled-icons/material'
+import { Person, AccessTime } from '@styled-icons/material'
 import { colors } from '@/design'
 
 const Wrapper = styled.article`
@@ -35,7 +35,7 @@ const Name = styled.h3`
   font-size: 20px;
   line-height: 20px;
   font-weight: 900;
-  margin-bottom: 4px;
+  margin: 0 0 4px 2px;
 `
 
 const SmallText = styled.div`

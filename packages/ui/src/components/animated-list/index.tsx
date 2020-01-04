@@ -5,8 +5,8 @@ import { useTrail, animated, OpaqueInterpolation } from 'react-spring'
 const trailConfig = {
   config: { mass: 5, tension: 1200, friction: 120 },
   opacity: 1,
-  x: 0,
-  from: { opacity: 0, x: 300 },
+  y: 0,
+  from: { opacity: 0, y: 300 },
   delay: 500,
 }
 
@@ -22,11 +22,11 @@ export const AnimatedList : React.FC = ({children} ) => {
   const trail = useTrail(elements.length, trailConfig)
   return (
     <ListComponent>
-      {trail.map(({ x, ...rest }, index) => (
+      {trail.map(({ y, ...rest }, index) => (
         <animated.div
           key={index}
           style={{
-            ...rest, transform: (x as OpaqueInterpolation<number>).interpolate(x => `translate3d(0,${x}px,0)`)
+            ...rest, transform: (y as OpaqueInterpolation<number>).interpolate(y => `translateY(${y}px)`)
           }}>
           {elements[index]}
         </animated.div>
