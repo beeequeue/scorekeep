@@ -49,6 +49,7 @@ const SmallText = styled.div`
 const Image = styled.img`
   height: 60px;
   width: 60px;
+  border-radius: 3px;
 `
 
 type Props = {
