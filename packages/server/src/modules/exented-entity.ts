@@ -12,7 +12,7 @@ export abstract class ExtendedEntity extends BaseEntity {
   public readonly uuid: string
 
   @CreateDateColumn()
-  public readonly createdAt!: Date
+  public createdAt!: Date
   @UpdateDateColumn()
   public readonly updatedAt!: Date
 
