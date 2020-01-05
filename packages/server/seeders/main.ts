@@ -1,7 +1,10 @@
 import faker from 'faker'
+import { addDays } from 'date-fns'
 
 import { connectToDatabase } from '@/db'
 import { Boardgame, GAME_TYPE } from '@/modules/boardgame/boardgame.model'
+import { Friendship } from '@/modules/friendship/friendship.model'
+import { User } from '@/modules/user/user.model'
 import { JsonSchemaObject } from '@/types/json-schema'
 import { generateUser } from '@/utils/tests'
 
@@ -195,6 +198,36 @@ const insertBoardgames = async () =>
 const insertUsers = async () =>
   Promise.all(Array.from({ length: 25 }).map(() => generateUser()))
 
+const createFriendGroups = async (users: User[]) => {
+  const now = new Date()
+  const userGroups: User[][] = []
+
+  for (let i = 0; i < 5; i++) {
+    userGroups.push(users.slice(i * 5, i * 5 + 5))
+  }
+
+  const promises = userGroups
+    .map(group => {
+      const leader = group[0]
+      return group.map(async (user, i) => {
+        if (i === 0) return
+
+        const createdAt = addDays(now, Math.round(Math.random() * -180) + 14)
+        await new Friendship({
+          initiatorUuid: leader.uuid,
+          receiverUuid: user.uuid,
+          createdAt,
+          accepted: addDays(createdAt, Math.round(Math.random() * 14)),
+        }).save()
+      })
+    })
+    .flat()
+
+  await Promise.all(promises)
+
+  return userGroups
+}
+
 const run = async () => {
   const conn = await connectToDatabase()
 
@@ -206,6 +239,10 @@ const run = async () => {
   const userDatas = await insertUsers()
   console.log('------------------------------------------')
   console.log(`Inserted ${userDatas.length} users!`)
+
+  const friendGroups = await createFriendGroups(userDatas.map(d => d.user))
+  console.log('------------------------------------------')
+  console.log(`Created ${friendGroups.length} groups of friends!`)
 
   console.log('------------------------------------------')
   await conn.close()
