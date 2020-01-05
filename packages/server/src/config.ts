@@ -13,10 +13,10 @@ type Config = {
 
 const defaultDbConfig = {
   type: 'postgres' as const,
-  host: process.env.DATABASE_HOST || 'localhost',
-  port: Number(process.env.DATABASE_PORT || 5432),
-  username: process.env.DATABASE_USER || 'scorekeep-admin',
-  password: process.env.DATABASE_PASS || "ADAM's COOL",
+  host: process.env.DATABASE_HOST ?? 'localhost',
+  port: Number(process.env.DATABASE_PORT ?? 5432),
+  username: process.env.DATABASE_USER ?? 'scorekeep-admin',
+  password: process.env.DATABASE_PASS ?? "ADAM's COOL",
   database: 'postgres',
   url: process.env.DATABASE_URL,
 
@@ -63,4 +63,6 @@ const _config: Config = {
 }
 
 export const config =
+  // || to replace empty string as well
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   _config[(process.env.NODE_ENV || 'development') as Environment]

@@ -7,7 +7,7 @@ import { SessionContext } from '@/modules/session/session.lib'
 export class ClubResolver {
   @Query(() => Club, { nullable: true })
   public async club(@Arg('uuid', () => ID) uuid: string): Promise<Club | null> {
-    return (await Club.findOne({ uuid })) || null
+    return (await Club.findOne({ uuid })) ?? null
   }
 
   @Mutation(() => Club)

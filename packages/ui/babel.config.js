@@ -1,6 +1,13 @@
-module.exports = {
+module.exports = api => ({
   presets: [
-    ['@babel/env', { modules: false, useBuiltIns: 'usage', corejs: 3 }],
+    [
+      '@babel/env',
+      {
+        modules: !api.env('test') ? false : 'cjs',
+        useBuiltIns: 'usage',
+        corejs: 3,
+      },
+    ],
     '@babel/preset-typescript',
     '@babel/preset-react',
   ],
@@ -12,4 +19,4 @@ module.exports = {
     '@babel/plugin-proposal-optional-chaining',
     '@babel/plugin-proposal-nullish-coalescing-operator',
   ],
-}
+})

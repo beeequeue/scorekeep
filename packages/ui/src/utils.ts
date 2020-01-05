@@ -84,7 +84,7 @@ export const omit = <T extends {}, K extends Array<keyof T>>(
       {} as any,
     )
 
-export const debounce = <P extends Array<any>>(
+export const debounce = <P extends any[]>(
   func: (...a: P) => any,
   ms: number,
   immediate = false,

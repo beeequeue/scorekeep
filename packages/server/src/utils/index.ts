@@ -34,7 +34,7 @@ export const mapObjIndexed = <T extends {}, R extends {}>(
   ) as R
 }
 
-export const pick = <T extends {}, K extends (keyof T)[]>(
+export const pick = <T extends {}, K extends Array<keyof T>>(
   obj: T,
   keys: K,
 ): Pick<T, K[number]> =>

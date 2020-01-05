@@ -12,7 +12,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   // eslint-disable-next-line no-console
   if (error) console.dir(error)
 
-  const user = data && data.viewer || null
+  const user = data?.viewer ?? null
 
   return <UserContext.Provider value={user}>{children}</UserContext.Provider>
 }
