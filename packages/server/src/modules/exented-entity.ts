@@ -1,14 +1,9 @@
 import { Field, ID, ObjectType } from 'type-graphql'
-import {
-  BaseEntity,
-  CreateDateColumn,
-  PrimaryColumn,
-  UpdateDateColumn,
-} from 'typeorm'
+import { BaseEntity, CreateDateColumn, PrimaryColumn, UpdateDateColumn } from 'typeorm'
 import uuid from 'uuid/v4'
 
-import { User } from '@/modules/user/user.model'
 import { isNil } from '@/utils'
+import { UserBase } from '@/modules/user/user-base.model'
 
 @ObjectType({ isAbstract: true })
 export abstract class ExtendedEntity extends BaseEntity {
@@ -47,11 +42,11 @@ export abstract class ExtendedEntity extends BaseEntity {
   }
 
   public static toLoggable(uuid: string) {
-    return `[${this.constructor.name}:${uuid}]`
+    return `[${this.name ?? this.constructor.name}:${uuid}]`
   }
 }
 
 @ObjectType({ isAbstract: true })
 export abstract class EntityWithOwner extends ExtendedEntity {
-  public abstract async getOwner(): Promise<User>
+  public abstract async getOwners(): Promise<UserBase[]>
 }

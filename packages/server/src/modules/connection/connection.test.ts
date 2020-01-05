@@ -1,21 +1,14 @@
-import { ApolloServer } from 'apollo-server-express'
-import { createTestClient } from 'apollo-server-integration-testing'
 import { GraphQLError } from 'graphql'
+import gql from 'graphql-tag'
 import { Connection as DBConnection } from 'typeorm'
-
-import { connectApolloServer, createApp } from '@/apollo'
 import { connectToDatabase } from '@/db'
-import { createConnection, generateUser } from '@/utils/tests'
+import { createApolloClient, createConnection, generateUser } from '@/utils/tests'
 
-let server: ApolloServer
-let client: ReturnType<typeof createTestClient>
+let client: PromiseReturnType<typeof createApolloClient>
 let dbConnection: DBConnection
 
 beforeAll(async () => {
-  server = await connectApolloServer(createApp())
-  client = createTestClient({
-    apolloServer: server,
-  })
+  client = await createApolloClient()
   dbConnection = await connectToDatabase()
 })
 
@@ -30,7 +23,7 @@ type GraphQLResponse<D = any> = {
   data: D | null
 }
 
-const disconnectQuery = `
+const disconnectQuery = gql`
   mutation Disconnect($uuid: ID!) {
     disconnect(uuid: $uuid) {
       uuid
@@ -49,15 +42,8 @@ describe('disconnect', () => {
     const { user, session, connection } = await generateUser()
     const secondConnection = await user.connectTo(await createConnection({ user }))
 
-    client.setOptions({
-      request: {
-        headers: {
-          authorization: `Bearer ${await session.getJWT()}`,
-        },
-      },
-    })
-
     const result = await client.query<GraphQLResponse>(disconnectQuery, {
+      session,
       variables: {
         uuid: connection.uuid,
       },
@@ -77,15 +63,8 @@ describe('disconnect', () => {
   test('fails if only has one connection', async () => {
     const { session, connection } = await generateUser()
 
-    client.setOptions({
-      request: {
-        headers: {
-          authorization: `Bearer ${await session.getJWT()}`,
-        },
-      },
-    })
-
     const result = await client.query<GraphQLResponse>(disconnectQuery, {
+      session,
       variables: {
         uuid: connection.uuid,
       },

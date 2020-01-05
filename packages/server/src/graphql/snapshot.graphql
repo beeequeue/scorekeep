@@ -52,6 +52,12 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 """
 scalar DateTime
 
+type FriendRequest {
+  uuid: ID!
+  initiator: User!
+  receiver: UsersUnion!
+}
+
 enum GAME_TYPE {
   COLLABORATIVE
   COMPETITIVE
@@ -81,15 +87,33 @@ type Mutation {
   _Requires login._
   """
   disconnect(uuid: ID!): User!
+  addFriend(uuid: ID!): User!
+  acceptFriendRequest(userUuid: ID!): User!
   addMatch(club: ID, game: ID!, results: JSONObject!): Match!
-  addUser(name: String!): User!
-  useUser(uuid: String!): Boolean!
 
   """
   Update the name of the logged in user.
   _Requires login._
   """
   updateName(name: String!): User!
+
+  """
+  Create a new UnclaimedUser as a friend.
+  _Requires login._
+  """
+  createFriend(name: String!): UnclaimedUser!
+
+  """
+  Create a User without a Connection.
+  _Development only._
+  """
+  addUser(name: String!): User!
+
+  """
+  Gives a session cookie for the specified User.
+  _Development only._
+  """
+  useUser(uuid: String!): Boolean!
 }
 
 type Query {
@@ -107,10 +131,27 @@ type Query {
   viewer: User
 }
 
+type UnclaimedUser {
+  uuid: ID!
+  name: String!
+  friends: [User!]!
+  friendsSince: DateTime
+}
+
 type User {
   uuid: ID!
   name: String!
   clubs: [Club!]!
   connections: [Connection!]!
   mainConnection: Connection
+  friends: [UsersUnion!]!
+  friendsSince: DateTime
+
+  """
+  Returns the user's friend requests.
+  _Only accessible by the owner._
+  """
+  friendRequests: [FriendRequest!]!
 }
+
+union UsersUnion = User | UnclaimedUser

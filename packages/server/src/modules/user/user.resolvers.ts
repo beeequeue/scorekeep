@@ -9,7 +9,9 @@ import {
 } from 'type-graphql'
 import uuid from 'uuid/v4'
 
+import { Friendship } from '@/modules/friendship/friendship.model'
 import { User } from '@/modules/user/user.model'
+import { UnclaimedUser } from '@/modules/user/unclaimed-user.model'
 import { SessionContext } from '@/modules/session/session.lib'
 import { Session } from '@/modules/session/session.model'
 import { createDescription, isNil, isUuid } from '@/utils'
@@ -33,33 +35,6 @@ export class UserResolver {
     return context.session?.user ?? null
   }
 
-  @Mutation(() => User)
-  public async addUser(@Arg('name') name: string) {
-    const user = new User({
-      name,
-      mainConnectionUuid: uuid(),
-    })
-
-    return user.save()
-  }
-
-  @Mutation(() => Boolean)
-  public async useUser(
-    @Ctx() context: SessionContext,
-    @Arg('uuid') uuid: string,
-  ) {
-    const user = await User.findOne({ uuid })
-    if (isNil(user)) {
-      throw new Error('User does not exist!')
-    }
-
-    const session = await Session.generate(user)
-
-    context.setSession(session)
-
-    return true
-  }
-
   @Mutation(() => User, {
     description: createDescription('Update the name of the logged in user.', {
       login: true,
@@ -76,5 +51,73 @@ export class UserResolver {
     await user.save()
 
     return user
+  }
+
+  @Mutation(() => UnclaimedUser, {
+    description: createDescription('Create a new UnclaimedUser as a friend.', {
+      login: true,
+    }),
+  })
+  @Authorized()
+  public async createFriend(
+    @Ctx() context: SessionContext,
+    @Arg('name') name: string,
+  ): Promise<UnclaimedUser> {
+    const newUser = new UnclaimedUser({ name })
+    await newUser.save()
+
+    const friendship = new Friendship({
+      initiatorUuid: context.session!.user.uuid,
+      receiverUuid: newUser.uuid,
+      accepted: new Date(),
+    })
+    await friendship.save()
+
+    return newUser
+  }
+
+  // Development shit
+
+  @Mutation(() => User, {
+    description: createDescription('Create a User without a Connection.', {
+      dev: true,
+    }),
+  })
+  public async addUser(@Arg('name') name: string) {
+    if (process.env.NODE_ENV !== 'development') {
+      throw new Error('NOT_IN_DEVELOPMENT')
+    }
+
+    const user = new User({
+      name,
+      mainConnectionUuid: uuid(),
+    })
+
+    return user.save()
+  }
+
+  @Mutation(() => Boolean, {
+    description: createDescription('Gives a session cookie for the specified User.', {
+      dev: true,
+    }),
+  })
+  public async useUser(
+    @Ctx() context: SessionContext,
+    @Arg('uuid') uuid: string,
+  ) {
+    if (process.env.NODE_ENV !== 'development') {
+      throw new Error('NOT_IN_DEVELOPMENT')
+    }
+
+    const user = await User.findOne({ uuid })
+    if (isNil(user)) {
+      throw new Error('User does not exist!')
+    }
+
+    const session = await Session.generate(user)
+
+    context.setSession(session)
+
+    return true
   }
 }
