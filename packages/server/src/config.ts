@@ -63,4 +63,6 @@ const _config: Config = {
 }
 
 export const config =
-  _config[(process.env.NODE_ENV ?? 'development') as Environment]
+  // || to replace empty string as well
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  _config[(process.env.NODE_ENV || 'development') as Environment]
