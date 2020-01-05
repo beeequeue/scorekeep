@@ -343,16 +343,17 @@ describe('resolvers', () => {
           generateUser(),
         ] as const)
 
-        await Promise.all([
-          new Friendship({
-            initiatorUuid: generated[1].user.uuid,
-            receiverUuid: generated[0].user.uuid,
-          }).save(),
-          new Friendship({
-            initiatorUuid: generated[0].user.uuid,
-            receiverUuid: generated[2].user.uuid,
-          }).save(),
-        ])
+        await new Friendship({
+          initiatorUuid: generated[1].user.uuid,
+          receiverUuid: generated[0].user.uuid,
+        }).save()
+
+        await new Promise(resolve => setTimeout(resolve, 100))
+
+        await new Friendship({
+          initiatorUuid: generated[0].user.uuid,
+          receiverUuid: generated[2].user.uuid,
+        }).save()
 
         const response = client.query(friendRequestQueries.viewer, {
           session: generated[0].session,
