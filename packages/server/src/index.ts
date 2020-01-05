@@ -14,7 +14,7 @@ if (shouldGenerateSnapshot) {
     process.exit(0)
   })
 } else {
-  const port = process.env.PORT || 3000
+  const port = process.env.PORT ?? 3000
 
   const start = async () => {
     await connectToDatabase()

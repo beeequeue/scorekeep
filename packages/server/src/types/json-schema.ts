@@ -64,7 +64,7 @@ export interface JsonSchemaArray extends JsonSchemaPropertyBase {
   uniqueItems: true
   additionalItems?: false | JsonSchemaProperty
   items?:
-    | Array<JsonSchemaProperty>
+    | JsonSchemaProperty[]
     | {
         [key: string]: JsonSchemaProperty
       }
@@ -84,8 +84,8 @@ export interface CustomValidator<D extends {}> extends Ajv.ValidateFunction {
   (
     data: any,
     dataPath?: string,
-    parentData?: object | Array<any>,
+    parentData?: object | any[],
     parentDataProperty?: string | number,
-    rootData?: object | Array<any>,
+    rootData?: object | any[],
   ): data is D
 }

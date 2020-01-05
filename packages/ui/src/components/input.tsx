@@ -11,7 +11,7 @@ export const Input = ({
 }: InputHTMLAttributes<HTMLInputElement>) => {
   return (
     <>
-      <InputElement required type={type || 'text'} {...props} />
+      <InputElement required type={type ?? 'text'} {...props} />
       <Label htmlFor={props.placeholder}>{props.placeholder}</Label>
     </>
   )

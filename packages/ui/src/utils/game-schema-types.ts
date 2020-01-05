@@ -4,7 +4,7 @@ const toPropertyType = (value: string): PropertyType => {
   const propertyTypes = [PropertyType.STRING, PropertyType.NUMBER]
 
   return (
-    propertyTypes.find(prop => prop.toLowerCase() === value) ||
+    propertyTypes.find(prop => prop.toLowerCase() === value) ??
     PropertyType.STRING
   )
 }

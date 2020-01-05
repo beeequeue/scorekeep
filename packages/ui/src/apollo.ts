@@ -31,7 +31,7 @@ export const client = new ApolloClient({
       id?: string
       uuid?: string
     }) => {
-      const id = obj.uuid || obj.id
+      const id = obj.uuid ?? obj.id
       return `${oc(obj).__typename('UnknownType')}${id ? `:${id}` : ''}`
     },
   }),

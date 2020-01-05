@@ -69,5 +69,5 @@ export const contextProvider: ContextFunction<
     await contextSetSession(session)
   }
 
-  return getContextSession(session || null, contextSetSession)
+  return getContextSession(session ?? null, contextSetSession)
 }

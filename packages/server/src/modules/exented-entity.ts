@@ -21,7 +21,7 @@ export abstract class ExtendedEntity extends BaseEntity {
 
     if (isNil(options)) options = {} as any
 
-    this.uuid = options.uuid || uuid()
+    this.uuid = options.uuid ?? uuid()
   }
 
   public shouldExistError<E extends typeof ExtendedEntity>(
