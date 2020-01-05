@@ -1,6 +1,11 @@
+import faker from 'faker'
+
 import { connectToDatabase } from '@/db'
 import { Boardgame, GAME_TYPE } from '@/modules/boardgame/boardgame.model'
 import { JsonSchemaObject } from '@/types/json-schema'
+import { generateUser } from '@/utils/tests'
+
+faker.seed(12)
 
 const createBoardgameSchema = <
   PR extends Omit<JsonSchemaObject, 'type'>,
@@ -187,11 +192,22 @@ const insertBoardgames = async () =>
     }).save(),
   ])
 
+const insertUsers = async () =>
+  Promise.all(Array.from({ length: 25 }).map(() => generateUser()))
+
 const run = async () => {
   const conn = await connectToDatabase()
 
-  await insertBoardgames()
+  const boardgames = await insertBoardgames()
+  console.log('------------------------------------------')
+  console.log(`Inserted ${boardgames.length} board games!`)
+  console.log(boardgames.map(game => game.name).join(', '))
 
+  const userDatas = await insertUsers()
+  console.log('------------------------------------------')
+  console.log(`Inserted ${userDatas.length} users!`)
+
+  console.log('------------------------------------------')
   await conn.close()
 }
 
