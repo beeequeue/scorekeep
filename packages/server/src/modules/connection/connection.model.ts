@@ -3,18 +3,20 @@ import { Field, ID, ObjectType, registerEnumType } from 'type-graphql'
 
 import { EntityWithOwner } from '@/modules/exented-entity'
 import { User } from '@/modules/user/user.model'
-import { isNil, OptionalUuid } from '@/utils'
+import { isNil, PartialPick } from '@/utils'
 
 export enum ConnectionService {
   GOOGLE = 'GOOGLE',
 }
 
-export type ConnectionConstructor = OptionalUuid<
+export type ConnectionConstructor = PartialPick<
+  Connection,
+  'uuid' | 'createdAt'
+> &
   Pick<
     Connection,
-    'uuid' | 'type' | 'userUuid' | 'name' | 'serviceId' | 'email' | 'image'
+    'type' | 'userUuid' | 'name' | 'serviceId' | 'email' | 'image'
   >
->
 
 registerEnumType(ConnectionService, {
   name: 'ConnectionService',
@@ -65,6 +67,7 @@ export class Connection extends EntityWithOwner {
     this.name = options?.name
     this.email = options?.email
     this.image = options?.image
+    this.createdAt = options?.createdAt!
   }
 
   public async getOwners() {

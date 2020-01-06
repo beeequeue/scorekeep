@@ -6,6 +6,8 @@ export type OptionalUuid<T extends { uuid: string }> = Omit<T, 'uuid'> & {
   uuid?: string
 }
 
+export type PartialPick<T extends {}, K extends keyof T> = Partial<Pick<T, K>>
+
 export const IS_DEV = process.env.NODE_ENV === 'development'
 
 export const mapAsync = async <T, R>(

@@ -5,17 +5,16 @@ import { Column, Entity, Index } from 'typeorm'
 import { IsUrl, MaxLength, Min } from 'class-validator'
 
 import { ExtendedEntity } from '@/modules/exented-entity'
-import { OptionalUuid } from '@/utils'
 import { JsonSchemaObject } from '@/types/json-schema'
+import { PartialPick } from '@/utils'
 
-type BoardgameConstructor = OptionalUuid<
+type BoardgameConstructor = PartialPick<Boardgame, 'uuid' | 'createdAt'> &
   Pick<
     Boardgame,
-    | 'uuid'
+    | 'type'
     | 'name'
     | 'shortName'
     | 'aliases'
-    | 'type'
     | 'url'
     | 'rulebook'
     | 'maxPlayers'
@@ -23,7 +22,6 @@ type BoardgameConstructor = OptionalUuid<
     | 'resultsSchema'
     | 'metadataSchema'
   >
->
 
 export enum GAME_TYPE {
   COLLABORATIVE = 'COLLABORATIVE',
@@ -115,5 +113,6 @@ export class Boardgame extends ExtendedEntity {
     this.maxPlayers = options?.maxPlayers
     this.resultsSchema = options?.resultsSchema
     this.metadataSchema = options?.metadataSchema
+    this.createdAt = options?.createdAt!
   }
 }
