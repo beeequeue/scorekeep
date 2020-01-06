@@ -5,20 +5,8 @@ import { Column, Entity, Index } from 'typeorm'
 import { IsUrl, MaxLength, Min } from 'class-validator'
 
 import { ExtendedEntity } from '@/modules/exented-entity'
-import { JsonSchemaObject } from '@/types/json-schema'
 import { OptionalUuid } from '@/utils'
-
-export type ResultBase = {
-  playerResults: Array<{
-    player: string
-    winner: boolean
-    total: number
-    [key: string]: any | undefined
-  }>
-  metadata?: {
-    [key: string]: any | undefined
-  }
-}
+import { JsonSchemaObject } from '@/types/json-schema'
 
 type BoardgameConstructor = OptionalUuid<
   Pick<
@@ -32,7 +20,8 @@ type BoardgameConstructor = OptionalUuid<
     | 'rulebook'
     | 'maxPlayers'
     | 'minPlayers'
-    | 'resultSchema'
+    | 'resultsSchema'
+    | 'metadataSchema'
   >
 >
 
@@ -107,7 +96,11 @@ export class Boardgame extends ExtendedEntity {
 
   @Column({ type: 'json' })
   @Field(() => GraphQLJSONObject)
-  public resultSchema: JsonSchemaObject
+  public resultsSchema: JsonSchemaObject
+
+  @Column({ type: 'json' })
+  @Field(() => GraphQLJSONObject)
+  public metadataSchema: JsonSchemaObject
 
   constructor(options: BoardgameConstructor) {
     super(options)
@@ -120,6 +113,7 @@ export class Boardgame extends ExtendedEntity {
     this.rulebook = options?.rulebook
     this.minPlayers = options?.minPlayers
     this.maxPlayers = options?.maxPlayers
-    this.resultSchema = options?.resultSchema
+    this.resultsSchema = options?.resultsSchema
+    this.metadataSchema = options?.metadataSchema
   }
 }

@@ -58,8 +58,10 @@ export class BoardgameResolver {
     @Arg('name') name: string,
     @Arg('shortName') shortName: string,
     @Arg('maxPlayers', () => Int) maxPlayers: number,
-    @Arg('resultSchema', () => GraphQLJSONObject)
-    resultSchema: object,
+    @Arg('resultsSchema', () => GraphQLJSONObject)
+    resultsSchema: object,
+    @Arg('metadataSchema', () => GraphQLJSONObject)
+    metadataSchema: object,
     // Nullable
     @Arg('aliases', () => [String], { nullable: true })
     aliases: string[] = [],
@@ -73,11 +75,12 @@ export class BoardgameResolver {
     minPlayers: number = 1,
   ) {
     // TODO: Move schema validation to a custom GQL type
-    validate(resultSchema)
-
     // TODO: actually validate against the minimum result schema
-    if (!validate(resultSchema)) {
-      throw createValidationError(validate.errors!, 'Invalid schema!')
+    if (!validate(resultsSchema)) {
+      throw createValidationError(validate.errors!, 'Invalid resultSchema!')
+    }
+    if (!validate(metadataSchema)) {
+      throw createValidationError(validate.errors!, 'Invalid metadataSchema!')
     }
 
     const boardgame = new Boardgame({
@@ -87,9 +90,10 @@ export class BoardgameResolver {
       aliases,
       url,
       rulebook,
-      resultSchema,
       minPlayers,
       maxPlayers,
+      resultsSchema,
+      metadataSchema,
     })
 
     return boardgame.save()
