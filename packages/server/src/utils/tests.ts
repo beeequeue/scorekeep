@@ -18,11 +18,13 @@ export const assertObjectEquals = <T extends {}>(result: T, user: T) => {
 type CreateConnectionOptions = {
   user: User
   uuid?: string
+  createdAt?: Date
   save?: boolean
 }
 export const createConnection = async ({
   user,
   uuid,
+  createdAt,
   save = true,
 }: CreateConnectionOptions) => {
   const name = user.name.split(' ')
@@ -34,6 +36,7 @@ export const createConnection = async ({
     name: user.name,
     email: faker.internet.email(name[0], name[1]),
     image: faker.image.avatar(),
+    createdAt,
   })
 
   if (save) {
@@ -45,10 +48,12 @@ export const createConnection = async ({
 
 type GenerateUserOptions = {
   connectionUuid?: string
+  createdAt?: Date
 }
 
 export const generateUser = async ({
   connectionUuid,
+  createdAt,
 }: GenerateUserOptions = {}) => {
   if (isNil(connectionUuid)) {
     connectionUuid = faker.random.uuid()
@@ -59,16 +64,21 @@ export const generateUser = async ({
   const user = await new User({
     name: fullName,
     mainConnectionUuid: connectionUuid,
+    createdAt,
   }).save()
 
-  const connection = await createConnection({ uuid: connectionUuid, user })
+  const connection = await createConnection({
+    uuid: connectionUuid,
+    user,
+    createdAt,
+  })
 
   const session = await Session.generate(user)
 
   return { user, session, connection }
 }
 
-export const createApolloClient = async () =>{
+export const createApolloClient = async () => {
   const server = await connectApolloServer(createApp())
   const client = createTestClient({
     apolloServer: server,
@@ -79,7 +89,10 @@ export const createApolloClient = async () =>{
     data: D | null
   }
 
-  const graphqlRequest = (type: 'query' | 'mutate') => async <D = any, V extends {} | undefined = undefined>(
+  const graphqlRequest = (type: 'query' | 'mutate') => async <
+    D = any,
+    V extends {} | undefined = undefined
+  >(
     query: string,
     options: { variables?: V; session?: Session } = {},
   ): Promise<GraphQLResponse<D>> => {

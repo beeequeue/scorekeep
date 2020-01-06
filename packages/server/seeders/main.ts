@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import faker from 'faker'
 import { addDays } from 'date-fns'
 
@@ -8,7 +9,28 @@ import { User } from '@/modules/user/user.model'
 import { JsonSchemaObject } from '@/types/json-schema'
 import { generateUser } from '@/utils/tests'
 
+/**
+ * Eras
+ *
+ * 0-14 (0) -----------
+ * Boardgames created
+ * Users registered
+ * 15-21 (1) ----------
+ * Friendships made
+ * 22-29 (2) ----------
+ * Matches added
+ */
+
 faker.seed(12)
+
+const FIRST_DATE = addDays(new Date(), -60)
+const eras = [
+  FIRST_DATE,
+  addDays(FIRST_DATE, 14),
+  addDays(FIRST_DATE, 21),
+] as const
+
+const random = (min = 0, max = 1) => Math.random() * (max - min) + min
 
 const createBoardgameSchema = <
   PR extends Omit<JsonSchemaObject, 'type'>,
@@ -86,6 +108,7 @@ const insertBoardgames = async () =>
           },
         },
       }),
+      createdAt: faker.date.between(eras[0], eras[1]),
     }).save(),
     new Boardgame({
       type: GAME_TYPE.COMPETITIVE,
@@ -106,6 +129,7 @@ const insertBoardgames = async () =>
           },
         },
       }),
+      createdAt: faker.date.between(eras[0], eras[1]),
     }).save(),
     new Boardgame({
       type: GAME_TYPE.COMPETITIVE,
@@ -138,6 +162,7 @@ const insertBoardgames = async () =>
           },
         },
       }),
+      createdAt: faker.date.between(eras[0], eras[1]),
     }).save(),
     new Boardgame({
       type: GAME_TYPE.COMPETITIVE,
@@ -167,6 +192,7 @@ const insertBoardgames = async () =>
           },
         },
       }),
+      createdAt: faker.date.between(eras[0], eras[1]),
     }).save(),
     new Boardgame({
       type: GAME_TYPE.COMPETITIVE,
@@ -192,14 +218,20 @@ const insertBoardgames = async () =>
           },
         },
       }),
+      createdAt: faker.date.between(eras[0], eras[1]),
     }).save(),
   ])
 
 const insertUsers = async () =>
-  Promise.all(Array.from({ length: 25 }).map(() => generateUser()))
+  Promise.all(
+    Array.from({ length: 25 }).map(() =>
+      generateUser({
+        createdAt: faker.date.between(eras[0], eras[1]),
+      }),
+    ),
+  )
 
 const createFriendGroups = async (users: User[]) => {
-  const now = new Date()
   const userGroups: User[][] = []
 
   for (let i = 0; i < 5; i++) {
@@ -212,7 +244,7 @@ const createFriendGroups = async (users: User[]) => {
       return group.map(async (user, i) => {
         if (i === 0) return
 
-        const createdAt = addDays(now, Math.round(Math.random() * -180) + 14)
+        const createdAt = faker.date.between(eras[1], eras[2])
         await new Friendship({
           initiatorUuid: leader.uuid,
           receiverUuid: user.uuid,
