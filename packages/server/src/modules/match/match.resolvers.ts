@@ -36,7 +36,7 @@ export class MatchResolver {
 
     const enhancedResultsSchema: JsonSchemaArray = {
       type: 'array',
-      items: game.resultsSchema as any,
+      items: game.resultsSchema,
       minItems: game.minPlayers,
       maxItems: game.maxPlayers,
     }
