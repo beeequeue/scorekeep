@@ -3,8 +3,8 @@ import { GraphQLJSONObject } from 'graphql-type-json'
 import { Arg, ID, Mutation, Query, Resolver } from 'type-graphql'
 
 import { Match } from '@/modules/match/match.model'
-import { Boardgame, ResultBase } from '@/modules/boardgame/boardgame.model'
-import { CustomValidator, JsonSchemaArray } from '@/types/json-schema'
+import { Boardgame } from '@/modules/boardgame/boardgame.model'
+import { JsonSchemaArray } from '@/types/json-schema'
 import { isNil } from '@/utils'
 import { createValidationError } from '@/utils/validations'
 
@@ -21,7 +21,10 @@ export class MatchResolver {
 
   @Mutation(() => Match)
   public async addMatch(
-    @Arg('results', () => GraphQLJSONObject) results: object,
+    @Arg('results', () => GraphQLJSONObject)
+    playerResults: Array<Record<string, any>>,
+    @Arg('metadata', () => GraphQLJSONObject, { nullable: true })
+    metadata: Record<string, any> | null,
     @Arg('game', () => ID) gameUuid: string,
     @Arg('club', () => ID, { nullable: true }) clubUuid: string,
   ) {
@@ -31,27 +34,35 @@ export class MatchResolver {
       throw new Error('Not found!')
     }
 
-    const improvedSchema = game.resultSchema
-    ;(improvedSchema.properties!.playerResults as JsonSchemaArray).minItems =
-      game.minPlayers
-    ;(improvedSchema.properties!.playerResults as JsonSchemaArray).maxItems =
-      game.maxPlayers
-    const validate = ajv.compile(game.resultSchema) as CustomValidator<
-      ResultBase
-    >
+    const enhancedResultsSchema: JsonSchemaArray = {
+      type: 'array',
+      items: game.resultsSchema as any,
+      minItems: game.minPlayers,
+      maxItems: game.maxPlayers,
+    }
+    const validate = ajv.compile(enhancedResultsSchema)
 
-    if (!validate(results, 'results')) {
-      throw createValidationError(validate.errors!, 'Invalid result!')
+    if (!await validate(playerResults, 'playerResults')) {
+      throw createValidationError(validate.errors!, 'Invalid playerResults!')
     }
 
-    const playerUuids = results.playerResults.map(({ player }) => player)
-    const winnerUuids = results.playerResults
+    if (!isNil(game.metadataSchema)) {
+      const validate = ajv.compile(game.metadataSchema)
+
+      if (!await validate(metadata, 'metadata')) {
+        throw createValidationError(validate.errors!, 'Invalid metadata!')
+      }
+    }
+
+    const playerUuids = playerResults.map(({ player }) => player)
+    const winnerUuids = playerResults
       .filter(({ winner }) => winner === true)
       .map(({ player }) => player)
 
     const match = new Match({
       playerUuids,
-      results,
+      playerResults,
+      metadata,
       winnerUuids,
       gameUuid,
       clubUuid,
