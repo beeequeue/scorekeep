@@ -22,7 +22,7 @@ export class MatchResolver {
   @Mutation(() => Match)
   public async addMatch(
     @Arg('results', () => GraphQLJSONObject)
-    playerResults: Array<Record<string, any>>,
+    results: Array<Record<string, any>>,
     @Arg('metadata', () => GraphQLJSONObject, { nullable: true })
     metadata: Record<string, any> | null,
     @Arg('game', () => ID) gameUuid: string,
@@ -42,26 +42,26 @@ export class MatchResolver {
     }
     const validate = ajv.compile(enhancedResultsSchema)
 
-    if (!await validate(playerResults, 'playerResults')) {
+    if (!(await validate(results, 'results'))) {
       throw createValidationError(validate.errors!, 'Invalid playerResults!')
     }
 
     if (!isNil(game.metadataSchema)) {
       const validate = ajv.compile(game.metadataSchema)
 
-      if (!await validate(metadata, 'metadata')) {
+      if (!(await validate(metadata, 'metadata'))) {
         throw createValidationError(validate.errors!, 'Invalid metadata!')
       }
     }
 
-    const playerUuids = playerResults.map(({ player }) => player)
-    const winnerUuids = playerResults
+    const playerUuids = results.map(({ player }) => player)
+    const winnerUuids = results
       .filter(({ winner }) => winner === true)
       .map(({ player }) => player)
 
     const match = new Match({
       playerUuids,
-      playerResults,
+      results,
       metadata,
       winnerUuids,
       gameUuid,

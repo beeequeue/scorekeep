@@ -21,11 +21,11 @@ test('createValidationError()', () => {
       validation: [
         {
           message: 'should be string',
-          path: ['results', 'playerResults'],
+          path: ['results', 'results'],
         },
         {
           message: 'should be string',
-          path: ['results', 'playerResults', '[0]', 'player'],
+          path: ['results', 'results', '[0]', 'player'],
         },
       ],
     },
