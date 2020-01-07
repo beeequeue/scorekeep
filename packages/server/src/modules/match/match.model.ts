@@ -6,20 +6,18 @@ import { ExtendedEntity } from '@/modules/exented-entity'
 import { User } from '@/modules/user/user.model'
 import { Boardgame } from '@/modules/boardgame/boardgame.model'
 import { Club } from '@/modules/club/club.model'
-import { isNil, OptionalUuid } from '@/utils'
+import { isNil, PartialPick } from '@/utils'
 
-type MatchConstructor = OptionalUuid<
-  Pick<
-    Match,
-    | 'uuid'
-    | 'clubUuid'
-    | 'playerUuids'
-    | 'winnerUuids'
-    | 'gameUuid'
-    | 'results'
-    | 'date'
-  >
->
+type MatchConstructor = Pick<
+  Match,
+  | 'clubUuid'
+  | 'playerUuids'
+  | 'winnerUuids'
+  | 'gameUuid'
+  | 'playerResults'
+  | 'date'
+> &
+  PartialPick<Match, 'uuid' | 'metadata'>
 
 @Entity()
 @ObjectType()
@@ -66,7 +64,11 @@ export class Match extends ExtendedEntity {
 
   @Column({ type: 'json' })
   @Field(() => GraphQLJSONObject)
-  public results: unknown
+  public playerResults: Record<string, any>
+
+  @Column({ type: 'json', nullable: true })
+  @Field(() => GraphQLJSONObject, { nullable: true })
+  public metadata: Record<string, any> | null
 
   @Column({ type: 'timestamp' })
   @Field(() => Date)
@@ -79,7 +81,8 @@ export class Match extends ExtendedEntity {
     this.playerUuids = options?.playerUuids
     this.winnerUuids = options?.winnerUuids
     this.gameUuid = options?.gameUuid
-    this.results = options?.results
+    this.playerResults = options?.playerResults
+    this.metadata = options?.metadata ?? null
     this.date = options?.date
   }
 }
