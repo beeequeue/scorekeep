@@ -60,8 +60,6 @@ export class BoardgameResolver {
     @Arg('maxPlayers', () => Int) maxPlayers: number,
     @Arg('resultsSchema', () => GraphQLJSONObject)
     resultsSchema: object,
-    @Arg('metadataSchema', () => GraphQLJSONObject)
-    metadataSchema: object,
     // Nullable
     @Arg('aliases', () => [String], { nullable: true })
     aliases: string[] = [],
@@ -73,6 +71,8 @@ export class BoardgameResolver {
     rulebook: string | null,
     @Arg('minPlayers', () => Int, { nullable: true })
     minPlayers: number = 1,
+    @Arg('metadataSchema', () => GraphQLJSONObject, { nullable: true })
+    metadataSchema: object | null,
   ) {
     // TODO: Move schema validation to a custom GQL type
     // TODO: actually validate against the minimum result schema

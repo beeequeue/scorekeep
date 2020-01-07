@@ -8,20 +8,19 @@ import { ExtendedEntity } from '@/modules/exented-entity'
 import { JsonSchemaObject } from '@/types/json-schema'
 import { PartialPick } from '@/utils'
 
-type BoardgameConstructor = PartialPick<Boardgame, 'uuid' | 'createdAt'> &
-  Pick<
-    Boardgame,
-    | 'type'
-    | 'name'
-    | 'shortName'
-    | 'aliases'
-    | 'url'
-    | 'rulebook'
-    | 'maxPlayers'
-    | 'minPlayers'
-    | 'resultsSchema'
-    | 'metadataSchema'
-  >
+type BoardgameConstructor = Pick<
+  Boardgame,
+  | 'type'
+  | 'name'
+  | 'shortName'
+  | 'aliases'
+  | 'url'
+  | 'rulebook'
+  | 'maxPlayers'
+  | 'minPlayers'
+  | 'resultsSchema'
+> &
+  PartialPick<Boardgame, 'uuid' | 'createdAt' | 'metadataSchema'>
 
 export enum GAME_TYPE {
   COLLABORATIVE = 'COLLABORATIVE',
@@ -96,9 +95,9 @@ export class Boardgame extends ExtendedEntity {
   @Field(() => GraphQLJSONObject)
   public resultsSchema: JsonSchemaObject
 
-  @Column({ type: 'json' })
-  @Field(() => GraphQLJSONObject)
-  public metadataSchema: JsonSchemaObject
+  @Column({ type: 'json', nullable: true })
+  @Field(() => GraphQLJSONObject, { nullable: true })
+  public metadataSchema: JsonSchemaObject | null
 
   constructor(options: BoardgameConstructor) {
     super(options)
@@ -112,7 +111,7 @@ export class Boardgame extends ExtendedEntity {
     this.minPlayers = options?.minPlayers
     this.maxPlayers = options?.maxPlayers
     this.resultsSchema = options?.resultsSchema
-    this.metadataSchema = options?.metadataSchema
+    this.metadataSchema = options?.metadataSchema ?? null
     this.createdAt = options?.createdAt!
   }
 }
