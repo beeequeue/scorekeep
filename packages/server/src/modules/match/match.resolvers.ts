@@ -1,14 +1,9 @@
-import Ajv from 'ajv'
 import { GraphQLJSONObject } from 'graphql-type-json'
 import { Arg, ID, Mutation, Query, Resolver } from 'type-graphql'
 
 import { Match } from '@/modules/match/match.model'
 import { Boardgame } from '@/modules/boardgame/boardgame.model'
-import { JsonSchemaArray } from '@/types/json-schema'
 import { isNil } from '@/utils'
-import { createValidationError } from '@/utils/validations'
-
-const ajv = new Ajv({ allErrors: true })
 
 @Resolver()
 export class MatchResolver {
@@ -34,24 +29,10 @@ export class MatchResolver {
       throw new Error('Not found!')
     }
 
-    const enhancedResultsSchema: JsonSchemaArray = {
-      type: 'array',
-      items: game.resultsSchema,
-      minItems: game.minPlayers,
-      maxItems: game.maxPlayers,
-    }
-    const validate = ajv.compile(enhancedResultsSchema)
-
-    if (!(await validate(results, 'results'))) {
-      throw createValidationError(validate.errors!, 'Invalid results!')
-    }
+    await game.validateResults(results)
 
     if (!isNil(game.metadataSchema)) {
-      const validate = ajv.compile(game.metadataSchema)
-
-      if (!(await validate(metadata, 'metadata'))) {
-        throw createValidationError(validate.errors!, 'Invalid metadata!')
-      }
+      await game.validateMetadata(metadata)
     }
 
     const playerUuids = results.map(({ player }) => player)
