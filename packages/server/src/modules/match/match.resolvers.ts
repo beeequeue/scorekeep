@@ -43,7 +43,7 @@ export class MatchResolver {
     const validate = ajv.compile(enhancedResultsSchema)
 
     if (!(await validate(results, 'results'))) {
-      throw createValidationError(validate.errors!, 'Invalid playerResults!')
+      throw createValidationError(validate.errors!, 'Invalid results!')
     }
 
     if (!isNil(game.metadataSchema)) {

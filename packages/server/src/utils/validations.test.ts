@@ -1,6 +1,6 @@
 import { createValidationError } from './validations'
 
-const typeError = (dataPath = 'results.playerResults[0].player') => ({
+const typeError = (dataPath = 'results[0].player') => ({
   keyword: 'type',
   dataPath,
   schemaPath: '#/properties/playerResults/items/properties/player/type',
@@ -12,7 +12,7 @@ const typeError = (dataPath = 'results.playerResults[0].player') => ({
 
 test('createValidationError()', () => {
   const result = createValidationError([
-    typeError('results.playerResults'),
+    typeError('results'),
     typeError(),
   ])
 
@@ -21,11 +21,11 @@ test('createValidationError()', () => {
       validation: [
         {
           message: 'should be string',
-          path: ['results', 'results'],
+          path: ['results'],
         },
         {
           message: 'should be string',
-          path: ['results', 'results', '[0]', 'player'],
+          path: ['results', '[0]', 'player'],
         },
       ],
     },
