@@ -10,29 +10,22 @@ import { isNil, PartialPick } from '@/utils'
 
 type MatchConstructor = Pick<
   Match,
-  | 'clubUuid'
-  | 'playerUuids'
-  | 'winnerUuids'
-  | 'gameUuid'
-  | 'results'
-  | 'date'
+  'playerUuids' | 'winnerUuids' | 'gameUuid' | 'results' | 'date'
 > &
-  PartialPick<Match, 'uuid' | 'metadata'>
+  PartialPick<Match, 'uuid' | 'clubUuid' | 'metadata'>
 
 @Entity()
 @ObjectType()
 export class Match extends ExtendedEntity {
-  @Column({ type: 'uuid' })
-  public clubUuid: string
-  @Field(() => Club)
-  public async club(): Promise<Club> {
+  @Column({ type: 'uuid', nullable: true })
+  public clubUuid: string | null
+  @Field(() => Club, { nullable: true })
+  public async club(): Promise<Club | null> {
+    if (isNil(this.clubUuid)) return null
+
     const club = await Club.findOne({ uuid: this.clubUuid })
 
-    if (isNil(club)) {
-      throw this.shouldExistError(Club, this.clubUuid)
-    }
-
-    return club
+    return club ?? null
   }
 
   @Column({ type: 'simple-array' })
@@ -77,7 +70,7 @@ export class Match extends ExtendedEntity {
   constructor(options: MatchConstructor) {
     super(options)
 
-    this.clubUuid = options?.clubUuid
+    this.clubUuid = options?.clubUuid ?? null
     this.playerUuids = options?.playerUuids
     this.winnerUuids = options?.winnerUuids
     this.gameUuid = options?.gameUuid

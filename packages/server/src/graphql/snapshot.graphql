@@ -71,7 +71,7 @@ scalar JSONObject
 
 type Match {
   uuid: ID!
-  club: Club!
+  club: Club
   players: [User!]!
   winners: [User!]!
   game: Boardgame!
