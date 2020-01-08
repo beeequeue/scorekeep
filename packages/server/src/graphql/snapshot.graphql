@@ -75,7 +75,7 @@ type Match {
   players: [User!]!
   winners: [User!]!
   game: Boardgame!
-  results: JSONObject!
+  results: [JSONObject!]!
   metadata: JSONObject
   date: DateTime!
 }

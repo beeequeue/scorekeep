@@ -56,8 +56,8 @@ export class Match extends ExtendedEntity {
   }
 
   @Column({ type: 'json' })
-  @Field(() => GraphQLJSONObject)
-  public results: Record<string, any>
+  @Field(() => [GraphQLJSONObject])
+  public results: Array<Record<string, any>>
 
   @Column({ type: 'json', nullable: true })
   @Field(() => GraphQLJSONObject, { nullable: true })
