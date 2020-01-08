@@ -36,9 +36,7 @@ export class MatchResolver {
     }
 
     const playerUuids = results.map(({ player }) => player)
-    const winnerUuids = results // TODO: add winner to minimum schema
-      .filter(({ winner }) => winner === true)
-      .map(({ player }) => player)
+    const winnerUuids = [] as string[] // TODO: add winner to minimum schema
 
     const match = new Match({
       playerUuids,

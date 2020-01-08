@@ -32,6 +32,8 @@ export class Match extends ExtendedEntity {
   public playerUuids: string[]
   @Field(() => [User])
   public async players(): Promise<User[]> {
+    if (this.winnerUuids.length < 1) return []
+
     return User.find({ where: this.playerUuids.map(uuid => ({ uuid })) })
   }
 
@@ -39,6 +41,8 @@ export class Match extends ExtendedEntity {
   public winnerUuids: string[]
   @Field(() => [User])
   public async winners(): Promise<User[]> {
+    if (this.winnerUuids.length < 1) return []
+
     return User.find({ where: this.winnerUuids.map(uuid => ({ uuid })) })
   }
 
