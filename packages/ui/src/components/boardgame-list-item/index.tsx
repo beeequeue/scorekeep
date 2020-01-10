@@ -35,7 +35,7 @@ const Name = styled.h3`
   font-size: 20px;
   line-height: 20px;
   font-weight: 900;
-  margin: 0 0 4px 2px;
+  margin-bottom: 4px;
 `
 
 const SmallText = styled.div`
