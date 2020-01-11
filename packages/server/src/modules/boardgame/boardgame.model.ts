@@ -37,7 +37,10 @@ const aliasTransformer = {
     arr.map(alias => alias.replace(/,/g, '{escaped_comma}')),
 }
 
-const ajv = new AJV()
+const ajv = new AJV({
+  coerceTypes: true,
+  allErrors: true,
+})
 
 @Entity()
 @ObjectType()
