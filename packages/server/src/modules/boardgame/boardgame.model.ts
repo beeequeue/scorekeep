@@ -129,8 +129,9 @@ export class Boardgame extends ExtendedEntity {
 
   public static validateMinimumResultsSchema(
     schema: object,
+    path?: string
   ): schema is MinimumResultsSchema {
-    const result = validateMinimumSchema(schema)
+    const result = validateMinimumSchema(schema, path)
 
     if (!result) {
       throw createValidationError(

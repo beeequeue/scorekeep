@@ -76,12 +76,14 @@ export class BoardgameResolver {
   ) {
     // TODO: Move schema validation to a custom GQL type
     // TODO: actually validate against the minimum result schema
-    if (!validate(resultsSchema)) {
+    if (!Boardgame.validateMinimumResultsSchema(resultsSchema, 'resultsSchema')) {
       throw createValidationError(validate.errors!, 'Invalid resultSchema!')
     }
     if (!validate(metadataSchema)) {
       throw createValidationError(validate.errors!, 'Invalid metadataSchema!')
     }
+
+    resultsSchema.$schema = 'http://json-schema.org/draft-07/schema#'
 
     const boardgame = new Boardgame({
       type,
