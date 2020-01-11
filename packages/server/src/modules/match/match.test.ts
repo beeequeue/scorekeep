@@ -174,5 +174,29 @@ describe('resolvers', () => {
         await expect(match.winners()).resolves.toEqual([])
       })
     })
+
+    describe('players', () => {
+      test('returns players', async () => {
+        const boardgame = await GAMES.azul.boardgame.save()
+        const generated = await Promise.all([
+          generateUser(),
+          generateUser(),
+          generateUser(),
+        ])
+
+        const results = GAMES.azul.generateResult(generated.map(d => d.user))
+
+        const match = await new Match({
+          gameUuid: boardgame.uuid,
+          playerUuids: generated.map(d => d.user.uuid),
+          winnerUuids: [generated[0].user.uuid],
+          results,
+          date: new Date(),
+        }).save()
+
+        const players = (await match.players()).map(u => u.uuid).sort()
+        expect(players).toMatchObject(generated.map(d => d.user.uuid).sort())
+      })
+    })
   })
 })
