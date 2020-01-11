@@ -51,10 +51,10 @@ export interface JsonSchemaObject extends JsonSchemaPropertyBase {
   minProperties?: number
   maxProperties?: number
   properties?: {
-    [key: string]: JsonSchemaProperty
+    [key: string]: JsonSchemaProperty | undefined
   }
   dependencies?: {
-    [key: string]: string[]
+    [key: string]: string[] | undefined
   }
 }
 

@@ -9,6 +9,10 @@ import { ExtendedEntity } from '@/modules/exented-entity'
 import { JsonSchemaArray, JsonSchemaObject } from '@/types/json-schema'
 import { isNil, PartialPick } from '@/utils'
 import { createValidationError } from '@/utils/validations'
+import {
+  minimumResultsSchema,
+  MinimumResultsSchema,
+} from './boardgame.schema'
 
 type BoardgameConstructor = Pick<
   Boardgame,
@@ -41,6 +45,7 @@ const ajv = new AJV({
   coerceTypes: true,
   allErrors: true,
 })
+const validateMinimumSchema = ajv.compile(minimumResultsSchema)
 
 @Entity()
 @ObjectType()
@@ -100,7 +105,7 @@ export class Boardgame extends ExtendedEntity {
 
   @Column({ type: 'json' })
   @Field(() => GraphQLJSONObject)
-  public resultsSchema: JsonSchemaObject
+  public resultsSchema: MinimumResultsSchema
 
   @Column({ type: 'json', nullable: true })
   @Field(() => GraphQLJSONObject, { nullable: true })
@@ -122,6 +127,21 @@ export class Boardgame extends ExtendedEntity {
     this.createdAt = options?.createdAt!
   }
 
+  public static validateMinimumResultsSchema(
+    schema: object,
+  ): schema is MinimumResultsSchema {
+    const result = validateMinimumSchema(schema)
+
+    if (!result) {
+      throw createValidationError(
+        validateMinimumSchema.errors!,
+        'Invalid results!',
+      )
+    }
+
+    return result as boolean
+  }
+
   public async validateResults(results: Record<string, any>) {
     const enhancedResultsSchema: JsonSchemaArray = {
       type: 'array',
@@ -131,7 +151,7 @@ export class Boardgame extends ExtendedEntity {
     }
     const validate = ajv.compile(enhancedResultsSchema)
 
-    if (!(await validate(results, 'results'))) {
+    if (!validate(results, 'results')) {
       throw createValidationError(validate.errors!, 'Invalid results!')
     }
   }
@@ -141,7 +161,7 @@ export class Boardgame extends ExtendedEntity {
 
     const validate = ajv.compile(this.metadataSchema)
 
-    if (!(await validate(results, 'metadata'))) {
+    if (!validate(results, 'metadata')) {
       throw createValidationError(validate.errors!, 'Invalid metadata!')
     }
   }
