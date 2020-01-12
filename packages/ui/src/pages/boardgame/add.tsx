@@ -90,10 +90,14 @@ const Add = () => {
   const submitBoardgame = useCallback(async () => {
     const [minPlayers, maxPlayers] = [1, 4]
     const variables: AddBoardgameMutationVariables = {
+      name,
+      shortName: name
+        .toLowerCase()
+        .replace(/[^a-z0-9 ]+/g, '') // Remove non-alphanumeric
+        .replace(/ /g, '-'), // Replace space with dash
       minPlayers,
       maxPlayers,
       schema: JSON.parse(generateSchemaFromProperties(properties)),
-      name,
     }
 
     return addBoardgame({ variables })

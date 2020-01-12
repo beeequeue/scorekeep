@@ -22,12 +22,15 @@ export type Boardgame = {
   uuid: Scalars['ID']
   type: Game_Type
   name: Scalars['String']
+  shortName: Scalars['String']
+  aliases: Array<Scalars['String']>
   /** Link to boardgamegeek */
   url: Maybe<Scalars['String']>
   rulebook: Maybe<Scalars['String']>
   minPlayers: Scalars['Int']
   maxPlayers: Scalars['Int']
-  resultSchema: Scalars['JSONObject']
+  resultsSchema: Scalars['JSONObject']
+  metadataSchema: Maybe<Scalars['JSONObject']>
 }
 
 export type BoardgamesPage = {
@@ -61,6 +64,13 @@ export enum ConnectionService {
   Google = 'GOOGLE',
 }
 
+export type FriendRequest = {
+  __typename?: 'FriendRequest'
+  uuid: Scalars['ID']
+  initiator: User
+  receiver: UsersUnion
+}
+
 export enum Game_Type {
   Collaborative = 'COLLABORATIVE',
   Competitive = 'COMPETITIVE',
@@ -69,11 +79,12 @@ export enum Game_Type {
 export type Match = {
   __typename?: 'Match'
   uuid: Scalars['ID']
-  club: Club
+  club: Maybe<Club>
   players: Array<User>
   winners: Array<User>
   game: Boardgame
-  results: Scalars['JSONObject']
+  results: Array<Scalars['JSONObject']>
+  metadata: Maybe<Scalars['JSONObject']>
   date: Scalars['DateTime']
 }
 
@@ -86,23 +97,41 @@ export type Mutation = {
    * _Requires login._
    */
   disconnect: User
+  addFriend: User
+  acceptFriendRequest: User
   addMatch: Match
-  addUser: User
-  useUser: Scalars['Boolean']
   /**
    * Update the name of the logged in user.
    * _Requires login._
    */
   updateName: User
+  /**
+   * Create a new UnclaimedUser as a friend.
+   * _Requires login._
+   */
+  createFriend: UnclaimedUser
+  /**
+   * Create a User without a Connection.
+   * _Development only._
+   */
+  addUser: User
+  /**
+   * Gives a session cookie for the specified User.
+   * _Development only._
+   */
+  useUser: Scalars['Boolean']
 }
 
 export type MutationAddBoardgameArgs = {
+  metadataSchema: Maybe<Scalars['JSONObject']>
   minPlayers: Maybe<Scalars['Int']>
   rulebook: Maybe<Scalars['String']>
   type: Maybe<Game_Type>
   url: Maybe<Scalars['String']>
-  resultSchema: Scalars['JSONObject']
+  aliases: Maybe<Array<Scalars['String']>>
+  resultsSchema: Scalars['JSONObject']
   maxPlayers: Scalars['Int']
+  shortName: Scalars['String']
   name: Scalars['String']
 }
 
@@ -114,10 +143,27 @@ export type MutationDisconnectArgs = {
   uuid: Scalars['ID']
 }
 
+export type MutationAddFriendArgs = {
+  uuid: Scalars['ID']
+}
+
+export type MutationAcceptFriendRequestArgs = {
+  userUuid: Scalars['ID']
+}
+
 export type MutationAddMatchArgs = {
   club: Maybe<Scalars['ID']>
   game: Scalars['ID']
-  results: Scalars['JSONObject']
+  metadata: Maybe<Scalars['JSONObject']>
+  results: Array<Scalars['JSONObject']>
+}
+
+export type MutationUpdateNameArgs = {
+  name: Scalars['String']
+}
+
+export type MutationCreateFriendArgs = {
+  name: Scalars['String']
 }
 
 export type MutationAddUserArgs = {
@@ -126,10 +172,6 @@ export type MutationAddUserArgs = {
 
 export type MutationUseUserArgs = {
   uuid: Scalars['String']
-}
-
-export type MutationUpdateNameArgs = {
-  name: Scalars['String']
 }
 
 export type Query = {
@@ -164,6 +206,14 @@ export type QueryUserArgs = {
   uuid: Scalars['ID']
 }
 
+export type UnclaimedUser = {
+  __typename?: 'UnclaimedUser'
+  uuid: Scalars['ID']
+  name: Scalars['String']
+  friends: Array<User>
+  friendsSince: Maybe<Scalars['DateTime']>
+}
+
 export type User = {
   __typename?: 'User'
   uuid: Scalars['ID']
@@ -171,10 +221,20 @@ export type User = {
   clubs: Array<Club>
   connections: Array<Connection>
   mainConnection: Maybe<Connection>
+  friends: Array<UsersUnion>
+  friendsSince: Maybe<Scalars['DateTime']>
+  /**
+   * Returns the user's friend requests.
+   * _Only accessible by the owner._
+   */
+  friendRequests: Array<FriendRequest>
 }
+
+export type UsersUnion = User | UnclaimedUser
 
 export type AddBoardgameMutationVariables = {
   name: Scalars['String']
+  shortName: Scalars['String']
   maxPlayers: Scalars['Int']
   minPlayers: Scalars['Int']
   schema: Scalars['JSONObject']
@@ -183,7 +243,7 @@ export type AddBoardgameMutationVariables = {
 export type AddBoardgameMutation = { __typename?: 'Mutation' } & {
   addBoardgame: { __typename?: 'Boardgame' } & Pick<
     Boardgame,
-    'uuid' | 'name' | 'resultSchema'
+    'uuid' | 'name' | 'resultsSchema'
   >
 }
 
@@ -218,7 +278,7 @@ export type LoginConnectionsQuery = { __typename?: 'Query' } & {
 }
 
 export type AddMatchMutationVariables = {
-  result: Scalars['JSONObject']
+  result: Array<Scalars['JSONObject']>
   boardgame: Scalars['ID']
 }
 
@@ -233,7 +293,7 @@ export type BoardgamesQuery = { __typename?: 'Query' } & {
     items: Array<
       { __typename?: 'Boardgame' } & Pick<
         Boardgame,
-        'uuid' | 'maxPlayers' | 'name' | 'resultSchema'
+        'uuid' | 'maxPlayers' | 'name' | 'resultsSchema'
       >
     >
   }
@@ -248,19 +308,21 @@ export type PlayersQuery = { __typename?: 'Query' } & {
 export const AddBoardgameDocument = gql`
   mutation AddBoardgame(
     $name: String!
+    $shortName: String!
     $maxPlayers: Int!
     $minPlayers: Int!
     $schema: JSONObject!
   ) {
     addBoardgame(
       name: $name
+      shortName: $shortName
       maxPlayers: $maxPlayers
       minPlayers: $minPlayers
-      resultSchema: $schema
+      resultsSchema: $schema
     ) {
       uuid
       name
-      resultSchema
+      resultsSchema
     }
   }
 `
@@ -283,6 +345,7 @@ export type AddBoardgameMutationFn = ApolloReactCommon.MutationFunction<
  * const [addBoardgameMutation, { data, loading, error }] = useAddBoardgameMutation({
  *   variables: {
  *      name: // value for 'name'
+ *      shortName: // value for 'shortName'
  *      maxPlayers: // value for 'maxPlayers'
  *      minPlayers: // value for 'minPlayers'
  *      schema: // value for 'schema'
@@ -430,7 +493,7 @@ export type LoginConnectionsQueryResult = ApolloReactCommon.QueryResult<
   LoginConnectionsQueryVariables
 >
 export const AddMatchDocument = gql`
-  mutation addMatch($result: JSONObject!, $boardgame: ID!) {
+  mutation addMatch($result: [JSONObject!]!, $boardgame: ID!) {
     addMatch(
       club: "40d950d8-4bb1-419d-9616-2fb0d7dc7aa7"
       game: $boardgame
@@ -489,7 +552,7 @@ export const BoardgamesDocument = gql`
         uuid
         maxPlayers
         name
-        resultSchema
+        resultsSchema
       }
     }
   }

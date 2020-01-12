@@ -1,4 +1,4 @@
-mutation addMatch ($result: JSONObject!, $boardgame: ID!) {
+mutation addMatch ($result: [JSONObject!]!, $boardgame: ID!) {
   addMatch(club: "40d950d8-4bb1-419d-9616-2fb0d7dc7aa7", game: $boardgame, results: $result) {
     uuid
   }
