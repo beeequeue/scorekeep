@@ -40,7 +40,7 @@ export const GAMES = {
         return {
           player: user.uuid,
           winner: isWinner,
-          score: isWinner
+          final: isWinner
             ? faker.random.number({ min: 50, max: 80 })
             : faker.random.number(50),
         }
@@ -128,7 +128,7 @@ export const GAMES = {
 
         return {
           ...results,
-          total: results.territories + results.twoResources + results.bonuses,
+          final: results.territories + results.twoResources + results.bonuses,
         }
       })
     },
