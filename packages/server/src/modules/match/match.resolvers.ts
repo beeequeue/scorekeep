@@ -3,7 +3,8 @@ import { Arg, ID, Mutation, Query, Resolver } from 'type-graphql'
 
 import { Match } from '@/modules/match/match.model'
 import { Boardgame } from '@/modules/boardgame/boardgame.model'
-import { isNil } from '@/utils'
+import { MinimumResults } from '@/modules/boardgame/boardgame.schema'
+import { isNil, isNotNil } from '@/utils'
 
 @Resolver()
 export class MatchResolver {
@@ -16,8 +17,8 @@ export class MatchResolver {
 
   @Mutation(() => Match)
   public async addMatch(
-    @Arg('results', () => GraphQLJSONObject)
-    results: Array<Record<string, any>>,
+    @Arg('results', () => [GraphQLJSONObject])
+    results: MinimumResults,
     @Arg('metadata', () => GraphQLJSONObject, { nullable: true })
     metadata: Record<string, any> | null,
     @Arg('game', () => ID) gameUuid: string,
@@ -36,7 +37,9 @@ export class MatchResolver {
     }
 
     const playerUuids = results.map(({ player }) => player)
-    const winnerUuids = [] as string[] // TODO: add winner to minimum schema
+    const winnerUuids = results
+      .map(({ player, winner }) => (winner ? player : null))
+      .filter(isNotNil)
 
     const match = new Match({
       playerUuids,

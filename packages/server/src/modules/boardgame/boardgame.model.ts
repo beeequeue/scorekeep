@@ -10,6 +10,7 @@ import { JsonSchemaArray, JsonSchemaObject } from '@/types/json-schema'
 import { isNil, PartialPick } from '@/utils'
 import { createValidationError } from '@/utils/validations'
 import {
+  MinimumResults,
   minimumResultsSchema,
   MinimumResultsSchema,
 } from './boardgame.schema'
@@ -143,7 +144,7 @@ export class Boardgame extends ExtendedEntity {
     return result as boolean
   }
 
-  public async validateResults(results: Record<string, any>) {
+  public async validateResults(results: MinimumResults) {
     const enhancedResultsSchema: JsonSchemaArray = {
       type: 'array',
       items: this.resultsSchema,
