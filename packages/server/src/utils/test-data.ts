@@ -17,7 +17,7 @@ export const GAMES = {
       resultsSchema: {
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',
-        required: ['player', 'winner', 'score'],
+        required: ['player', 'winner', 'final'],
         properties: {
           player: {
             type: 'string' as const,
@@ -64,13 +64,13 @@ export const GAMES = {
         required: [
           'player',
           'winner',
+          'final',
           'faction',
           'popularity',
           'stars',
           'territories',
           'twoResources',
           'bonuses',
-          'total',
         ],
         properties: {
           player: {
