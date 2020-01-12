@@ -48,6 +48,41 @@ describe('resolvers', () => {
       }
     `
 
+    test('should add a boardgame', async () => {
+      const generated = await generateUser()
+      const {
+        name,
+        shortName,
+        aliases,
+        url,
+        maxPlayers,
+        resultsSchema,
+        metadataSchema,
+      } = GAMES.scythe.boardgame
+
+      const response = await client.mutate(addBoardgame, {
+        session: generated.session,
+        variables: {
+          name,
+          shortName,
+          aliases,
+          url,
+          maxPlayers,
+          resultsSchema,
+          metadataSchema,
+        },
+      })
+
+      expect(response.errors).toBeUndefined()
+      expect(response.data).toMatchObject({
+        addBoardgame: {
+          uuid: expect.any(String),
+          shortName,
+          resultsSchema,
+        },
+      })
+    })
+
     test('should fail without minimum schema', async () => {
       const generated = await generateUser()
 
@@ -90,41 +125,6 @@ describe('resolvers', () => {
           },
         },
       ])
-    })
-
-    test('should add a boardgame', async () => {
-      const generated = await generateUser()
-      const {
-        name,
-        shortName,
-        aliases,
-        url,
-        maxPlayers,
-        resultsSchema,
-        metadataSchema,
-      } = GAMES.scythe.boardgame
-
-      const response = await client.mutate(addBoardgame, {
-        session: generated.session,
-        variables: {
-          name,
-          shortName,
-          aliases,
-          url,
-          maxPlayers,
-          resultsSchema,
-          metadataSchema,
-        },
-      })
-
-      expect(response.errors).toBeUndefined()
-      expect(response.data).toMatchObject({
-        addBoardgame: {
-          uuid: expect.any(String),
-          shortName,
-          resultsSchema,
-        },
-      })
     })
   })
 })
