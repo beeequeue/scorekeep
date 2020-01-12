@@ -1,27 +1,71 @@
 import { JsonSchemaProperty } from '@/types/json-schema'
 
-export const minimumResultsSchema = {
-  $schema: 'http://json-schema.org/draft-07/schema#' as const,
+export const minimumResultsSchema: JsonSchemaProperty = {
   type: 'object' as const,
-  required: ['player' as const, 'winner' as const, 'score' as const],
+  required: ['type', 'required'],
   properties: {
-    player: {
-      type: 'string' as const,
+    type: {
+      type: 'string',
+      enum: ['object'],
     },
-    winner: {
-      type: 'boolean' as const,
+    required: {
+      type: 'array' as const,
+      minItems: 2,
+      uniqueItems: true,
+      items: [
+        { type: 'string' as const, enum: ['player', 'winner'] },
+        { type: 'string' as const, enum: ['player', 'winner'] },
+      ],
+      additionalItems: { type: 'string' as const },
     },
-    final: {
-      type: 'number' as const,
-    } as { type: 'number' } | undefined,
+    properties: {
+      type: 'object' as const,
+      required: ['player', 'winner'],
+      properties: {
+        player: {
+          type: 'object' as const,
+          required: ['type'],
+          properties: {
+            type: {
+              type: 'string' as const,
+              enum: ['string'],
+            },
+          },
+        },
+        winner: {
+          type: 'object' as const,
+          required: ['type'],
+          properties: {
+            type: {
+              type: 'string' as const,
+              enum: ['boolean'],
+            },
+          },
+        },
+        additionalProperties: {
+          type: 'object' as const,
+          required: ['type'],
+        },
+      },
+    },
   },
 }
 
-export type MinimumResultsSchema = typeof minimumResultsSchema & {
+export type MinimumResultsSchema = {
+  $schema: 'http://json-schema.org/draft-07/schema#'
+  type: 'object'
+  required: Array<'player' | 'winner' | 'score' | string>
   properties: {
-    [key: string]:
-      | JsonSchemaProperty
-      | undefined
+    player: {
+      type: 'string'
+    }
+    winner: {
+      type: 'boolean'
+    }
+    final?: {
+      type: 'number'
+    }
+    [key: string]: JsonSchemaProperty | undefined
   }
 }
 

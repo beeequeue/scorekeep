@@ -18,6 +18,7 @@ import { PaginatedResponse, PaginationArgs } from '@/modules/pagination'
 import { Boardgame, GAME_TYPE } from '@/modules/boardgame/boardgame.model'
 import { CustomValidator, JsonSchemaObject } from '@/types/json-schema'
 import { createValidationError } from '@/utils/validations'
+import { isNil } from '@/utils'
 
 const ajv = new Ajv({ allErrors: true })
 
@@ -79,7 +80,7 @@ export class BoardgameResolver {
     if (!Boardgame.validateMinimumResultsSchema(resultsSchema, 'resultsSchema')) {
       throw createValidationError(validate.errors!, 'Invalid resultSchema!')
     }
-    if (!validate(metadataSchema)) {
+    if (!isNil(metadataSchema) && !validate(metadataSchema)) {
       throw createValidationError(validate.errors!, 'Invalid metadataSchema!')
     }
 

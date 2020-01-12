@@ -15,6 +15,7 @@ export const GAMES = {
       minPlayers: 2,
       maxPlayers: 4,
       resultsSchema: {
+        $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',
         required: ['player', 'winner', 'score'],
         properties: {
@@ -24,7 +25,7 @@ export const GAMES = {
           winner: {
             type: 'boolean' as const,
           },
-          score: {
+          final: {
             type: 'number' as const,
           },
         },
@@ -58,6 +59,7 @@ export const GAMES = {
       minPlayers: 1,
       maxPlayers: 5,
       resultsSchema: {
+        $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',
         required: [
           'player',
@@ -77,6 +79,9 @@ export const GAMES = {
           winner: {
             type: 'boolean' as const,
           },
+          final: {
+            type: 'number' as const,
+          },
           faction: {
             type: 'string' as const,
             enum: ['Red', 'Green', 'Blue', 'Yellow', 'Black'],
@@ -94,9 +99,6 @@ export const GAMES = {
             type: 'number' as const,
           },
           bonuses: {
-            type: 'number' as const,
-          },
-          total: {
             type: 'number' as const,
           },
         },
