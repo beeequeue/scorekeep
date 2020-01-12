@@ -84,9 +84,18 @@ describe('resolvers', () => {
           .sort(),
       ).toEqual(generated.map(d => d.user.uuid).sort())
 
-      expect(response.data.addMatch.results).toMatchObject(results)
+      expect(
+        response.data.addMatch.winners
+          .map((p: { uuid: string }) => p.uuid)
+          .sort(),
+      ).toEqual(
+        results
+          .filter(r => r.winner)
+          .map(r => r.player)
+          .sort(),
+      )
 
-      expect(response.data.addMatch.winners).toMatchObject([])
+      expect(response.data.addMatch.results).toMatchObject(results)
     })
 
     test('fails on bad result structure', async () => {
