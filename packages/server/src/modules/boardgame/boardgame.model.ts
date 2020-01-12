@@ -3,38 +3,31 @@ import { GraphQLJSONObject } from 'graphql-type-json'
 import { Field, Int, ObjectType, registerEnumType } from 'type-graphql'
 import { Column, Entity, Index } from 'typeorm'
 import { IsUrl, MaxLength, Min } from 'class-validator'
+import AJV from 'ajv'
 
 import { ExtendedEntity } from '@/modules/exented-entity'
-import { JsonSchemaObject } from '@/types/json-schema'
-import { OptionalUuid } from '@/utils'
+import { JsonSchemaArray, JsonSchemaObject } from '@/types/json-schema'
+import { isNil, PartialPick } from '@/utils'
+import { createValidationError } from '@/utils/validations'
+import {
+  MinimumResults,
+  minimumResultsSchema,
+  MinimumResultsSchema,
+} from './boardgame.schema'
 
-export type ResultBase = {
-  playerResults: Array<{
-    player: string
-    winner: boolean
-    total: number
-    [key: string]: any | undefined
-  }>
-  metadata?: {
-    [key: string]: any | undefined
-  }
-}
-
-type BoardgameConstructor = OptionalUuid<
-  Pick<
-    Boardgame,
-    | 'uuid'
-    | 'name'
-    | 'shortName'
-    | 'aliases'
-    | 'type'
-    | 'url'
-    | 'rulebook'
-    | 'maxPlayers'
-    | 'minPlayers'
-    | 'resultSchema'
-  >
->
+type BoardgameConstructor = Pick<
+  Boardgame,
+  | 'type'
+  | 'name'
+  | 'shortName'
+  | 'aliases'
+  | 'url'
+  | 'rulebook'
+  | 'maxPlayers'
+  | 'minPlayers'
+  | 'resultsSchema'
+> &
+  PartialPick<Boardgame, 'uuid' | 'createdAt' | 'metadataSchema'>
 
 export enum GAME_TYPE {
   COLLABORATIVE = 'COLLABORATIVE',
@@ -48,6 +41,12 @@ const aliasTransformer = {
   to: (arr: string[]) =>
     arr.map(alias => alias.replace(/,/g, '{escaped_comma}')),
 }
+
+const ajv = new AJV({
+  coerceTypes: true,
+  allErrors: true,
+})
+const validateMinimumSchema = ajv.compile(minimumResultsSchema)
 
 @Entity()
 @ObjectType()
@@ -107,7 +106,11 @@ export class Boardgame extends ExtendedEntity {
 
   @Column({ type: 'json' })
   @Field(() => GraphQLJSONObject)
-  public resultSchema: JsonSchemaObject
+  public resultsSchema: MinimumResultsSchema
+
+  @Column({ type: 'json', nullable: true })
+  @Field(() => GraphQLJSONObject, { nullable: true })
+  public metadataSchema: JsonSchemaObject | null
 
   constructor(options: BoardgameConstructor) {
     super(options)
@@ -120,6 +123,48 @@ export class Boardgame extends ExtendedEntity {
     this.rulebook = options?.rulebook
     this.minPlayers = options?.minPlayers
     this.maxPlayers = options?.maxPlayers
-    this.resultSchema = options?.resultSchema
+    this.resultsSchema = options?.resultsSchema
+    this.metadataSchema = options?.metadataSchema ?? null
+    this.createdAt = options?.createdAt!
+  }
+
+  public static validateMinimumResultsSchema(
+    schema: object,
+    path?: string
+  ): schema is MinimumResultsSchema {
+    const result = validateMinimumSchema(schema, path)
+
+    if (!result) {
+      throw createValidationError(
+        validateMinimumSchema.errors!,
+        'Invalid results!',
+      )
+    }
+
+    return result as boolean
+  }
+
+  public async validateResults(results: MinimumResults) {
+    const enhancedResultsSchema: JsonSchemaArray = {
+      type: 'array',
+      items: this.resultsSchema,
+      minItems: this.minPlayers,
+      maxItems: this.maxPlayers,
+    }
+    const validate = ajv.compile(enhancedResultsSchema)
+
+    if (!validate(results, 'results')) {
+      throw createValidationError(validate.errors!, 'Invalid results!')
+    }
+  }
+
+  public async validateMetadata(results: Record<string, any> | null) {
+    if (isNil(this.metadataSchema)) return
+
+    const validate = ajv.compile(this.metadataSchema)
+
+    if (!validate(results, 'metadata')) {
+      throw createValidationError(validate.errors!, 'Invalid metadata!')
+    }
   }
 }

@@ -18,6 +18,7 @@ import { PaginatedResponse, PaginationArgs } from '@/modules/pagination'
 import { Boardgame, GAME_TYPE } from '@/modules/boardgame/boardgame.model'
 import { CustomValidator, JsonSchemaObject } from '@/types/json-schema'
 import { createValidationError } from '@/utils/validations'
+import { isNil } from '@/utils'
 
 const ajv = new Ajv({ allErrors: true })
 
@@ -58,8 +59,8 @@ export class BoardgameResolver {
     @Arg('name') name: string,
     @Arg('shortName') shortName: string,
     @Arg('maxPlayers', () => Int) maxPlayers: number,
-    @Arg('resultSchema', () => GraphQLJSONObject)
-    resultSchema: object,
+    @Arg('resultsSchema', () => GraphQLJSONObject)
+    resultsSchema: object,
     // Nullable
     @Arg('aliases', () => [String], { nullable: true })
     aliases: string[] = [],
@@ -71,14 +72,19 @@ export class BoardgameResolver {
     rulebook: string | null,
     @Arg('minPlayers', () => Int, { nullable: true })
     minPlayers: number = 1,
+    @Arg('metadataSchema', () => GraphQLJSONObject, { nullable: true })
+    metadataSchema: object | null,
   ) {
     // TODO: Move schema validation to a custom GQL type
-    validate(resultSchema)
-
     // TODO: actually validate against the minimum result schema
-    if (!validate(resultSchema)) {
-      throw createValidationError(validate.errors!, 'Invalid schema!')
+    if (!Boardgame.validateMinimumResultsSchema(resultsSchema, 'resultsSchema')) {
+      throw createValidationError(validate.errors!, 'Invalid resultSchema!')
     }
+    if (!isNil(metadataSchema) && !validate(metadataSchema)) {
+      throw createValidationError(validate.errors!, 'Invalid metadataSchema!')
+    }
+
+    resultsSchema.$schema = 'http://json-schema.org/draft-07/schema#'
 
     const boardgame = new Boardgame({
       type,
@@ -87,9 +93,10 @@ export class BoardgameResolver {
       aliases,
       url,
       rulebook,
-      resultSchema,
       minPlayers,
       maxPlayers,
+      resultsSchema,
+      metadataSchema,
     })
 
     return boardgame.save()

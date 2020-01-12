@@ -18,6 +18,7 @@ export interface JsonSchemaString extends JsonSchemaPropertyBase {
   minLength?: number
   maxLength?: number
   pattern?: string
+  enum?: string[]
   format?:
     | 'date-time'
     | 'time'
@@ -50,10 +51,10 @@ export interface JsonSchemaObject extends JsonSchemaPropertyBase {
   minProperties?: number
   maxProperties?: number
   properties?: {
-    [key: string]: JsonSchemaProperty
+    [key: string]: JsonSchemaProperty | undefined
   }
   dependencies?: {
-    [key: string]: string[]
+    [key: string]: string[] | undefined
   }
 }
 
@@ -61,13 +62,10 @@ export interface JsonSchemaArray extends JsonSchemaPropertyBase {
   type: 'array'
   minItems?: number
   maxItems?: number
-  uniqueItems: true
+  uniqueItems?: true
+  required?: string[]
   additionalItems?: false | JsonSchemaProperty
-  items?:
-    | JsonSchemaProperty[]
-    | {
-        [key: string]: JsonSchemaProperty
-      }
+  items?: JsonSchemaProperty | JsonSchemaProperty[]
 }
 
 export type JsonSchemaProperty =

@@ -3,13 +3,15 @@ import { Field, ObjectType } from 'type-graphql'
 
 import { UserBase } from '@/modules/user/user-base.model'
 import { Club } from '@/modules/club/club.model'
-import { Connection, ConnectionConstructor } from '@/modules/connection/connection.model'
+import {
+  Connection,
+  ConnectionConstructor,
+} from '@/modules/connection/connection.model'
 import { Friendship } from '@/modules/friendship/friendship.model'
-import { isNil, OptionalUuid } from '@/utils'
+import { isNil, PartialPick } from '@/utils'
 
-type UserConstructor = OptionalUuid<
-  Pick<User, 'uuid' | 'name' | 'mainConnectionUuid'>
->
+type UserConstructor = PartialPick<User, 'uuid' | 'createdAt'> &
+  Pick<User, 'name' | 'mainConnectionUuid'>
 
 @Entity()
 @ObjectType()
@@ -38,6 +40,7 @@ export class User extends UserBase {
 
     this.name = options?.name
     this.mainConnectionUuid = options?.mainConnectionUuid
+    this.createdAt = options?.createdAt!
   }
 
   public async connectTo(options: Omit<ConnectionConstructor, 'userUuid'>) {

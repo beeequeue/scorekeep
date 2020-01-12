@@ -1,14 +1,10 @@
-import Ajv from 'ajv'
 import { GraphQLJSONObject } from 'graphql-type-json'
 import { Arg, ID, Mutation, Query, Resolver } from 'type-graphql'
 
 import { Match } from '@/modules/match/match.model'
-import { Boardgame, ResultBase } from '@/modules/boardgame/boardgame.model'
-import { CustomValidator, JsonSchemaArray } from '@/types/json-schema'
-import { isNil } from '@/utils'
-import { createValidationError } from '@/utils/validations'
-
-const ajv = new Ajv({ allErrors: true })
+import { Boardgame } from '@/modules/boardgame/boardgame.model'
+import { MinimumResults } from '@/modules/boardgame/boardgame.schema'
+import { isNil, isNotNil } from '@/utils'
 
 @Resolver()
 export class MatchResolver {
@@ -21,7 +17,10 @@ export class MatchResolver {
 
   @Mutation(() => Match)
   public async addMatch(
-    @Arg('results', () => GraphQLJSONObject) results: object,
+    @Arg('results', () => [GraphQLJSONObject])
+    results: MinimumResults,
+    @Arg('metadata', () => GraphQLJSONObject, { nullable: true })
+    metadata: Record<string, any> | null,
     @Arg('game', () => ID) gameUuid: string,
     @Arg('club', () => ID, { nullable: true }) clubUuid: string,
   ) {
@@ -31,27 +30,21 @@ export class MatchResolver {
       throw new Error('Not found!')
     }
 
-    const improvedSchema = game.resultSchema
-    ;(improvedSchema.properties!.playerResults as JsonSchemaArray).minItems =
-      game.minPlayers
-    ;(improvedSchema.properties!.playerResults as JsonSchemaArray).maxItems =
-      game.maxPlayers
-    const validate = ajv.compile(game.resultSchema) as CustomValidator<
-      ResultBase
-    >
+    await game.validateResults(results)
 
-    if (!validate(results, 'results')) {
-      throw createValidationError(validate.errors!, 'Invalid result!')
+    if (!isNil(game.metadataSchema)) {
+      await game.validateMetadata(metadata)
     }
 
-    const playerUuids = results.playerResults.map(({ player }) => player)
-    const winnerUuids = results.playerResults
-      .filter(({ winner }) => winner === true)
-      .map(({ player }) => player)
+    const playerUuids = results.map(({ player }) => player)
+    const winnerUuids = results
+      .map(({ player, winner }) => (winner ? player : null))
+      .filter(isNotNil)
 
     const match = new Match({
       playerUuids,
       results,
+      metadata,
       winnerUuids,
       gameUuid,
       clubUuid,

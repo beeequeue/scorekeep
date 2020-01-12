@@ -5,12 +5,13 @@ import { EntityWithOwner } from '@/modules/exented-entity'
 import { User } from '@/modules/user/user.model'
 import { UnclaimedUser } from '@/modules/user/unclaimed-user.model'
 import { UsersUnionType } from '@/modules/user/user.types'
-import { isNil, OptionalUuid } from '@/utils'
+import { isNil, PartialPick } from '@/utils'
 
-type FriendshipConstructor = OptionalUuid<
-  Pick<Friendship, 'uuid' | 'initiatorUuid' | 'receiverUuid'> &
-    Partial<Pick<Friendship, 'accepted'>>
->
+type FriendshipConstructor = Pick<
+  Friendship,
+  'initiatorUuid' | 'receiverUuid'
+> &
+  PartialPick<Friendship, 'uuid' | 'accepted' | 'createdAt'>
 
 @Entity()
 export class Friendship extends EntityWithOwner {
@@ -49,6 +50,7 @@ export class Friendship extends EntityWithOwner {
     this.initiatorUuid = options?.initiatorUuid
     this.receiverUuid = options?.receiverUuid
     this.accepted = options?.accepted ?? null
+    this.createdAt = options?.createdAt!
   }
 
   public async getOwners() {

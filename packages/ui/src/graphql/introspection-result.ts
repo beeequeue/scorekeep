@@ -13,7 +13,20 @@ export interface IntrospectionResultData {
 }
 const result: IntrospectionResultData = {
   __schema: {
-    types: [],
+    types: [
+      {
+        kind: 'UNION',
+        name: 'UsersUnion',
+        possibleTypes: [
+          {
+            name: 'User',
+          },
+          {
+            name: 'UnclaimedUser',
+          },
+        ],
+      },
+    ],
   },
 }
 export default result

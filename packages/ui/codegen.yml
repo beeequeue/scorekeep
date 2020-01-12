@@ -1,5 +1,5 @@
 schema:
-  - http://localhost:3000/graphql:
+  - ../server/src/graphql/snapshot.graphql:
       headers:
         Authorization: Bearer ${TOKEN}
 documents: ./src/**/*.{ts,tsx,graphql}

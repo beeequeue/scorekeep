@@ -6,41 +6,34 @@ import { ExtendedEntity } from '@/modules/exented-entity'
 import { User } from '@/modules/user/user.model'
 import { Boardgame } from '@/modules/boardgame/boardgame.model'
 import { Club } from '@/modules/club/club.model'
-import { isNil, OptionalUuid } from '@/utils'
+import { isNil, PartialPick } from '@/utils'
 
-type MatchConstructor = OptionalUuid<
-  Pick<
-    Match,
-    | 'uuid'
-    | 'clubUuid'
-    | 'playerUuids'
-    | 'winnerUuids'
-    | 'gameUuid'
-    | 'results'
-    | 'date'
-  >
->
+type MatchConstructor = Pick<
+  Match,
+  'playerUuids' | 'winnerUuids' | 'gameUuid' | 'results' | 'date'
+> &
+  PartialPick<Match, 'uuid' | 'clubUuid' | 'metadata'>
 
 @Entity()
 @ObjectType()
 export class Match extends ExtendedEntity {
-  @Column({ type: 'uuid' })
-  public clubUuid: string
-  @Field(() => Club)
-  public async club(): Promise<Club> {
+  @Column({ type: 'uuid', nullable: true })
+  public clubUuid: string | null
+  @Field(() => Club, { nullable: true })
+  public async club(): Promise<Club | null> {
+    if (isNil(this.clubUuid)) return null
+
     const club = await Club.findOne({ uuid: this.clubUuid })
 
-    if (isNil(club)) {
-      throw this.shouldExistError(Club, this.clubUuid)
-    }
-
-    return club
+    return club ?? null
   }
 
   @Column({ type: 'simple-array' })
   public playerUuids: string[]
   @Field(() => [User])
   public async players(): Promise<User[]> {
+    if (this.playerUuids.length < 1) return []
+
     return User.find({ where: this.playerUuids.map(uuid => ({ uuid })) })
   }
 
@@ -48,6 +41,8 @@ export class Match extends ExtendedEntity {
   public winnerUuids: string[]
   @Field(() => [User])
   public async winners(): Promise<User[]> {
+    if (this.winnerUuids.length < 1) return []
+
     return User.find({ where: this.winnerUuids.map(uuid => ({ uuid })) })
   }
 
@@ -65,8 +60,12 @@ export class Match extends ExtendedEntity {
   }
 
   @Column({ type: 'json' })
-  @Field(() => GraphQLJSONObject)
-  public results: unknown
+  @Field(() => [GraphQLJSONObject])
+  public results: Array<Record<string, any>>
+
+  @Column({ type: 'json', nullable: true })
+  @Field(() => GraphQLJSONObject, { nullable: true })
+  public metadata: Record<string, any> | null
 
   @Column({ type: 'timestamp' })
   @Field(() => Date)
@@ -75,11 +74,12 @@ export class Match extends ExtendedEntity {
   constructor(options: MatchConstructor) {
     super(options)
 
-    this.clubUuid = options?.clubUuid
+    this.clubUuid = options?.clubUuid ?? null
     this.playerUuids = options?.playerUuids
     this.winnerUuids = options?.winnerUuids
     this.gameUuid = options?.gameUuid
     this.results = options?.results
+    this.metadata = options?.metadata ?? null
     this.date = options?.date
   }
 }

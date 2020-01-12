@@ -32,7 +32,7 @@ const Boardgames = gql`
         uuid
         maxPlayers
         name
-        resultSchema
+        resultsSchema
       }
     }
   }
@@ -40,7 +40,7 @@ const Boardgames = gql`
 const Add = () => {
   const [boardgame, setBoardgame] = useState<Pick<
     Boardgame,
-    'uuid' | 'name' | 'resultSchema' | 'maxPlayers'
+    'uuid' | 'name' | 'resultsSchema' | 'maxPlayers'
   > | null>(null)
   const { data, loading } = useQuery<BoardgamesQuery>(Boardgames)
   const [playerResults, setPlayerResults] = useState<any>(null)
@@ -74,12 +74,10 @@ const Add = () => {
           e.preventDefault()
           const variables: AddMatchMutationVariables = {
             boardgame: boardgame!.uuid,
-            result: {
-              playerResults: toSchemaType(
-                playerResults,
-                getTypesFromSchema(boardgame!.resultSchema),
-              ),
-            },
+            result: toSchemaType(
+              playerResults,
+              getTypesFromSchema(boardgame!.resultsSchema),
+            ),
           }
           await addMatch({ variables })
         }}
@@ -101,7 +99,7 @@ const Add = () => {
         {boardgame && (
           <>
             <MatchForm
-              schemaTypes={getTypesFromSchema(boardgame.resultSchema)}
+              schemaTypes={getTypesFromSchema(boardgame.resultsSchema)}
               maxPlayers={boardgame.maxPlayers}
               onChange={setPlayerResults}
             />

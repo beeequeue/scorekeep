@@ -15,7 +15,8 @@ type Boardgame {
   rulebook: String
   minPlayers: Int!
   maxPlayers: Int!
-  resultSchema: JSONObject!
+  resultsSchema: JSONObject!
+  metadataSchema: JSONObject
 }
 
 type BoardgamesPage {
@@ -70,16 +71,17 @@ scalar JSONObject
 
 type Match {
   uuid: ID!
-  club: Club!
+  club: Club
   players: [User!]!
   winners: [User!]!
   game: Boardgame!
-  results: JSONObject!
+  results: [JSONObject!]!
+  metadata: JSONObject
   date: DateTime!
 }
 
 type Mutation {
-  addBoardgame(minPlayers: Int, rulebook: String, type: GAME_TYPE, url: String, aliases: [String!], resultSchema: JSONObject!, maxPlayers: Int!, shortName: String!, name: String!): Boardgame!
+  addBoardgame(metadataSchema: JSONObject, minPlayers: Int, rulebook: String, type: GAME_TYPE, url: String, aliases: [String!], resultsSchema: JSONObject!, maxPlayers: Int!, shortName: String!, name: String!): Boardgame!
   addClub(name: String!): Club!
 
   """
@@ -89,7 +91,7 @@ type Mutation {
   disconnect(uuid: ID!): User!
   addFriend(uuid: ID!): User!
   acceptFriendRequest(userUuid: ID!): User!
-  addMatch(club: ID, game: ID!, results: JSONObject!): Match!
+  addMatch(club: ID, game: ID!, metadata: JSONObject, results: [JSONObject!]!): Match!
 
   """
   Update the name of the logged in user.

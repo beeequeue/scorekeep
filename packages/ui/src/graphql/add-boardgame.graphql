@@ -1,12 +1,13 @@
 mutation AddBoardgame(
   $name: String!
+  $shortName: String!
   $maxPlayers: Int!,
   $minPlayers: Int!,
   $schema: JSONObject!
 ){
-  addBoardgame(name: $name, maxPlayers: $maxPlayers, minPlayers: $minPlayers, resultSchema: $schema) {
+  addBoardgame(name: $name, shortName: $shortName, maxPlayers: $maxPlayers, minPlayers: $minPlayers, resultsSchema: $schema) {
     uuid
     name
-    resultSchema
+    resultsSchema
   }
 }
