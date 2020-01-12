@@ -118,6 +118,10 @@ describe('resolvers', () => {
                   message: "should have required property 'required'",
                   path: ['resultsSchema'],
                 },
+                {
+                  message: "should have required property 'properties'",
+                  path: ['resultsSchema'],
+                },
               ],
             },
           },
@@ -194,7 +198,6 @@ describe('resolvers', () => {
         },
       })
 
-      console.log(response.errors![0].extensions!.exception.validation)
       expect(response.errors).not.toBeUndefined()
       expect(response.errors).toMatchObject([
         {

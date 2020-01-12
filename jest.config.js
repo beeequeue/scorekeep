@@ -13,6 +13,7 @@ module.exports = {
   testEnvironment: 'node',
   roots: [`${rootDir}/packages/`],
   setupFiles: [`${rootDir}/jest.setup.ts`],
+  coveragePathIgnorePatterns: ['migrations/*'],
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
     prefix: '<rootDir>/',
   }),
