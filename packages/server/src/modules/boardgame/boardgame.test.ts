@@ -78,15 +78,11 @@ describe('resolvers', () => {
             exception: {
               validation: [
                 {
-                  message: "should have required property 'score'",
+                  message: "should have required property 'type'",
                   path: ['resultsSchema'],
                 },
                 {
-                  message: "should have required property 'player'",
-                  path: ['resultsSchema'],
-                },
-                {
-                  message: "should have required property 'winner'",
+                  message: "should have required property 'required'",
                   path: ['resultsSchema'],
                 },
               ],
@@ -124,7 +120,6 @@ describe('resolvers', () => {
       expect(response.errors).toBeUndefined()
       expect(response.data).toMatchObject({
         addBoardgame: {
-          __typename: 'Boardgame',
           uuid: expect.any(String),
           shortName,
           resultsSchema,
