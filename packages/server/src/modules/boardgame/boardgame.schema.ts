@@ -2,7 +2,7 @@ import { JsonSchemaProperty } from '@/types/json-schema'
 
 export const minimumResultsSchema: JsonSchemaProperty = {
   type: 'object' as const,
-  required: ['type', 'required'],
+  required: ['type', 'required', 'properties'],
   properties: {
     type: {
       type: 'string',

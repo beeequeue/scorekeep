@@ -95,10 +95,8 @@ describe('resolvers', () => {
           url: null,
           maxPlayers: 2,
           resultsSchema: {
-            schema: {
-              something: {
-                type: 'boolean',
-              },
+            something: {
+              type: 'boolean',
             },
           },
           metadataSchema: null,
@@ -119,6 +117,98 @@ describe('resolvers', () => {
                 {
                   message: "should have required property 'required'",
                   path: ['resultsSchema'],
+                },
+              ],
+            },
+          },
+        },
+      ])
+    })
+
+    test('should fail without required "player" and "winner" fields', async () => {
+      const generated = await generateUser()
+
+      const response = await client.mutate(addBoardgame, {
+        session: generated.session,
+        variables: {
+          name: 'FakeBoardgame',
+          shortName: 'fakeboardgame',
+          aliases: [],
+          url: null,
+          maxPlayers: 2,
+          resultsSchema: {
+            type: 'object',
+            required: ['player', 'winner'],
+            properties: {},
+          },
+          metadataSchema: null,
+        },
+      })
+
+      expect(response.errors).not.toBeUndefined()
+      expect(response.errors).toMatchObject([
+        {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            exception: {
+              validation: [
+                {
+                  message: "should have required property 'player'",
+                  path: ['resultsSchema', 'properties'],
+                },
+                {
+                  message: "should have required property 'winner'",
+                  path: ['resultsSchema', 'properties'],
+                },
+              ],
+            },
+          },
+        },
+      ])
+    })
+
+    test("should fail if 'player' and 'winner' fields aren't required", async () => {
+      const generated = await generateUser()
+
+      const response = await client.mutate(addBoardgame, {
+        session: generated.session,
+        variables: {
+          name: 'FakeBoardgame',
+          shortName: 'fakeboardgame',
+          aliases: [],
+          url: null,
+          maxPlayers: 2,
+          resultsSchema: {
+            type: 'object',
+            required: ['test', 'foo'],
+            properties: {
+              player: {
+                type: 'string',
+              },
+              winner: {
+                type: 'boolean',
+              },
+            },
+          },
+          metadataSchema: null,
+        },
+      })
+
+      console.log(response.errors![0].extensions!.exception.validation)
+      expect(response.errors).not.toBeUndefined()
+      expect(response.errors).toMatchObject([
+        {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            exception: {
+              validation: [
+                {
+                  message: 'should be equal to one of the allowed values',
+                  path: ['resultsSchema', 'required', '[0]'],
+                },
+                {
+                  message: 'should be equal to one of the allowed values',
+                  path: ['resultsSchema', 'required', '[1]'],
                 },
               ],
             },
