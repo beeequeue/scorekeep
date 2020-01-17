@@ -8,6 +8,7 @@ import { Friendship } from '@/modules/friendship/friendship.model'
 import { User } from '@/modules/user/user.model'
 import { JsonSchemaObject } from '@/types/json-schema'
 import { generateUser } from '@/utils/tests'
+import { GAMES } from '@/utils/test-data'
 
 /**
  * Eras
@@ -30,31 +31,23 @@ const eras = [
   addDays(FIRST_DATE, 21),
 ] as const
 
-const random = (min = 0, max = 1) => Math.random() * (max - min) + min
-
-const createBoardgameSchema = <
-  PR extends Omit<JsonSchemaObject, 'type'>,
-  MD extends Omit<JsonSchemaObject, 'type'>
->(
-  playerResults: PR,
-  metaData?: MD,
+const createBoardgameSchema = <PR extends Omit<JsonSchemaObject, 'type'>>(
+  playerResults?: PR,
 ) => ({
   $schema: 'http://json-schema.org/draft-07/schema#' as const,
   type: 'object' as const,
-  required: ['playerResults'],
+  required: ['player', 'winner', 'final', ...(playerResults?.required ?? [])],
   properties: {
-    playerResults: {
-      type: 'array' as const,
-      required: ['items'],
-      items: {
-        ...playerResults,
-        type: 'object' as const,
-      },
+    player: {
+      type: 'string' as const,
     },
-    metaData: {
-      ...(metaData ?? {}),
-      type: 'object' as const,
+    winner: {
+      type: 'boolean' as const,
     },
+    final: {
+      type: 'number' as const,
+    },
+    ...playerResults?.properties,
   },
 })
 
@@ -62,73 +55,11 @@ const createBoardgameSchema = <
 const insertBoardgames = async () =>
   Promise.all([
     new Boardgame({
-      type: GAME_TYPE.COMPETITIVE,
-      name: 'Scythe',
-      shortName: 'scythe',
-      aliases: ['Серп', '大鎌戦役', '鐮刀戰爭', '사이쓰'],
-      thumbnail:
-        'https://cf.geekdo-images.com/itemrep/img/gLHDC5bCrxd1JhefjJ-VxW2zC54=/fit-in/246x300/pic3163924.jpg',
-      url: 'https://boardgamegeek.com/boardgame/169786/scythe',
-      rulebook:
-        'https://app.box.com/s/rj3jrw0rab2uiz02up89kbant5g8ew1p/file/49368403634',
-      minPlayers: 1,
-      maxPlayers: 5,
-      resultSchema: createBoardgameSchema({
-        required: [
-          'faction',
-          'popularity',
-          'stars',
-          'territories',
-          'twoResources',
-          'bonuses',
-          'total',
-        ],
-        properties: {
-          faction: {
-            type: 'string' as const,
-            enum: ['Red', 'Green', 'Blue', 'Yellow', 'Black'],
-          },
-          popularity: {
-            type: 'number' as const,
-          },
-          stars: {
-            type: 'number' as const,
-          },
-          territories: {
-            type: 'number' as const,
-          },
-          twoResources: {
-            type: 'number' as const,
-          },
-          bonuses: {
-            type: 'number' as const,
-          },
-          total: {
-            type: 'number' as const,
-          },
-        },
-      }),
+      ...GAMES.scythe.boardgame,
       createdAt: faker.date.between(eras[0], eras[1]),
     }).save(),
     new Boardgame({
-      type: GAME_TYPE.COMPETITIVE,
-      name: 'Azul',
-      shortName: 'azul',
-      aliases: ['アズール', '花磚物語', '아줄'],
-      thumbnail:
-        'https://cf.geekdo-images.com/itemrep/img/ql-0-t271LVGqbmWA1gdkIH7WvM=/fit-in/246x300/pic3718275.jpg',
-      url: 'https://boardgamegeek.com/boardgame/230802/azul',
-      rulebook: null,
-      minPlayers: 2,
-      maxPlayers: 4,
-      resultSchema: createBoardgameSchema({
-        required: ['score'],
-        properties: {
-          score: {
-            type: 'number' as const,
-          },
-        },
-      }),
+      ...GAMES.azul.boardgame,
       createdAt: faker.date.between(eras[0], eras[1]),
     }).save(),
     new Boardgame({
@@ -154,14 +85,7 @@ const insertBoardgames = async () =>
       rulebook: null,
       minPlayers: 1,
       maxPlayers: 5,
-      resultSchema: createBoardgameSchema({
-        required: ['score'],
-        properties: {
-          score: {
-            type: 'number' as const,
-          },
-        },
-      }),
+      resultsSchema: createBoardgameSchema(),
       createdAt: faker.date.between(eras[0], eras[1]),
     }).save(),
     new Boardgame({
@@ -184,7 +108,7 @@ const insertBoardgames = async () =>
       rulebook: null,
       minPlayers: 1,
       maxPlayers: 5,
-      resultSchema: createBoardgameSchema({
+      resultsSchema: createBoardgameSchema({
         required: ['score'],
         properties: {
           score: {
@@ -210,14 +134,7 @@ const insertBoardgames = async () =>
       rulebook: null,
       minPlayers: 1,
       maxPlayers: 4,
-      resultSchema: createBoardgameSchema({
-        required: ['score'],
-        properties: {
-          score: {
-            type: 'number' as const,
-          },
-        },
-      }),
+      resultsSchema: createBoardgameSchema({}),
       createdAt: faker.date.between(eras[0], eras[1]),
     }).save(),
   ])

@@ -10,6 +10,8 @@ export const GAMES = {
       name: 'Azul',
       shortName: 'azul',
       aliases: ['アズール', '花磚物語', '아줄'],
+      thumbnail:
+        'https://cf.geekdo-images.com/itemrep/img/ql-0-t271LVGqbmWA1gdkIH7WvM=/fit-in/246x300/pic3718275.jpg',
       url: 'https://boardgamegeek.com/boardgame/230802/azul',
       rulebook: null,
       minPlayers: 2,
@@ -53,6 +55,8 @@ export const GAMES = {
       name: 'Scythe',
       shortName: 'scythe',
       aliases: ['Серп', '大鎌戦役', '鐮刀戰爭', '사이쓰'],
+      thumbnail:
+        'https://cf.geekdo-images.com/itemrep/img/bhemoxL7PG1a_79L0D9syPTADSY=/fit-in/246x300/pic3536616.jpg',
       url: 'https://boardgamegeek.com/boardgame/169786/scythe',
       rulebook:
         'https://app.box.com/s/rj3jrw0rab2uiz02up89kbant5g8ew1p/file/49368403634',
