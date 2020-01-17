@@ -26,6 +26,7 @@ describe('resolvers', () => {
         $name: String!
         $shortName: String!
         $aliases: [String!]!
+        $thumbnail: String!
         $url: String
         $maxPlayers: Int!
         $resultsSchema: JSONObject!
@@ -36,6 +37,7 @@ describe('resolvers', () => {
           name: $name
           shortName: $shortName
           aliases: $aliases
+          thumbnail: $thumbnail,
           url: $url
           maxPlayers: $maxPlayers
           resultsSchema: $resultsSchema
@@ -54,6 +56,7 @@ describe('resolvers', () => {
         name,
         shortName,
         aliases,
+        thumbnail,
         url,
         maxPlayers,
         resultsSchema,
@@ -66,6 +69,7 @@ describe('resolvers', () => {
           name,
           shortName,
           aliases,
+          thumbnail,
           url,
           maxPlayers,
           resultsSchema,
@@ -92,6 +96,7 @@ describe('resolvers', () => {
           name: 'FakeBoardgame',
           shortName: 'fakeboardgame',
           aliases: [],
+          thumbnail: 'url',
           url: null,
           maxPlayers: 2,
           resultsSchema: {
@@ -138,6 +143,7 @@ describe('resolvers', () => {
           name: 'FakeBoardgame',
           shortName: 'fakeboardgame',
           aliases: [],
+          thumbnail: 'url',
           url: null,
           maxPlayers: 2,
           resultsSchema: {
@@ -180,6 +186,7 @@ describe('resolvers', () => {
           name: 'FakeBoardgame',
           shortName: 'fakeboardgame',
           aliases: [],
+          thumbnail: 'url',
           url: null,
           maxPlayers: 2,
           resultsSchema: {
