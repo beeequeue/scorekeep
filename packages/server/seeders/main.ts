@@ -5,10 +5,12 @@ import { addDays } from 'date-fns'
 import { connectToDatabase } from '@/db'
 import { Boardgame, GAME_TYPE } from '@/modules/boardgame/boardgame.model'
 import { Friendship } from '@/modules/friendship/friendship.model'
+import { Match } from '@/modules/match/match.model'
 import { User } from '@/modules/user/user.model'
 import { JsonSchemaObject } from '@/types/json-schema'
 import { generateUser } from '@/utils/tests'
 import { GAMES } from '@/utils/test-data'
+import { randomItem } from '@/utils'
 
 /**
  * Eras
@@ -24,7 +26,7 @@ import { GAMES } from '@/utils/test-data'
 
 faker.seed(12)
 
-const FIRST_DATE = addDays(new Date(), -60)
+const FIRST_DATE = addDays(new Date(), -90)
 const eras = [
   FIRST_DATE,
   addDays(FIRST_DATE, 14),
@@ -177,6 +179,39 @@ const createFriendGroups = async (users: User[]) => {
   return userGroups
 }
 
+const insertMatches = async (groups: User[][], games: Boardgame[]) => {
+  const daysLeft = 90 - 21
+  const twos = Math.floor(daysLeft / 2)
+
+  const promises = groups.map(users =>
+    Array.from({ length: twos }).map(() => {
+      const game =
+        Math.random() > 0.5
+          ? randomItem([games[0], games[1]])
+          : randomItem(games)
+
+      const results =
+        game.shortName === GAMES.scythe.boardgame.shortName
+          ? GAMES.scythe.generateResult(users)
+          : GAMES.azul.generateResult(users)
+      const winnerUuids = results
+        .filter(result => result.winner)
+        .map(result => result.player)
+
+      return new Match({
+        playerUuids: users.map(u => u.uuid),
+        winnerUuids,
+        gameUuid: game.uuid,
+        results,
+        metadata: null,
+        date: faker.date.between(eras[2], new Date()),
+      }).save()
+    }),
+  )
+
+  return Promise.all(promises)
+}
+
 const run = async () => {
   const conn = await connectToDatabase()
 
@@ -186,12 +221,17 @@ const run = async () => {
   console.log(boardgames.map(game => game.name).join(', '))
 
   const userDatas = await insertUsers()
+  const users = userDatas.map(d => d.user)
   console.log('------------------------------------------')
-  console.log(`Inserted ${userDatas.length} users!`)
+  console.log(`Inserted ${users.length} users!`)
 
-  const friendGroups = await createFriendGroups(userDatas.map(d => d.user))
+  const friendGroups = await createFriendGroups(users)
   console.log('------------------------------------------')
   console.log(`Created ${friendGroups.length} groups of friends!`)
+
+  const matches = await insertMatches(friendGroups, boardgames)
+  console.log('------------------------------------------')
+  console.log(`Created ${matches.length} matches!`)
 
   console.log('------------------------------------------')
   await conn.close()

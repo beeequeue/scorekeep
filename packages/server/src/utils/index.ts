@@ -53,6 +53,9 @@ export const isUuid = (str?: string) =>
     str,
   )
 
+export const randomItem = <T>(arr: T[]): T =>
+  arr[Math.floor(Math.random() * arr.length)]
+
 export const createDescription = (
   desc: string,
   options?: { login?: true; dev?: true; owner?: true },
