@@ -2,7 +2,7 @@
 import { GraphQLJSONObject } from 'graphql-type-json'
 import { Field, Int, ObjectType, registerEnumType } from 'type-graphql'
 import { Column, Entity, Index } from 'typeorm'
-import { IsUrl, MaxLength, Min } from 'class-validator'
+import { IsLowercase, IsUrl, MaxLength, Min } from 'class-validator'
 import AJV from 'ajv'
 
 import { ExtendedEntity } from '@/modules/exented-entity'
@@ -21,6 +21,7 @@ type BoardgameConstructor = Pick<
   | 'name'
   | 'shortName'
   | 'aliases'
+  | 'thumbnail'
   | 'url'
   | 'rulebook'
   | 'maxPlayers'
@@ -65,12 +66,18 @@ export class Boardgame extends ExtendedEntity {
   @Index({ unique: true })
   @Field()
   @MaxLength(20)
+  @IsLowercase()
   public shortName: string
 
   @Column({ type: 'simple-array', transformer: aliasTransformer })
   @Index()
   @Field(() => [String])
   public aliases: string[]
+
+  @Column()
+  @Field()
+  @IsUrl({ disallow_auth: true, protocols: ['https'] })
+  public thumbnail: string
 
   @Column({ type: 'varchar', nullable: true })
   @Field(() => String, {
@@ -82,6 +89,7 @@ export class Boardgame extends ExtendedEntity {
     allow_protocol_relative_urls: false,
     disallow_auth: true,
     protocols: ['https'],
+    host_whitelist: ['boardgamegeek.com'],
   })
   public url: string | null
 
@@ -119,6 +127,7 @@ export class Boardgame extends ExtendedEntity {
     this.name = options?.name
     this.shortName = options?.shortName
     this.aliases = options?.aliases
+    this.thumbnail = options?.thumbnail
     this.url = options?.url
     this.rulebook = options?.rulebook
     this.minPlayers = options?.minPlayers

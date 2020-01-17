@@ -58,6 +58,7 @@ export class BoardgameResolver {
   public async addBoardgame(
     @Arg('name') name: string,
     @Arg('shortName') shortName: string,
+    @Arg('thumbnail') thumbnail: string,
     @Arg('maxPlayers', () => Int) maxPlayers: number,
     @Arg('resultsSchema', () => GraphQLJSONObject)
     resultsSchema: object,
@@ -91,6 +92,7 @@ export class BoardgameResolver {
       name,
       shortName,
       aliases,
+      thumbnail,
       url,
       rulebook,
       minPlayers,
