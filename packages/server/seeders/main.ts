@@ -179,7 +179,7 @@ const createFriendGroups = async (users: User[]) => {
   return userGroups
 }
 
-const insertMatches = async (groups: User[][], games: Boardgame[]) => {
+const insertMatches = async (groups: User[][], games: Boardgame[]): Promise<Match[]> => {
   const daysLeft = 90 - 21
   const twos = Math.floor(daysLeft / 2)
 
@@ -209,7 +209,7 @@ const insertMatches = async (groups: User[][], games: Boardgame[]) => {
     }),
   )
 
-  return Promise.all(promises)
+  return Promise.all(promises.flat())
 }
 
 const run = async () => {
