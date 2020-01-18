@@ -4,6 +4,7 @@ import gql from 'graphql-tag'
 import { connectToDatabase } from '@/db'
 import { createApolloClient, generateUser, TestClient } from '@/utils/tests'
 import { GAMES } from '@/utils/test-data'
+import { Boardgame } from '@/modules/boardgame/boardgame.model'
 
 let client: TestClient
 let dbConnection: DBConnection
@@ -37,7 +38,7 @@ describe('resolvers', () => {
           name: $name
           shortName: $shortName
           aliases: $aliases
-          thumbnail: $thumbnail,
+          thumbnail: $thumbnail
           url: $url
           maxPlayers: $maxPlayers
           resultsSchema: $resultsSchema
@@ -225,6 +226,32 @@ describe('resolvers', () => {
           },
         },
       ])
+    })
+  })
+})
+
+describe('statics', () => {
+  describe('getBoardgameNames', () => {
+    const testData = [GAMES.azul, GAMES.scythe] as const
+    let games: Boardgame[] = []
+
+    beforeEach(async () => {
+      games = await Promise.all(testData.map(data => data.boardgame.save()))
+    })
+
+    test('returns name:uuid map', async () => {
+      const result = await Boardgame.getBoardgameNames()
+
+      const expectedResult = Object.fromEntries(
+        games
+          .map(boardgame => [
+            [boardgame.name, boardgame.uuid],
+            [boardgame.shortName, boardgame.uuid],
+          ])
+          .flat(),
+      )
+
+      expect(result).toMatchObject(expectedResult)
     })
   })
 })
