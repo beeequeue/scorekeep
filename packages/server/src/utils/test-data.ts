@@ -215,6 +215,22 @@ export const GAMES = {
     }),
     generateResult: defaultResultGenerator,
   },
+  wonders: {
+    boardgame: new Boardgame({
+      type: GAME_TYPE.COMPETITIVE,
+      name: '7 Wonders (mock)',
+      shortName: '7-wonders',
+      aliases: [],
+      thumbnail:
+        'https://cf.geekdo-images.com/itemrep/img/fR5_q-7pMDmhLP8SPLOwPcUeLVo=/fit-in/246x300/pic860217.jpg',
+      url: 'https://boardgamegeek.com/boardgame/68448/7-wonders',
+      rulebook: null,
+      minPlayers: 2,
+      maxPlayers: 7,
+      resultsSchema: defaultSchema,
+    }),
+    generateResult: defaultResultGenerator,
+  },
 } as const
 
 export const getTestBoardgames = () =>

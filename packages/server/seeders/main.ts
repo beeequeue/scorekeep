@@ -55,6 +55,10 @@ const insertBoardgames = async () =>
       ...GAMES.wingspan.boardgame,
       createdAt: faker.date.between(eras[0], eras[1]),
     }).save(),
+    new Boardgame({
+      ...GAMES.wonders.boardgame,
+      createdAt: faker.date.between(eras[0], eras[1]),
+    }).save(),
   ])
 
 const insertUsers = async () =>
