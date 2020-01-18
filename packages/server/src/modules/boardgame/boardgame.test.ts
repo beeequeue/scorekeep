@@ -282,26 +282,34 @@ describe('resolvers', () => {
 
 describe('statics', () => {
   describe('getBoardgameNames', () => {
-    const testData = [GAMES.azul, GAMES.scythe] as const
     let games: Boardgame[] = []
 
     beforeEach(async () => {
-      games = await Promise.all(testData.map(data => data.boardgame.save()))
+      games = await Promise.all(
+        getTestBoardgames().map(boardgame => boardgame.save()),
+      )
     })
 
     test('returns name:uuid map', async () => {
       const result = await Boardgame.getBoardgameNames()
 
-      const expectedResult = Object.fromEntries(
-        games
-          .map(boardgame => [
-            [boardgame.name, boardgame.uuid],
-            [boardgame.shortName, boardgame.uuid],
-          ])
-          .flat(),
-      )
+      const aliases = games
+        .map(game => game.aliases.map(alias => [alias, game.uuid]))
+        .flat()
+      const expectedResult = games
+        .map(game => {
+          return [
+            [game.name, game.uuid],
+            [game.shortName, game.uuid],
+            ...aliases,
+          ]
+        })
+        .flat()
 
-      expect(result).toMatchObject(expectedResult)
+      const sortedResult = result.sort((a, b) => a[0].localeCompare(b[0]))
+      const sortedExpectedResult = expectedResult.sort((a, b) => a[0].localeCompare(b[0]))
+
+      expect(sortedResult).toMatchObject(sortedExpectedResult)
     })
   })
 })
