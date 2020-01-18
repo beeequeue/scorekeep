@@ -46,7 +46,9 @@ export const connectApolloServer = async (app: IExpress) => {
       }
 
       if (!isNil(error.originalError)) {
-        error.message = `${error.originalError.name}: ${error.originalError.message}`
+        if (error.originalError.name !== 'Error') {
+          error.message = `${error.originalError.name}: ${error.originalError.message}`
+        }
 
         // Better query error message
         if (error.originalError instanceof QueryFailedError) {
