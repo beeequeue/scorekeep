@@ -197,7 +197,7 @@ export class Boardgame extends ExtendedEntity {
       return cache.get<CachedNames>(this.cacheKey)!
     }
 
-    const games = await this.find({ select: ['uuid', 'name', 'shortName'] })
+    const games = await this.find({ select: ['uuid', 'name', 'shortName', 'aliases'] })
 
     const aliases = games
       .map<CachedNames>(game => game.aliases.map(alias => [alias, game.uuid]))
