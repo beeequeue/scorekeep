@@ -66,3 +66,5 @@ export const createDescription = (
 
   return `${desc}${loginStr}${ownerStr}${devStr}`
 }
+
+export const removeDuplicates = <T>(arr: T[]): T[] => Array.from(new Set(arr))

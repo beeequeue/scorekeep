@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
 import { UserInputError } from 'apollo-server-errors'
 import Ajv from 'ajv'
+import Fuse from 'fuse.js'
 import { GraphQLJSONObject } from 'graphql-type-json'
 import {
   Arg,
   Args,
   ArgsType,
+  Field,
   ID,
   Int,
   Mutation,
@@ -13,15 +15,26 @@ import {
   Query,
   Resolver,
 } from 'type-graphql'
+import { MaxLength, MinLength } from 'class-validator'
 
 import jsonSchema from '@/assets/json-schema-07.json'
 import { PaginatedResponse, PaginationArgs } from '@/modules/pagination'
 import { Boardgame, GAME_TYPE } from '@/modules/boardgame/boardgame.model'
 import { CustomValidator, JsonSchemaObject } from '@/types/json-schema'
 import { createValidationError } from '@/utils/validations'
-import { isNil } from '@/utils'
+import { isNil, removeDuplicates } from '@/utils'
+import { FindManyOptions } from 'typeorm'
 
 const ajv = new Ajv({ allErrors: true })
+
+const fuse = new Fuse([] as Array<[string, string]>, {
+  id: '1',
+  keys: ['0'],
+  threshold: 0.6,
+  maxPatternLength: 50,
+  includeScore: true,
+  shouldSort: true,
+})
 
 const validate = ajv.compile(jsonSchema) as CustomValidator<JsonSchemaObject>
 
@@ -29,7 +42,12 @@ const validate = ajv.compile(jsonSchema) as CustomValidator<JsonSchemaObject>
 class BoardgamesPage extends PaginatedResponse(Boardgame) {}
 
 @ArgsType()
-class BoardgamesArgs extends PaginationArgs {}
+class BoardgamesArgs extends PaginationArgs {
+  @Field(() => String, { nullable: true })
+  @MinLength(3)
+  @MaxLength(50)
+  public search!: string | null
+}
 
 @Resolver()
 export class BoardgameResolver {
@@ -44,10 +62,33 @@ export class BoardgameResolver {
   public async boardgames(
     @Args() args: BoardgamesArgs,
   ): Promise<BoardgamesPage> {
-    const boardgames = await Boardgame.find({ ...args.getFilters() })
-    const count = await Boardgame.count({ ...args.getFilters() })
-    const boardgames = await Boardgame.find({ ...args.getPageFilters() })
-    const count = await Boardgame.count({ ...args.getPageFilters() })
+    let searchFilter: FindManyOptions | null = null
+    let searchResults: string[] | null = null
+
+    if (!isNil(args.search)) {
+      fuse.setCollection(await Boardgame.getBoardgameNames())
+
+      const results = fuse.search(args.search)
+      searchResults = removeDuplicates(results.map(({ item }) => item))
+
+      if (results.length < 1) {
+        return PaginatedResponse.EMPTY_PAGE
+      }
+
+      searchFilter = { where: searchResults.map(uuid => ({ uuid })) }
+    }
+
+    let boardgames = await Boardgame.find({
+      ...args.getPageFilters(),
+      ...searchFilter,
+    })
+    const count = await Boardgame.count({ ...searchFilter })
+
+    if (!isNil(searchResults)) {
+      boardgames = searchResults.map((uuid) =>
+        boardgames.find(game => game.uuid === uuid),
+      )
+    }
 
     const nextOffset = args.offset + args.limit
     return {

@@ -3,8 +3,9 @@ import gql from 'graphql-tag'
 
 import { connectToDatabase } from '@/db'
 import { createApolloClient, generateUser, TestClient } from '@/utils/tests'
-import { GAMES } from '@/utils/test-data'
+import { GAMES, getTestBoardgames } from '@/utils/test-data'
 import { Boardgame } from '@/modules/boardgame/boardgame.model'
+import { mapAsync } from '@/utils'
 
 let client: TestClient
 let dbConnection: DBConnection
@@ -226,6 +227,57 @@ describe('resolvers', () => {
           },
         },
       ])
+    })
+  })
+
+  describe('boardgames', () => {
+    const boardgamesQuery = gql`
+      query GetBoardgames($search: String!) {
+        boardgames(search: $search) {
+          items {
+            uuid
+            name
+            shortName
+          }
+        }
+      }
+    `
+    let boardgames: Boardgame[] = []
+
+    beforeEach(async () => {
+      boardgames = await mapAsync(getTestBoardgames(), game => game.save())
+    })
+
+    test('search works as intended', async () => {
+      const response = await client.query(boardgamesQuery, {
+        variables: {
+          search: 'wind',
+        },
+      })
+
+      const shortNameResult = (shortName: string) => ({
+        uuid: expect.any(String),
+        name: expect.any(String),
+        shortName,
+      })
+      expect(response.errors).toBeUndefined()
+      expect(response.data.boardgames.items[0]).toMatchObject(
+        shortNameResult('wingspan'),
+      )
+      expect(response.data.boardgames.items[1]).toMatchObject(
+        shortNameResult('7-wonders'),
+      )
+    })
+
+    test('returns [] if none are found', async () => {
+      const response = await client.query(boardgamesQuery, {
+        variables: {
+          search: '93476b76n934vy2b76n89p4',
+        },
+      })
+
+      expect(response.errors).toBeUndefined()
+      expect(response.data.boardgames.items.length).toBe(0)
     })
   })
 })
