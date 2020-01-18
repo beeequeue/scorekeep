@@ -242,10 +242,8 @@ describe('resolvers', () => {
         }
       }
     `
-    let boardgames: Boardgame[] = []
-
     beforeEach(async () => {
-      boardgames = await mapAsync(getTestBoardgames(), game => game.save())
+      await mapAsync(getTestBoardgames(), game => game.save())
     })
 
     test('search works as intended', async () => {
