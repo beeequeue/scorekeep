@@ -176,4 +176,8 @@ export class Boardgame extends ExtendedEntity {
       throw createValidationError(validate.errors!, 'Invalid metadata!')
     }
   }
+
+  public static async shortNameExists(shortName: string) {
+    return (await Boardgame.count({ shortName })) > 0
+  }
 }

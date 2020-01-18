@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
+import { UserInputError } from 'apollo-server-errors'
 import Ajv from 'ajv'
 import { GraphQLJSONObject } from 'graphql-type-json'
 import {
@@ -76,9 +77,15 @@ export class BoardgameResolver {
     @Arg('metadataSchema', () => GraphQLJSONObject, { nullable: true })
     metadataSchema: object | null,
   ) {
+    if (await Boardgame.shortNameExists(shortName)) {
+      throw new UserInputError(`Short name "${shortName}" already exists!`)
+    }
+
     // TODO: Move schema validation to a custom GQL type
     // TODO: actually validate against the minimum result schema
-    if (!Boardgame.validateMinimumResultsSchema(resultsSchema, 'resultsSchema')) {
+    if (
+      !Boardgame.validateMinimumResultsSchema(resultsSchema, 'resultsSchema')
+    ) {
       throw createValidationError(validate.errors!, 'Invalid resultSchema!')
     }
     if (!isNil(metadataSchema) && !validate(metadataSchema)) {
