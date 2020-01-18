@@ -198,10 +198,15 @@ export class Boardgame extends ExtendedEntity {
     }
 
     const games = await this.find({ select: ['uuid', 'name', 'shortName'] })
+
+    const aliases = games
+      .map<CachedNames>(game => game.aliases.map(alias => [alias, game.uuid]))
+      .flat()
     const names = games
       .map<CachedNames>(game => [
         [game.name, game.uuid],
         [game.shortName, game.uuid],
+        ...aliases,
       ])
       .flat()
 
