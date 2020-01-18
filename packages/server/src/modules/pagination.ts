@@ -28,7 +28,7 @@ export class PaginationArgs {
   @Max(20)
   public limit: number = 20
 
-  public getFilters = (): FindManyOptions => ({
+  public getPageFilters = (): FindManyOptions => ({
     take: this.limit,
     skip: this.offset,
   })
