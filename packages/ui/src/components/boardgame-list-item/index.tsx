@@ -53,30 +53,38 @@ const Image = styled.img`
 `
 
 type Props = {
-  name: string,
-  players: [number, number],
-  imageUrl: string,
+  name: string
+  players: [number, number]
+  imageUrl: string
   lastPlayed?: string
 }
-export const BoardgameListItem = ({name, imageUrl, players, lastPlayed}:Props) => {
+
+export const BoardgameListItem = ({
+  name,
+  imageUrl,
+  players,
+  lastPlayed,
+}: Props) => {
   return (
     <Wrapper>
       <Info>
-        <Name>
-          {name}
-        </Name>
+        <Name>{name}</Name>
+
         <SmallText>
-          <Player />{players[0]} - {players[1]}
+          <Player />
+          {players[0]} - {players[1]}
         </SmallText>
+
         <SmallText>
           <Clock />
-          {lastPlayed ?
-            `Last played ${formatDistance(new Date(lastPlayed), new Date())}`
-            : "Never played"
-          }
+
+          {lastPlayed
+            ? `Last played ${formatDistance(new Date(lastPlayed), new Date())}`
+            : 'Never played'}
         </SmallText>
       </Info>
-      <Image src={imageUrl}/>
+
+      <Image src={imageUrl} />
     </Wrapper>
   )
 }

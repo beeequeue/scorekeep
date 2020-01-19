@@ -44,5 +44,5 @@ export const main = () => (
         imageUrl="https://cf.geekdo-images.com/itemrep/img/P7MVqNuhAl8Y4fxiM6e74kMX6e0=/fit-in/246x300/pic2437871.jpg"
       />
     </AnimatedList>
-    </Container>
+  </Container>
 )
