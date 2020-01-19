@@ -18,6 +18,12 @@ export const PaginatedResponse = <TItem>(TItemClass: ClassType<TItem>) => {
   return PaginatedResponseClass
 }
 
+PaginatedResponse.EMPTY_PAGE = {
+  items: [],
+  nextOffset: null,
+  total: 0,
+}
+
 @ArgsType()
 export class PaginationArgs {
   @Field(() => Int, { nullable: true })
@@ -28,7 +34,7 @@ export class PaginationArgs {
   @Max(20)
   public limit: number = 20
 
-  public getFilters = (): FindManyOptions => ({
+  public getPageFilters = (): FindManyOptions => ({
     take: this.limit,
     skip: this.offset,
   })

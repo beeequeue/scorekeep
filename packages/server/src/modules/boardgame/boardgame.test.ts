@@ -3,7 +3,9 @@ import gql from 'graphql-tag'
 
 import { connectToDatabase } from '@/db'
 import { createApolloClient, generateUser, TestClient } from '@/utils/tests'
-import { GAMES } from '@/utils/test-data'
+import { GAMES, getTestBoardgames } from '@/utils/test-data'
+import { Boardgame } from '@/modules/boardgame/boardgame.model'
+import { mapAsync } from '@/utils'
 
 let client: TestClient
 let dbConnection: DBConnection
@@ -37,7 +39,7 @@ describe('resolvers', () => {
           name: $name
           shortName: $shortName
           aliases: $aliases
-          thumbnail: $thumbnail,
+          thumbnail: $thumbnail
           url: $url
           maxPlayers: $maxPlayers
           resultsSchema: $resultsSchema
@@ -225,6 +227,89 @@ describe('resolvers', () => {
           },
         },
       ])
+    })
+  })
+
+  describe('boardgames', () => {
+    const boardgamesQuery = gql`
+      query GetBoardgames($search: String!) {
+        boardgames(search: $search) {
+          items {
+            uuid
+            name
+            shortName
+          }
+        }
+      }
+    `
+    beforeEach(async () => {
+      await mapAsync(getTestBoardgames(), game => game.save())
+    })
+
+    test('search works as intended', async () => {
+      const response = await client.query(boardgamesQuery, {
+        variables: {
+          search: 'wind',
+        },
+      })
+
+      const shortNameResult = (shortName: string) => ({
+        uuid: expect.any(String),
+        name: expect.any(String),
+        shortName,
+      })
+      expect(response.errors).toBeUndefined()
+      expect(response.data.boardgames.items[0]).toMatchObject(
+        shortNameResult('wingspan'),
+      )
+      expect(response.data.boardgames.items[1]).toMatchObject(
+        shortNameResult('7-wonders'),
+      )
+    })
+
+    test('returns [] if none are found', async () => {
+      const response = await client.query(boardgamesQuery, {
+        variables: {
+          search: '93476b76n934vy2b76n89p4',
+        },
+      })
+
+      expect(response.errors).toBeUndefined()
+      expect(response.data.boardgames.items.length).toBe(0)
+    })
+  })
+})
+
+describe('statics', () => {
+  describe('getBoardgameNames', () => {
+    let games: Boardgame[] = []
+
+    beforeEach(async () => {
+      games = await Promise.all(
+        getTestBoardgames().map(boardgame => boardgame.save()),
+      )
+    })
+
+    test('returns name:uuid map', async () => {
+      const result = await Boardgame.getBoardgameNames()
+
+      const aliases = games
+        .map(game => game.aliases.map(alias => [alias, game.uuid]))
+        .flat()
+      const expectedResult = games
+        .map(game => {
+          return [
+            [game.name, game.uuid],
+            [game.shortName, game.uuid],
+            ...aliases,
+          ]
+        })
+        .flat()
+
+      const sortedResult = result.sort((a, b) => a[0].localeCompare(b[0]))
+      const sortedExpectedResult = expectedResult.sort((a, b) => a[0].localeCompare(b[0]))
+
+      expect(sortedResult).toMatchObject(sortedExpectedResult)
     })
   })
 })

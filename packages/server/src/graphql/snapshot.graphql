@@ -126,6 +126,7 @@ type Query {
 
     """Maximum 20"""
     limit: Int = 20
+    search: String
   ): BoardgamesPage!
   club(uuid: ID!): Club
   match(uuid: ID!): Match

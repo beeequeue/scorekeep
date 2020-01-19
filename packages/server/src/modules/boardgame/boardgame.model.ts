@@ -4,6 +4,7 @@ import { Field, Int, ObjectType, registerEnumType } from 'type-graphql'
 import { Column, Entity, Index } from 'typeorm'
 import { IsLowercase, IsUrl, MaxLength, Min } from 'class-validator'
 import AJV from 'ajv'
+import Cache from 'node-cache'
 
 import { ExtendedEntity } from '@/modules/exented-entity'
 import { JsonSchemaArray, JsonSchemaObject } from '@/types/json-schema'
@@ -48,6 +49,15 @@ const ajv = new AJV({
   allErrors: true,
 })
 const validateMinimumSchema = ajv.compile(minimumResultsSchema)
+
+const isDev = process.env.NODE_ENV === 'development'
+const cache = new Cache({
+  checkperiod: 500,
+  stdTTL: isDev ? 1 : 60 * 1000,
+  useClones: false,
+})
+
+type CachedNames = Array<[string, string]>
 
 @Entity()
 @ObjectType()
@@ -139,7 +149,7 @@ export class Boardgame extends ExtendedEntity {
 
   public static validateMinimumResultsSchema(
     schema: object,
-    path?: string
+    path?: string,
   ): schema is MinimumResultsSchema {
     const result = validateMinimumSchema(schema, path)
 
@@ -175,5 +185,33 @@ export class Boardgame extends ExtendedEntity {
     if (!validate(results, 'metadata')) {
       throw createValidationError(validate.errors!, 'Invalid metadata!')
     }
+  }
+
+  public static async shortNameExists(shortName: string) {
+    return (await Boardgame.count({ shortName })) > 0
+  }
+
+  private static cacheKey = 'names'
+  public static async getBoardgameNames(): Promise<CachedNames> {
+    if (cache.has(this.cacheKey)) {
+      return cache.get<CachedNames>(this.cacheKey)!
+    }
+
+    const games = await this.find({ select: ['uuid', 'name', 'shortName', 'aliases'] })
+
+    const aliases = games
+      .map<CachedNames>(game => game.aliases.map(alias => [alias, game.uuid]))
+      .flat()
+    const names = games
+      .map<CachedNames>(game => [
+        [game.name, game.uuid],
+        [game.shortName, game.uuid],
+        ...aliases,
+      ])
+      .flat()
+
+    cache.set<CachedNames>(this.cacheKey, names)
+
+    return names
   }
 }

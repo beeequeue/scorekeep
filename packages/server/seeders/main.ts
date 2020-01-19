@@ -3,11 +3,10 @@ import faker from 'faker'
 import { addDays } from 'date-fns'
 
 import { connectToDatabase } from '@/db'
-import { Boardgame, GAME_TYPE } from '@/modules/boardgame/boardgame.model'
+import { Boardgame } from '@/modules/boardgame/boardgame.model'
 import { Friendship } from '@/modules/friendship/friendship.model'
 import { Match } from '@/modules/match/match.model'
 import { User } from '@/modules/user/user.model'
-import { JsonSchemaObject } from '@/types/json-schema'
 import { generateUser } from '@/utils/tests'
 import { GAMES } from '@/utils/test-data'
 import { randomItem } from '@/utils'
@@ -33,26 +32,6 @@ const eras = [
   addDays(FIRST_DATE, 21),
 ] as const
 
-const createBoardgameSchema = <PR extends Omit<JsonSchemaObject, 'type'>>(
-  playerResults?: PR,
-) => ({
-  $schema: 'http://json-schema.org/draft-07/schema#' as const,
-  type: 'object' as const,
-  required: ['player', 'winner', 'final', ...(playerResults?.required ?? [])],
-  properties: {
-    player: {
-      type: 'string' as const,
-    },
-    winner: {
-      type: 'boolean' as const,
-    },
-    final: {
-      type: 'number' as const,
-    },
-    ...playerResults?.properties,
-  },
-})
-
 // Board games with (mock) in the name don't have a unique result schema
 const insertBoardgames = async () =>
   Promise.all([
@@ -65,78 +44,19 @@ const insertBoardgames = async () =>
       createdAt: faker.date.between(eras[0], eras[1]),
     }).save(),
     new Boardgame({
-      type: GAME_TYPE.COMPETITIVE,
-      name: 'Terraforming Mars (mock)',
-      shortName: 'terraforming-mars',
-      aliases: [
-        'A Mars terraformálása',
-        'Mars: Teraformace',
-        'Teraformarea Planetei Marte',
-        'Terraformacja Marsa',
-        'Покорение Марса',
-        'Тераформирай Марс',
-        'Тераформування Марса',
-        'พลิกพิภพดาวอังคาร',
-        'テラフォーミング・マーズ',
-        '殖民火星',
-        '테라포밍 마스',
-      ],
-      thumbnail:
-        'https://cf.geekdo-images.com/itemrep/img/bhemoxL7PG1a_79L0D9syPTADSY=/fit-in/246x300/pic3536616.jpg',
-      url: 'https://boardgamegeek.com/boardgame/167791/terraforming-mars',
-      rulebook: null,
-      minPlayers: 1,
-      maxPlayers: 5,
-      resultsSchema: createBoardgameSchema(),
+      ...GAMES.mars.boardgame,
       createdAt: faker.date.between(eras[0], eras[1]),
     }).save(),
     new Boardgame({
-      type: GAME_TYPE.COMPETITIVE,
-      name: 'Wingspan (mock)',
-      shortName: 'wingspan',
-      aliases: [
-        'Fesztáv',
-        'Flügelschlag',
-        'Na křídlech',
-        'Na skrzydłach',
-        'Крылья',
-        'ปีกปักษา',
-        '展翅翱翔',
-        '윙스팬',
-      ],
-      thumbnail:
-        'https://cf.geekdo-images.com/itemrep/img/vb971Kg92dzMd1TM3RBJtQm-XCU=/fit-in/246x300/pic4458123.jpg',
-      url: 'https://boardgamegeek.com/boardgame/266192/wingspan',
-      rulebook: null,
-      minPlayers: 1,
-      maxPlayers: 5,
-      resultsSchema: createBoardgameSchema({
-        required: ['score'],
-        properties: {
-          score: {
-            type: 'number' as const,
-          },
-        },
-      }),
+      ...GAMES.gloomhaven.boardgame,
       createdAt: faker.date.between(eras[0], eras[1]),
     }).save(),
     new Boardgame({
-      type: GAME_TYPE.COMPETITIVE,
-      name: 'Gloomhaven (mock)',
-      shortName: 'gloomhaven',
-      aliases: [
-        'Gloomhaven.Мрачная Гавань',
-        'Homályrév',
-        '幽港迷城',
-        '글룸헤이븐',
-      ],
-      thumbnail:
-        'https://cf.geekdo-images.com/itemrep/img/P7MVqNuhAl8Y4fxiM6e74kMX6e0=/fit-in/246x300/pic2437871.jpg',
-      url: 'https://boardgamegeek.com/boardgame/174430/gloomhaven',
-      rulebook: null,
-      minPlayers: 1,
-      maxPlayers: 4,
-      resultsSchema: createBoardgameSchema({}),
+      ...GAMES.wingspan.boardgame,
+      createdAt: faker.date.between(eras[0], eras[1]),
+    }).save(),
+    new Boardgame({
+      ...GAMES.wonders.boardgame,
       createdAt: faker.date.between(eras[0], eras[1]),
     }).save(),
   ])
