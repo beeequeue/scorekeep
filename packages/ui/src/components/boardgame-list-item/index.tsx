@@ -1,20 +1,22 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
-import { formatDistance } from 'date-fns'
-import { Person, AccessTime } from '@styled-icons/material'
+import { formatDistanceStrict } from 'date-fns'
+import { AccessTime, Person } from '@styled-icons/material'
 import { colors } from '@/design'
+import { isNil } from '@/utils'
 
 const Wrapper = styled.article`
   display: flex;
   justify-content: space-between;
 
   width: 100%;
-  height: 70px;
+  height: 80px;
 `
 
 const iconStyle = css`
   height: 20px;
   margin-right: 4px;
+  margin-left: -3px;
   margin-bottom: 2px;
 `
 
@@ -39,17 +41,18 @@ const Name = styled.h3`
   margin-bottom: 4px;
 `
 
-const SmallText = styled.div`
+const SmallText = styled.div<{ hidden?: boolean }>`
   display: flex;
   align-items: center;
   color: ${colors.text.secondary.string()};
   font-size: 16px;
   line-height: 14px;
+  visibility: ${p => (p.hidden ? 'hidden' : 'visible')};
 `
 
 const Image = styled.img`
-  height: 70px;
-  width: 70px;
+  height: 80px;
+  width: 80px;
   border-radius: 3px;
 `
 
@@ -66,6 +69,12 @@ export const BoardgameListItem = ({
   players,
   lastPlayed,
 }: Props) => {
+  const dateStr =
+    !isNil(lastPlayed) &&
+    formatDistanceStrict(new Date(lastPlayed), new Date(), {
+      addSuffix: true,
+    })
+
   return (
     <Wrapper>
       <Info>
@@ -76,12 +85,9 @@ export const BoardgameListItem = ({
           {players[0]} - {players[1]}
         </SmallText>
 
-        <SmallText>
+        <SmallText hidden={!dateStr}>
           <Clock />
-
-          {lastPlayed
-            ? `Last played ${formatDistance(new Date(lastPlayed), new Date())} ago`
-            : 'Never played'}
+          {dateStr && `Last played ${dateStr}`}
         </SmallText>
       </Info>
 
