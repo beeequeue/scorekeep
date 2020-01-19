@@ -9,14 +9,15 @@ const Wrapper = styled.article`
   justify-content: space-between;
 
   width: 100%;
-  height: 60px;
+  height: 70px;
 `
 
 const iconStyle = css`
-  height: 18px;
+  height: 20px;
   margin-right: 4px;
- margin-bottom:2px;
+  margin-bottom: 2px;
 `
+
 const Player = styled(Person)`
   ${iconStyle};
 `
@@ -32,7 +33,7 @@ const Info = styled.div`
 `
 
 const Name = styled.h3`
-  font-size: 20px;
+  font-size: 24px;
   line-height: 20px;
   font-weight: 900;
   margin-bottom: 4px;
@@ -42,13 +43,13 @@ const SmallText = styled.div`
   display: flex;
   align-items: center;
   color: ${colors.text.secondary.string()};
-  font-size: 14px;
+  font-size: 16px;
   line-height: 14px;
 `
 
 const Image = styled.img`
-  height: 60px;
-  width: 60px;
+  height: 70px;
+  width: 70px;
   border-radius: 3px;
 `
 
@@ -79,7 +80,7 @@ export const BoardgameListItem = ({
           <Clock />
 
           {lastPlayed
-            ? `Last played ${formatDistance(new Date(lastPlayed), new Date())}`
+            ? `Last played ${formatDistance(new Date(lastPlayed), new Date())} ago`
             : 'Never played'}
         </SmallText>
       </Info>
