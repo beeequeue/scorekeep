@@ -1,9 +1,9 @@
-import { configure, addParameters } from '@storybook/react'
+import { addons } from '@storybook/addons'
 import { create } from '@storybook/theming'
-import { colors } from '../src/design'
-import './styles.css'
+import { colors } from 'babel-loader!../src/design.ts'
 
 const theme = create({
+  brandTitle: 'scorekeep',
   base: 'dark',
 
   colorPrimary: colors.actions.primary.highlight.string(),
@@ -31,12 +31,6 @@ const theme = create({
   inputBorderRadius: 3,
 })
 
-// Option defaults.
-addParameters({
-  options: {
-    theme: theme,
-  },
+addons.setConfig({
+  theme,
 })
-
-// automatically import all files ending in *.stories.js
-configure(require.context('../src', true, /\.stories\.tsx$/), module)
