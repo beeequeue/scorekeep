@@ -10,7 +10,7 @@
     "@types/superagent": "4.1.4",
     "@types/uuid": "3.4.6",
     "ajv": "6.10.2",
-    "apollo-server-express": "2.9.15",
+    "apollo-server-express": "2.14.2",
     "class-validator": "0.11.0",
     "cookie": "0.4.0",
     "cookie-parser": "1.4.4",
